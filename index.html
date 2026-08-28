@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="fr" class="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>UniDocs • Mes Cours & Examens</title>
+  
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#ffffff">
+  <link rel="icon" type="image/svg+xml" href="assets/icons/icon-192.svg">
+
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            brand: '#2563eb'
+          }
+        }
+      }
+    }
+  </script>
+
+  <!-- Lucide Icons & Supabase -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+  <link rel="stylesheet" href="css/custom.css">
+</head>
+<body class="bg-[#f8fafc] dark:bg-[#09090b] text-slate-900 dark:text-slate-100 min-h-screen flex antialiased">
+
+  <!-- ==================================================== -->
+  <!-- BARRE LATÉRALE / SIDEBAR                             -->
+  <!-- ==================================================== -->
+  <aside class="w-64 border-r border-slate-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 flex flex-col shrink-0 hidden md:flex h-screen sticky top-0">
+    
+    <!-- En-tête Sidebar -->
+    <div class="p-5 border-b border-slate-100 dark:border-zinc-900 flex items-center justify-between">
+      <div class="flex items-center gap-2.5">
+        <div class="w-8 h-8 rounded-lg bg-slate-900 dark:bg-white text-white dark:text-zinc-900 flex items-center justify-center font-bold text-sm">
+          UD
+        </div>
+        <div>
+          <h1 class="font-bold text-sm tracking-tight text-slate-900 dark:text-white">UniDocs</h1>
+          <p class="text-[11px] text-slate-500 dark:text-zinc-400">Licence 2 Informatique</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Navigation Principale -->
+    <div class="flex-1 overflow-y-auto p-3 space-y-6">
+      
+      <!-- Vues Générales -->
+      <div class="space-y-1">
+        <button id="nav-all" onclick="window.app.setSubjectFilter(null)" class="nav-item-active w-full flex items-center justify-between px-3 py-2 rounded-lg text-xs font-medium text-slate-600 dark:text-zinc-400 hover:bg-slate-100 dark:hover:bg-zinc-900 transition">
+          <div class="flex items-center gap-2.5">
+            <i data-lucide="layout-grid" class="w-4 h-4 text-slate-500"></i>
+            <span>Tous les documents</span>
+          </div>
+          <span id="nav-count-all" class="text-[11px] px-1.5 py-0.5 rounded bg-slate-200/60 dark:bg-zinc-800 text-slate-600 dark:text-zinc-400 font-mono">0</span>
+        </button>
+
+        <button id="nav-favs" onclick="window.app.setQuickCategory('favorites')" class="w-full flex items-center justify-between px-3 py-2 rounded-lg text-xs font-medium text-slate-600 dark:text-zinc-400 hover:bg-slate-100 dark:hover:bg-zinc-900 transition">
+          <div class="flex items-center gap-2.5">
+            <i data-lucide="star" class="w-4 h-4 text-amber-500"></i>
+            <span>Mes Favoris</span>
+          </div>
+          <span id="nav-count-favs" class="text-[11px] px-1.5 py-0.5 rounded bg-slate-200/60 dark:bg-zinc-800 text-slate-600 dark:text-zinc-400 font-mono">0</span>
+        </button>
+      </div>
+
+      <!-- Matières Semestre 1 -->
+      <div>
+        <div class="px-3 mb-2 text-[10px] font-bold uppercase tracking-wider text-slate-400 dark:text-zinc-500">Semestre 1</div>
+        <div id="nav-courses-s1" class="space-y-0.5">
+          <!-- Dynamique -->
+        </div>
+      </div>
+
+      <!-- Matières Semestre 2 -->
+      <div>
+        <div class="px-3 mb-2 text-[10px] font-bold uppercase tracking-wider text-slate-400 dark:text-zinc-500">Semestre 2</div>
+        <div id="nav-courses-s2" class="space-y-0.5">
+          <!-- Dynamique -->
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Pied de Sidebar : Statut Hors-ligne & Supabase -->
+    <div class="p-3 border-t border-slate-100 dark:border-zinc-900 space-y-2">
+      <div class="flex items-center justify-between px-2 py-1.5 text-xs text-slate-500 dark:text-zinc-400">
+        <span class="flex items-center gap-1.5">
+          <span id="sidebar-online-dot" class="w-2 h-2 rounded-full bg-emerald-500"></span>
+          <span id="sidebar-online-text">Hors-ligne OK</span>
+        </span>
+        <button id="open-supabase-btn" class="hover:text-slate-900 dark:hover:text-white p-1" title="Configuration Cloud">
+          <i data-lucide="settings" class="w-3.5 h-3.5"></i>
+        </button>
+      </div>
+    </div>
+  </aside>
+
+  <!-- ==================================================== -->
+  <!-- CONTENU PRINCIPAL                                    -->
+  <!-- ==================================================== -->
+  <div class="flex-1 flex flex-col min-w-0">
+    
+    <!-- Top Header -->
+    <header class="h-16 border-b border-slate-200 dark:border-zinc-800 bg-white/80 dark:bg-zinc-950/80 backdrop-blur-md px-4 sm:px-8 flex items-center justify-between gap-4 sticky top-0 z-30">
+      
+      <!-- Titre Mobile / Bouton Menu -->
+      <div class="flex items-center gap-3 md:hidden">
+        <button onclick="document.querySelector('aside').classList.toggle('hidden')" class="p-2 rounded-lg bg-slate-100 dark:bg-zinc-900 text-slate-600 dark:text-zinc-300">
+          <i data-lucide="menu" class="w-5 h-5"></i>
+        </button>
+        <span class="font-bold text-sm">UniDocs</span>
+      </div>
+
+      <!-- Barre de Recherche Sobre -->
+      <div class="relative flex-1 max-w-md">
+        <i data-lucide="search" class="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2"></i>
+        <input id="search-input" type="text" placeholder="Rechercher un cours, TP, examen..." class="w-full bg-slate-100 dark:bg-zinc-900 border-none rounded-xl pl-9 pr-4 py-2 text-xs sm:text-sm text-slate-900 dark:text-slate-100 placeholder-slate-400 dark:placeholder-zinc-500 focus:ring-2 focus:ring-slate-900 dark:focus:ring-white transition">
+      </div>
+
+      <!-- Actions Header -->
+      <div class="flex items-center gap-2">
+        <!-- Toggle Thème Clair/Sombre -->
+        <button id="theme-toggle-btn" class="p-2 rounded-xl text-slate-500 dark:text-zinc-400 hover:bg-slate-100 dark:hover:bg-zinc-900 transition" title="Changer de thème">
+          <i data-lucide="sun" class="w-4 h-4 hidden dark:block"></i>
+          <i data-lucide="moon" class="w-4 h-4 block dark:hidden"></i>
+        </button>
+
+
+
+        <!-- Bouton Ajouter -->
+        <button id="open-add-doc-btn" class="flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-semibold bg-slate-900 hover:bg-slate-800 dark:bg-white dark:hover:bg-zinc-200 text-white dark:text-zinc-900 transition shadow-sm">
+          <i data-lucide="plus" class="w-4 h-4"></i>
+          <span>Ajouter</span>
+        </button>
+      </div>
+    </header>
+
+    <!-- Corps de page -->
+    <main class="flex-1 p-4 sm:p-8 max-w-6xl w-full mx-auto space-y-6">
+      
+      <!-- En-tête de la vue sélectionnée -->
+      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-2">
+        <div>
+          <h2 id="view-title" class="text-xl sm:text-2xl font-bold tracking-tight text-slate-900 dark:text-white">Tous les documents</h2>
+          <p id="view-subtitle" class="text-xs text-slate-500 dark:text-zinc-400 mt-0.5">Consultez l'ensemble des ressources pédagogiques disponibles.</p>
+        </div>
+
+        <!-- Filtres par types de documents (Chips simples) -->
+        <div class="flex items-center gap-1.5 overflow-x-auto pb-1 max-w-full">
+          <button data-category="all" class="category-chip filter-chip-active px-3 py-1.5 rounded-lg text-xs font-medium border border-slate-200 dark:border-zinc-800 text-slate-600 dark:text-zinc-300 hover:bg-slate-100 dark:hover:bg-zinc-900 transition">Tous</button>
+          <button data-category="cours" class="category-chip px-3 py-1.5 rounded-lg text-xs font-medium border border-slate-200 dark:border-zinc-800 text-slate-600 dark:text-zinc-300 hover:bg-slate-100 dark:hover:bg-zinc-900 transition">Cours</button>
+          <button data-category="tp" class="category-chip px-3 py-1.5 rounded-lg text-xs font-medium border border-slate-200 dark:border-zinc-800 text-slate-600 dark:text-zinc-300 hover:bg-slate-100 dark:hover:bg-zinc-900 transition">TPs</button>
+          <button data-category="exercice" class="category-chip px-3 py-1.5 rounded-lg text-xs font-medium border border-slate-200 dark:border-zinc-800 text-slate-600 dark:text-zinc-300 hover:bg-slate-100 dark:hover:bg-zinc-900 transition">Exercices</button>
+          <button data-category="examen" class="category-chip px-3 py-1.5 rounded-lg text-xs font-medium border border-slate-200 dark:border-zinc-800 text-slate-600 dark:text-zinc-300 hover:bg-slate-100 dark:hover:bg-zinc-900 transition">Examens</button>
+          <button data-category="interro" class="category-chip px-3 py-1.5 rounded-lg text-xs font-medium border border-slate-200 dark:border-zinc-800 text-slate-600 dark:text-zinc-300 hover:bg-slate-100 dark:hover:bg-zinc-900 transition">Interrogations</button>
+        </div>
+      </div>
+
+      <!-- Liste sobre des documents -->
+      <div id="documents-table" class="bg-white dark:bg-zinc-900/60 border border-slate-200 dark:border-zinc-800/80 rounded-2xl divide-y divide-slate-100 dark:divide-zinc-800/80 overflow-hidden shadow-sm">
+        <!-- Rendu dynamique -->
+      </div>
+
+      <!-- État vide -->
+      <div id="documents-empty" class="hidden text-center py-16 px-4">
+        <i data-lucide="file-search" class="w-10 h-10 text-slate-400 dark:text-zinc-600 mx-auto mb-2"></i>
+        <h4 class="font-semibold text-slate-800 dark:text-zinc-200 text-sm">Aucun document ne correspond à ce filtre</h4>
+        <p class="text-xs text-slate-400 dark:text-zinc-500 mt-1">Sélectionnez une autre matière ou réinitialisez la recherche.</p>
+      </div>
+
+    </main>
+  </div>
+
+  <!-- ==================================================== -->
+  <!-- MODAL : AJOUTER UN DOCUMENT                          -->
+  <!-- ==================================================== -->
+  <div id="add-doc-modal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-sm hidden">
+    <div class="w-full max-w-md bg-white dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800 rounded-2xl shadow-xl p-6 text-slate-900 dark:text-slate-100">
+      <div class="flex items-center justify-between pb-3 border-b border-slate-100 dark:border-zinc-800">
+        <h3 class="font-bold text-base">Ajouter un document</h3>
+        <button id="close-add-doc-btn" class="p-1 rounded-lg text-slate-400 hover:text-slate-700 dark:hover:text-white">
+          <i data-lucide="x" class="w-4 h-4"></i>
+        </button>
+      </div>
+
+      <form id="add-doc-form" class="space-y-3.5 pt-4 text-xs">
+        <div>
+          <label class="block font-medium text-slate-600 dark:text-zinc-400 mb-1">Matière</label>
+          <select id="add-doc-course" class="w-full bg-slate-50 dark:bg-zinc-800 border border-slate-200 dark:border-zinc-700 rounded-xl px-3 py-2 text-slate-900 dark:text-slate-100 focus:outline-none" required></select>
+        </div>
+
+        <div>
+          <label class="block font-medium text-slate-600 dark:text-zinc-400 mb-1">Titre du document</label>
+          <input id="add-doc-title" type="text" placeholder="Ex: Examen Final Session Juin 2024" class="w-full bg-slate-50 dark:bg-zinc-800 border border-slate-200 dark:border-zinc-700 rounded-xl px-3 py-2 text-slate-900 dark:text-slate-100 focus:outline-none" required>
+        </div>
+
+        <div class="grid grid-cols-2 gap-2">
+          <div>
+            <label class="block font-medium text-slate-600 dark:text-zinc-400 mb-1">Type</label>
+            <select id="add-doc-type" class="w-full bg-slate-50 dark:bg-zinc-800 border border-slate-200 dark:border-zinc-700 rounded-xl px-3 py-2 text-slate-900 dark:text-slate-100 focus:outline-none">
+              <option value="cours">Cours</option>
+              <option value="tp">TP</option>
+              <option value="exercice">Exercice / TD</option>
+              <option value="examen">Examen</option>
+              <option value="interro">Interrogation</option>
+            </select>
+          </div>
+          <div>
+            <label class="block font-medium text-slate-600 dark:text-zinc-400 mb-1">Année</label>
+            <input id="add-doc-year" type="text" value="2024-2025" class="w-full bg-slate-50 dark:bg-zinc-800 border border-slate-200 dark:border-zinc-700 rounded-xl px-3 py-2 text-slate-900 dark:text-slate-100 focus:outline-none">
+          </div>
+        </div>
+
+        <div>
+          <label class="block font-medium text-slate-600 dark:text-zinc-400 mb-1">Enseignant / Auteur</label>
+          <input id="add-doc-author" type="text" placeholder="Ex: Prof. Dupont" class="w-full bg-slate-50 dark:bg-zinc-800 border border-slate-200 dark:border-zinc-700 rounded-xl px-3 py-2 text-slate-900 dark:text-slate-100 focus:outline-none">
+        </div>
+
+        <div>
+          <label class="block font-medium text-slate-600 dark:text-zinc-400 mb-1">Fichier PDF (Optionnel)</label>
+          <input id="add-doc-file" type="file" accept=".pdf" class="w-full text-xs text-slate-500 file:mr-2 file:py-1 file:px-2.5 file:rounded-lg file:border-0 file:text-xs file:bg-slate-100 dark:file:bg-zinc-800 file:text-slate-700 dark:file:text-zinc-300">
+        </div>
+
+        <div class="flex items-center gap-2 pt-1">
+          <input id="add-doc-solution" type="checkbox" class="w-4 h-4 rounded text-slate-900 dark:text-white border-slate-300 dark:border-zinc-700">
+          <label for="add-doc-solution" class="text-slate-600 dark:text-zinc-400">Contient le corrigé officiel 💡</label>
+        </div>
+
+        <div class="flex items-center justify-end gap-2 pt-3 border-t border-slate-100 dark:border-zinc-800">
+          <button type="button" id="cancel-add-doc-btn" class="px-3 py-1.5 rounded-lg text-slate-600 dark:text-zinc-400 hover:bg-slate-100 dark:hover:bg-zinc-800 font-medium">Annuler</button>
+          <button type="submit" class="px-4 py-1.5 rounded-lg bg-slate-900 dark:bg-white text-white dark:text-zinc-900 font-medium">Enregistrer</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- ==================================================== -->
+  <!-- MODAL : SUPABASE CONFIG                              -->
+  <!-- ==================================================== -->
+  <div id="supabase-modal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-sm hidden">
+    <div class="w-full max-w-md bg-white dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800 rounded-2xl shadow-xl p-6 text-slate-900 dark:text-slate-100 text-xs">
+      <div class="flex items-center justify-between pb-3 border-b border-slate-100 dark:border-zinc-800">
+        <h3 class="font-bold text-base">Synchronisation Cloud Supabase</h3>
+        <button id="close-supabase-btn" class="p-1 text-slate-400 hover:text-slate-700 dark:hover:text-white">
+          <i data-lucide="x" class="w-4 h-4"></i>
+        </button>
+      </div>
+
+      <form id="supabase-form" class="space-y-3 pt-4">
+        <div>
+          <label class="block font-medium text-slate-600 dark:text-zinc-400 mb-1">URL Supabase</label>
+          <input id="supabase-url" type="url" placeholder="https://xyz.supabase.co" class="w-full bg-slate-50 dark:bg-zinc-800 border border-slate-200 dark:border-zinc-700 rounded-xl px-3 py-2 font-mono text-xs">
+        </div>
+        <div>
+          <label class="block font-medium text-slate-600 dark:text-zinc-400 mb-1">Clé Anon</label>
+          <input id="supabase-key" type="password" placeholder="eyJ..." class="w-full bg-slate-50 dark:bg-zinc-800 border border-slate-200 dark:border-zinc-700 rounded-xl px-3 py-2 font-mono text-xs">
+        </div>
+        <button type="submit" class="w-full py-2 bg-slate-900 dark:bg-white text-white dark:text-zinc-900 font-semibold rounded-xl">Enregistrer & Tester</button>
+      </form>
+
+      <div class="mt-4 pt-3 border-t border-slate-100 dark:border-zinc-800 flex gap-2">
+        <button id="sync-push-btn" class="flex-1 py-1.5 bg-slate-100 dark:bg-zinc-800 hover:bg-slate-200 dark:hover:bg-zinc-700 rounded-lg font-medium">Envoyer Cloud</button>
+        <button id="sync-pull-btn" class="flex-1 py-1.5 bg-slate-100 dark:bg-zinc-800 hover:bg-slate-200 dark:hover:bg-zinc-700 rounded-lg font-medium">Télécharger Cloud</button>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- Scripts -->
+  <script src="js/data.js"></script>
+  <script src="js/db.js"></script>
+  <script src="js/supabase.js"></script>
+  <script src="js/pdf-viewer.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>

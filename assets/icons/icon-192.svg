@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 192 192" width="192" height="192">
+  <defs>
+    <linearGradient id="grad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#4f46e5" />
+      <stop offset="100%" stop-color="#06b6d4" />
+    </linearGradient>
+    <filter id="shadow" x="-10%" y="-10%" width="120%" height="120%">
+      <feDropShadow dx="0" dy="8" stdDeviation="12" flood-color="#000" flood-opacity="0.3"/>
+    </filter>
+  </defs>
+  <rect width="192" height="192" rx="44" fill="url(#grad)"/>
+  <g filter="url(#shadow)" fill="none" stroke="#ffffff" stroke-width="9" stroke-linecap="round" stroke-linejoin="round">
+    <!-- Graduation Cap / Book Icon -->
+    <path d="M96 46 L38 72 L96 98 L154 72 Z" fill="#ffffff" fill-opacity="0.2"/>
+    <path d="M58 84 v38 c0 16 17 28 38 28 s38 -12 38 -28 v-38"/>
+    <line x1="154" y1="72" x2="154" y2="124"/>
+    <circle cx="154" cy="128" r="5" fill="#ffffff"/>
+  </g>
+</svg>
+
