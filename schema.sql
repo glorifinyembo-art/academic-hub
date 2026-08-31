@@ -25,6 +25,7 @@ CREATE TABLE IF NOT EXISTS public.documents (
     year TEXT DEFAULT '2024-2025',
     semester TEXT NOT NULL,
     description TEXT,
+    content TEXT,
     author TEXT,
     file_url TEXT,
     size TEXT DEFAULT '1.2 Mo',

@@ -4,7 +4,7 @@
  */
 
 const DB_NAME = 'UniDocsOfflineDB';
-const DB_VERSION = 1;
+const DB_VERSION = 2;
 
 class LocalDatabase {
   constructor() {
@@ -19,12 +19,24 @@ class LocalDatabase {
 
       request.onupgradeneeded = (event) => {
         const db = event.target.result;
+        const txn = event.target.transaction;
 
         // Table des Matières / Cours
+        let courseStore;
         if (!db.objectStoreNames.contains('courses')) {
-          const courseStore = db.createObjectStore('courses', { keyPath: 'id' });
+          courseStore = db.createObjectStore('courses', { keyPath: 'id' });
           courseStore.createIndex('semester', 'semester', { unique: false });
-          courseStore.createIndex('code', 'code', { unique: true });
+          courseStore.createIndex('promotion', 'promotion', { unique: false });
+          courseStore.createIndex('code', 'code', { unique: false });
+        } else {
+          courseStore = txn.objectStore('courses');
+          if (courseStore.indexNames.contains('code')) {
+            courseStore.deleteIndex('code');
+          }
+          courseStore.createIndex('code', 'code', { unique: false });
+          if (!courseStore.indexNames.contains('promotion')) {
+            courseStore.createIndex('promotion', 'promotion', { unique: false });
+          }
         }
 
         // Table des Documents (Cours, TPs, TD, Examens, Interros)
@@ -60,6 +72,24 @@ class LocalDatabase {
     });
   }
 
+  async resetAllData(courses, documents) {
+    await this.init();
+    return new Promise((resolve, reject) => {
+      const transaction = this.db.transaction(['courses', 'documents'], 'readwrite');
+      const courseStore = transaction.objectStore('courses');
+      const docStore = transaction.objectStore('documents');
+      
+      courseStore.clear();
+      docStore.clear();
+
+      courses.forEach(c => courseStore.put(c));
+      documents.forEach(d => docStore.put(d));
+
+      transaction.oncomplete = () => resolve(true);
+      transaction.onerror = () => reject(transaction.error);
+    });
+  }
+
   // --- GESTION DES COURS ---
   async getAllCourses() {
     await this.init();
@@ -91,6 +121,28 @@ class LocalDatabase {
       const request = store.put(course);
       request.onsuccess = () => resolve(course);
       request.onerror = () => reject(request.error);
+    });
+  }
+
+  async deleteCourse(id) {
+    await this.init();
+    return new Promise((resolve, reject) => {
+      const transaction = this.db.transaction(['courses', 'documents'], 'readwrite');
+      const courseStore = transaction.objectStore('courses');
+      const docStore = transaction.objectStore('documents');
+
+      courseStore.delete(id);
+
+      // Supprimer les documents rattachés à ce cours
+      const docIndex = docStore.index('courseId');
+      const req = docIndex.getAll(id);
+      req.onsuccess = () => {
+        const docs = req.result || [];
+        docs.forEach(d => docStore.delete(d.id));
+      };
+
+      transaction.oncomplete = () => resolve(true);
+      transaction.onerror = () => reject(transaction.error);
     });
   }
 
@@ -171,7 +223,7 @@ class LocalDatabase {
   }
 
   // --- CACHE PDF HORS-LIGNE ---
-  async savePdfBlob(docId, blobOrDataUrl) {
+  async savePdfBlob(docId, blobOrDataUrl, meta = {}) {
     await this.init();
     return new Promise((resolve, reject) => {
       const transaction = this.db.transaction(['pdf_cache'], 'readwrite');
@@ -179,6 +231,8 @@ class LocalDatabase {
       const request = store.put({
         docId: docId,
         data: blobOrDataUrl,
+        mimeType: meta.mimeType || '',
+        fileName: meta.fileName || '',
         savedAt: new Date().toISOString()
       });
       request.onsuccess = async () => {
@@ -186,6 +240,8 @@ class LocalDatabase {
         const doc = await this.getDocument(docId);
         if (doc) {
           doc.isOfflineAvailable = true;
+          if (meta.fileName) doc.fileName = meta.fileName;
+          if (meta.fileType) doc.fileType = meta.fileType;
           await this.updateDocument(doc);
         }
         resolve(true);
@@ -200,7 +256,7 @@ class LocalDatabase {
       const transaction = this.db.transaction(['pdf_cache'], 'readonly');
       const store = transaction.objectStore('pdf_cache');
       const request = store.get(docId);
-      request.onsuccess = () => resolve(request.result ? request.result.data : null);
+      request.onsuccess = () => resolve(request.result || null);
       request.onerror = () => reject(request.error);
     });
   }

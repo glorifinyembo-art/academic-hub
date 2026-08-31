@@ -42,12 +42,29 @@ class SupabaseService {
       console.log('[Supabase] Mode local actif (Renseignez .env pour connecter votre Cloud Supabase)');
       this.isConnected = false;
     }
+    if (this.url && this.anonKey) {
+      localStorage.setItem('unidocs_supabase_url', this.url);
+      localStorage.setItem('unidocs_supabase_key', this.anonKey);
+    }
     return this.isConnected;
+  }
+
+  isConfigured() {
+    return Boolean(this.url && this.anonKey && this.client);
+  }
+
+  async configureManually(url, key) {
+    return await this.setCredentials(url, key);
   }
 
   async setCredentials(url, key) {
     this.url = (url || '').trim();
     this.anonKey = (key || '').trim();
+
+    if (this.url && this.anonKey) {
+      localStorage.setItem('unidocs_supabase_url', this.url);
+      localStorage.setItem('unidocs_supabase_key', this.anonKey);
+    }
 
     await window.localDB.setSetting('supabase_url', this.url);
     await window.localDB.setSetting('supabase_anon_key', this.anonKey);
@@ -143,6 +160,55 @@ class SupabaseService {
     });
   }
 
+  // Normaliser un document venant de Supabase (snake_case ou camelCase) vers l'application
+  normalizeDocument(doc) {
+    if (!doc) return null;
+    return {
+      id: doc.id,
+      courseId: doc.courseId || doc.course_id || '',
+      title: doc.title || 'Document sans titre',
+      type: doc.type || 'cours',
+      year: doc.year || '2024-2025',
+      semester: doc.semester || 'S1',
+      description: doc.description || '',
+      author: doc.author || 'Faculté Polytechnique UNILU',
+      promotion: doc.promotion || 'prepo',
+      hasSolution: doc.hasSolution !== undefined ? doc.hasSolution : (doc.has_solution !== undefined ? doc.has_solution : false),
+      isFavorite: doc.isFavorite !== undefined ? doc.isFavorite : (doc.is_favorite !== undefined ? doc.is_favorite : false),
+      revisionStatus: doc.revisionStatus || doc.revision_status || 'todo',
+      size: doc.size || '1.5 Mo',
+      dateAdded: doc.dateAdded || doc.date_added || new Date().toISOString().split('T')[0],
+      file_url: doc.file_url || doc.fileUrl || '',
+      content: doc.content || ''
+    };
+  }
+
+  // Préparer un document pour l'envoi vers Supabase (compatible avec les deux conventions SQL)
+  formatDocumentForCloud(doc) {
+    const { fileBlob, ...rest } = doc;
+    return {
+      id: rest.id,
+      course_id: rest.courseId || rest.course_id,
+      courseId: rest.courseId || rest.course_id,
+      title: rest.title,
+      type: rest.type || 'cours',
+      year: rest.year || '2024-2025',
+      semester: rest.semester || 'S1',
+      description: rest.description || '',
+      author: rest.author || 'Faculté Polytechnique UNILU',
+      promotion: rest.promotion || 'prepo',
+      has_solution: Boolean(rest.hasSolution),
+      hasSolution: Boolean(rest.hasSolution),
+      is_favorite: Boolean(rest.isFavorite),
+      isFavorite: Boolean(rest.isFavorite),
+      revision_status: rest.revisionStatus || 'todo',
+      size: rest.size || '1.5 Mo',
+      date_added: rest.dateAdded || new Date().toISOString().split('T')[0],
+      file_url: rest.file_url || '',
+      content: rest.content || ''
+    };
+  }
+
   // Synchronisation descendante : Supabase -> IndexedDB local
   async pullFromCloud() {
     if (!this.client || !navigator.onLine) {
@@ -162,7 +228,8 @@ class SupabaseService {
       const { data: remoteDocs, error: dErr } = await this.client.from('documents').select('*');
       if (dErr) throw dErr;
       if (remoteDocs && remoteDocs.length > 0) {
-        await window.localDB.saveDocuments(remoteDocs);
+        const normalized = remoteDocs.map(d => this.normalizeDocument(d));
+        await window.localDB.saveDocuments(normalized);
       }
 
       this.isSyncing = false;
@@ -174,7 +241,38 @@ class SupabaseService {
     }
   }
 
-  // Synchronisation montante : IndexedDB -> Supabase Cloud
+  // Publication immédiate d'un document individuel
+  async publishSingleDocument(doc, pdfBlobDataUrl = null) {
+    // 1. Toujours enregistrer en local d'abord (IndexedDB)
+    await window.localDB.addDocument(doc);
+    if (pdfBlobDataUrl) {
+      await window.localDB.savePdfBlob(doc.id, pdfBlobDataUrl, {
+        fileName: `${doc.title.replace(/[^a-zA-Z0-9_-]/g, '_')}.pdf`,
+        fileType: 'pdf',
+        mimeType: 'application/pdf'
+      });
+    }
+
+    // 2. Si connecté à Supabase, pousser immédiatement vers la table
+    if (this.client && navigator.onLine) {
+      try {
+        const payload = this.formatDocumentForCloud(doc);
+        const { error } = await this.client.from('documents').upsert(payload, { onConflict: 'id' });
+        if (error) {
+          console.warn('[Supabase Direct Upsert Error]', error);
+          return { success: true, cloudSynced: false, error: error.message };
+        }
+        return { success: true, cloudSynced: true };
+      } catch (e) {
+        console.warn('[Supabase Publish Single Doc Ex]', e);
+        return { success: true, cloudSynced: false, error: e.message };
+      }
+    }
+
+    return { success: true, cloudSynced: false, message: "Enregistré en local (Mode hors-ligne)" };
+  }
+
+  // Synchronisation montante globale : IndexedDB -> Supabase Cloud
   async pushToCloud() {
     if (!this.client || !navigator.onLine) {
       return { success: false, message: "Hors-ligne ou Supabase non configuré" };
@@ -191,11 +289,7 @@ class SupabaseService {
       }
 
       if (localDocs.length > 0) {
-        // Nettoyer les données locales avant envoi (enlever les blobs binaires lourds de la table SQL)
-        const docsToSync = localDocs.map(doc => {
-          const { fileBlob, ...rest } = doc;
-          return rest;
-        });
+        const docsToSync = localDocs.map(doc => this.formatDocumentForCloud(doc));
         const { error: dErr } = await this.client.from('documents').upsert(docsToSync, { onConflict: 'id' });
         if (dErr) console.warn('[Supabase Sync] Avertissement docs upsert:', dErr);
       }
@@ -260,6 +354,7 @@ CREATE TABLE IF NOT EXISTS public.documents (
     year TEXT DEFAULT '2024-2025',
     semester TEXT NOT NULL,
     description TEXT,
+    content TEXT,
     author TEXT,
     file_url TEXT,
     size TEXT DEFAULT '1.2 Mo',
