@@ -1,6 +1,6 @@
 {
-  "name": "UniDocs • Polytechnique UNILU",
-  "description": "Plateforme académique officielle de la Faculté Polytechnique (Université de Lubumbashi) pour consulter et réviser cours, TPs, exercices, examens et mémoires de TFC de la Prépo au Bac 3.",
+  "name": "Academic Hub",
+  "description": "Centre d'information académique universitaire : banque de ressources centralisée, recherche documentaire avancée, lecteurs multi-formats et accompagnement pédagogique de faculté.",
   "requestFramePermissions": [],
   "majorCapabilities": [
     "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"

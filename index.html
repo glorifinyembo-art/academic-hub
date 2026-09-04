@@ -1,436 +1,194 @@
 <!DOCTYPE html>
-<html lang="fr" class="light">
+<html lang="fr" class="h-full bg-slate-50">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>UniDocs • Polytechnique UNILU</title>
-  <meta name="description" content="Plateforme académique officielle de la Faculté Polytechnique (Université de Lubumbashi) pour consulter et réviser cours, TPs, exercices, examens et mémoires de TFC de la Prépo au Bac 3.">
-  <meta property="og:title" content="UniDocs • Polytechnique UNILU">
-  <meta property="og:description" content="Plateforme académique officielle de la Faculté Polytechnique (Université de Lubumbashi) pour consulter et réviser cours, TPs, exercices, examens et mémoires de TFC de la Prépo au Bac 3.">
-  
-  <link rel="manifest" href="manifest.json">
-  <meta name="theme-color" content="#ffffff">
-  <link rel="icon" type="image/svg+xml" href="assets/icons/icon-192.svg">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Academic Hub — Centre d'Information Académique</title>
+  <meta name="description" content="Centre d'Information Académique intelligent : banque de ressources, recherche hybride, lecteurs multi-formats, tuteur IA adaptatif et administration tri-agents.">
+  <meta property="og:title" content="Academic Hub — Centre d'Information Académique">
+  <meta property="og:description" content="Banque de ressources académiques centralisée, recherche hybride, tuteur IA et lecteurs intégrés.">
 
   <!-- Tailwind CSS CDN -->
   <script src="https://cdn.tailwindcss.com"></script>
   <script>
     tailwind.config = {
-      darkMode: 'class',
       theme: {
         extend: {
           colors: {
-            brand: '#1e3a8a',
-            poly: '#0f172a'
+            brand: {
+              50: '#eff6ff',
+              100: '#dbeafe',
+              200: '#bfdbfe',
+              500: '#3b82f6',
+              600: '#2563eb',
+              700: '#1d4ed8',
+              800: '#1e40af',
+              900: '#1e3a8a',
+            }
           }
         }
       }
     }
   </script>
 
-  <!-- PDF.js & jsPDF for Real Native PDF Reader Engine -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-  <script>
-    if (window.pdfjsLib) {
-      window.pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
-    }
-  </script>
-
-  <!-- Lucide Icons & Supabase -->
+  <!-- Lucide Icons -->
   <script src="https://unpkg.com/lucide@latest"></script>
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-
-  <link rel="stylesheet" href="css/custom.css">
+  
+  <style>
+    /* Clean custom scrollbar */
+    ::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #f1f5f9;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #cbd5e1;
+      border-radius: 9999px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: #94a3b8;
+    }
+  </style>
 </head>
-<body class="bg-[#f8fafc] dark:bg-[#09090b] text-slate-900 dark:text-slate-100 min-h-screen flex antialiased">
+<body class="h-full flex flex-col text-slate-900 bg-slate-50 antialiased font-sans">
 
-  <!-- ==================================================== -->
-  <!-- BARRE LATÉRALE / SIDEBAR                             -->
-  <!-- ==================================================== -->
-  <aside id="app-sidebar" class="w-72 border-r border-slate-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 flex flex-col shrink-0 hidden md:flex h-screen sticky top-0 z-40">
-    
-    <!-- En-tête Sidebar -->
-    <div class="p-4 border-b border-slate-100 dark:border-zinc-900 flex items-center justify-between">
-      <div class="flex items-center gap-3">
-        <div class="w-9 h-9 rounded-xl bg-gradient-to-br from-blue-900 to-indigo-950 text-white flex items-center justify-center font-black text-sm shadow-sm border border-blue-700/30">
-          UD
+  <!-- Top Global Header -->
+  <header id="main-header" class="sticky top-0 z-40 bg-white/95 backdrop-blur border-b border-slate-200 px-4 py-3 sm:px-6">
+    <div class="max-w-7xl mx-auto flex items-center justify-between gap-4">
+      <!-- Logo & Title -->
+      <div class="flex items-center gap-3 cursor-pointer" onclick="app.navigate('home')">
+        <div class="w-10 h-10 rounded-xl bg-blue-600 text-white flex items-center justify-center shadow-md shadow-blue-500/20 font-bold text-lg">
+          <i data-lucide="graduation-cap" class="w-5 h-5"></i>
         </div>
         <div>
-          <h1 class="font-bold text-sm tracking-tight text-slate-900 dark:text-white flex items-center gap-1.5">
-            UniDocs
-            <span class="text-[10px] font-semibold uppercase px-1.5 py-0.5 rounded bg-blue-100 text-blue-800 dark:bg-blue-950 dark:text-blue-300">UNILU</span>
-          </h1>
-          <p class="text-[11px] text-slate-500 dark:text-zinc-400 font-medium">Faculté Polytechnique</p>
-        </div>
-      </div>
-    </div>
-
-    <!-- Navigation Principale -->
-    <div class="flex-1 overflow-y-auto p-3 space-y-5">
-      
-      <!-- Vues Générales -->
-      <div class="space-y-1">
-        <button id="nav-all" onclick="window.app.setSubjectFilter(null)" class="nav-item-active w-full flex items-center justify-between px-3 py-2 rounded-xl text-xs font-medium text-slate-600 dark:text-zinc-400 hover:bg-slate-100 dark:hover:bg-zinc-900 transition">
-          <div class="flex items-center gap-2.5">
-            <i data-lucide="layout-grid" class="w-4 h-4 text-slate-500"></i>
-            <span>Tous les documents</span>
+          <div class="flex items-center gap-2">
+            <span class="font-extrabold text-lg sm:text-xl tracking-tight text-slate-900">Academic<span class="text-blue-600">Hub</span></span>
+            <span class="text-[10px] uppercase font-bold tracking-wider px-2 py-0.5 rounded-full bg-blue-50 text-blue-700 border border-blue-200/60">Faculté</span>
           </div>
-          <span id="nav-count-all" class="text-[11px] px-1.5 py-0.5 rounded-md bg-slate-200/60 dark:bg-zinc-800 text-slate-600 dark:text-zinc-400 font-mono">0</span>
+          <p class="text-xs text-slate-500 hidden sm:block">Centre d'Information Académique & Tuteur IA</p>
+        </div>
+      </div>
+
+      <!-- Navigation Links Desktop -->
+      <nav class="hidden md:flex items-center gap-1 bg-slate-100/80 p-1 rounded-xl border border-slate-200/80 text-sm font-medium">
+        <button id="nav-home" onclick="app.navigate('home')" class="px-3.5 py-1.5 rounded-lg transition-all text-slate-600 hover:text-slate-900">
+          <span class="flex items-center gap-2"><i data-lucide="library" class="w-4 h-4"></i>Ressources</span>
         </button>
-
-        <button id="nav-favs" onclick="window.app.setQuickCategory('favorites')" class="w-full flex items-center justify-between px-3 py-2 rounded-xl text-xs font-medium text-slate-600 dark:text-zinc-400 hover:bg-slate-100 dark:hover:bg-zinc-900 transition">
-          <div class="flex items-center gap-2.5">
-            <i data-lucide="star" class="w-4 h-4 text-amber-500"></i>
-            <span>Mes Favoris</span>
-          </div>
-          <span id="nav-count-favs" class="text-[11px] px-1.5 py-0.5 rounded-md bg-slate-200/60 dark:bg-zinc-800 text-slate-600 dark:text-zinc-400 font-mono">0</span>
+        <button id="nav-courses" onclick="app.navigate('courses')" class="px-3.5 py-1.5 rounded-lg transition-all text-slate-600 hover:text-slate-900">
+          <span class="flex items-center gap-2"><i data-lucide="folder-tree" class="w-4 h-4"></i>Matières</span>
         </button>
-      </div>
+        <button id="nav-tutor" onclick="app.navigate('tutor')" class="px-3.5 py-1.5 rounded-lg transition-all text-slate-600 hover:text-slate-900">
+          <span class="flex items-center gap-2"><i data-lucide="bot" class="w-4 h-4 text-blue-600"></i>Tuteur IA</span>
+        </button>
+        <button id="nav-admin" onclick="app.navigate('admin')" class="px-3.5 py-1.5 rounded-lg transition-all text-slate-600 hover:text-slate-900">
+          <span class="flex items-center gap-2"><i data-lucide="shield-check" class="w-4 h-4 text-amber-600"></i>Administration</span>
+        </button>
+      </nav>
 
-      <!-- Matières Semestre 1 -->
-      <div id="section-s1" class="space-y-1">
-        <div class="flex items-center justify-between px-3 mb-1.5">
-          <span class="text-[10px] font-bold uppercase tracking-wider text-slate-400 dark:text-zinc-500">Semestre 1</span>
-          <span id="s1-course-count" class="text-[10px] font-medium text-slate-400 dark:text-zinc-500"></span>
-        </div>
-        <div id="nav-courses-s1" class="space-y-0.5">
-          <!-- Rendu dynamique -->
-        </div>
-      </div>
-
-      <!-- Matières Semestre 2 -->
-      <div id="section-s2" class="space-y-1">
-        <div class="flex items-center justify-between px-3 mb-1.5">
-          <span class="text-[10px] font-bold uppercase tracking-wider text-slate-400 dark:text-zinc-500">Semestre 2</span>
-          <span id="s2-course-count" class="text-[10px] font-medium text-slate-400 dark:text-zinc-500"></span>
-        </div>
-        <div id="nav-courses-s2" class="space-y-0.5">
-          <!-- Rendu dynamique -->
-        </div>
-      </div>
-
-    </div>
-
-    <!-- Pied de Sidebar : Statut Hors-ligne & Supabase -->
-    <div class="p-3 border-t border-slate-100 dark:border-zinc-900 space-y-2 bg-slate-50/40 dark:bg-zinc-900/20">
-      <div class="flex items-center justify-between px-2 py-1 text-xs text-slate-500 dark:text-zinc-400">
-        <span class="flex items-center gap-1.5">
-          <span id="sidebar-online-dot" class="w-2 h-2 rounded-full bg-emerald-500"></span>
-          <span id="sidebar-online-text" class="text-[11px] font-medium">Hors-ligne prêt</span>
-        </span>
-        <div class="flex items-center gap-1">
-          <button id="open-settings-btn" class="hover:text-slate-900 dark:hover:text-white p-1.5 rounded-lg text-slate-400 hover:bg-slate-100 dark:hover:bg-zinc-800 transition" title="Paramètres & Statistiques">
-            <i data-lucide="settings" class="w-4 h-4"></i>
-          </button>
-        </div>
-      </div>
-    </div>
-  </aside>
-
-  <!-- ==================================================== -->
-  <!-- CONTENU PRINCIPAL                                    -->
-  <!-- ==================================================== -->
-  <div class="flex-1 flex flex-col min-w-0">
-    
-    <!-- Top Header -->
-    <header class="h-16 border-b border-slate-200 dark:border-zinc-800 bg-white/80 dark:bg-zinc-950/80 backdrop-blur-md px-4 sm:px-8 flex items-center justify-between gap-4 sticky top-0 z-30">
-      
-      <!-- Titre Mobile / Bouton Menu -->
-      <div class="flex items-center gap-3 md:hidden">
-        <button id="mobile-menu-toggle" onclick="document.getElementById('app-sidebar').classList.toggle('hidden')" class="p-2 rounded-xl bg-slate-100 dark:bg-zinc-900 text-slate-600 dark:text-zinc-300">
+      <!-- Action buttons -->
+      <div class="flex items-center gap-2">
+        <button onclick="app.openApiKeyModal()" id="btn-api-key" class="text-xs px-2.5 py-1.5 rounded-lg font-medium border border-slate-200 hover:border-slate-300 bg-white text-slate-700 flex items-center gap-1.5 shadow-sm transition">
+          <i data-lucide="key" class="w-3.5 h-3.5 text-blue-600"></i>
+          <span class="hidden sm:inline" id="api-key-status-label">Clé Gemini</span>
+        </button>
+        <button onclick="app.toggleMobileMenu()" class="md:hidden p-2 rounded-lg text-slate-600 hover:bg-slate-100 border border-slate-200">
           <i data-lucide="menu" class="w-5 h-5"></i>
         </button>
-        <span class="font-bold text-sm">Polytechnique UNILU</span>
-      </div>
-
-      <!-- Barre de Recherche Sobre -->
-      <div class="relative flex-1 max-w-lg">
-        <i data-lucide="search" class="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2"></i>
-        <input id="search-input" type="text" placeholder="Rechercher par matière, code UE, prof, sujet..." class="w-full bg-slate-100 dark:bg-zinc-900 border-none rounded-xl pl-9 pr-4 py-2 text-xs sm:text-sm text-slate-900 dark:text-slate-100 placeholder-slate-400 dark:placeholder-zinc-500 focus:ring-2 focus:ring-slate-900 dark:focus:ring-white transition">
-      </div>
-
-      <!-- Actions Header -->
-      <div class="flex items-center gap-2">
-        <!-- Bouton Accès Console Admin -->
-        <a href="/admin" class="flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-bold bg-slate-100 text-slate-700 hover:bg-slate-200 dark:bg-zinc-800 dark:text-zinc-300 dark:hover:bg-zinc-700 border border-slate-200 dark:border-zinc-700 transition shadow-2xs" title="Ouvrir la Console d'Administration">
-          <i data-lucide="shield" class="w-4 h-4 text-slate-500"></i>
-          <span class="hidden sm:inline">Admin</span>
-        </a>
-      </div>
-    </header>
-
-    <!-- Corps de page -->
-    <main class="flex-1 p-3.5 sm:p-6 max-w-6xl w-full mx-auto space-y-3.5 pb-20 md:pb-8">
-      
-      <!-- Bannière / Cartouche d'En-tête de la Vue (Compact & Espace optimisé) -->
-      <div class="bg-white dark:bg-zinc-900/80 border border-slate-200 dark:border-zinc-800 rounded-xl p-3 sm:p-3.5 shadow-2xs space-y-2.5">
-        <div class="flex flex-col md:flex-row md:items-center justify-between gap-2.5">
-          
-          <!-- Titre & Badge en ligne compacte -->
-          <div class="flex items-center gap-2 min-w-0 flex-1">
-            <span id="view-promotion-badge" class="px-2 py-0.5 rounded text-[11px] font-bold bg-blue-50 text-blue-700 dark:bg-blue-950/70 dark:text-blue-300 border border-blue-200/60 dark:border-blue-800 shrink-0">
-              Classe Préparatoire
-            </span>
-            <h2 id="view-title" class="text-sm sm:text-base font-bold tracking-tight text-slate-900 dark:text-white truncate">
-              Tous les documents
-            </h2>
-            <span class="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-mono font-bold bg-slate-100 dark:bg-zinc-800 text-slate-600 dark:text-zinc-300 border border-slate-200 dark:border-zinc-700 shrink-0">
-              <span id="view-doc-count">1</span>
-            </span>
-          </div>
-
-          <!-- Filtres par catégorie compacts et proportionnés -->
-          <div class="flex items-center gap-1.5 overflow-x-auto no-scrollbar py-0.5 max-w-full shrink-0">
-            <button data-category="all" class="category-chip filter-chip-active h-7 inline-flex items-center justify-center px-2.5 text-xs font-semibold whitespace-nowrap shrink-0 rounded-lg border border-slate-200 dark:border-zinc-700 text-slate-700 dark:text-zinc-300 hover:bg-slate-100 dark:hover:bg-zinc-800 transition">Tous</button>
-            <button data-category="cours" class="category-chip h-7 inline-flex items-center justify-center px-2.5 text-xs font-semibold whitespace-nowrap shrink-0 rounded-lg border border-slate-200 dark:border-zinc-700 text-slate-700 dark:text-zinc-300 hover:bg-slate-100 dark:hover:bg-zinc-800 transition">Cours</button>
-            <button data-category="tp" class="category-chip h-7 inline-flex items-center justify-center px-2.5 text-xs font-semibold whitespace-nowrap shrink-0 rounded-lg border border-slate-200 dark:border-zinc-700 text-slate-700 dark:text-zinc-300 hover:bg-slate-100 dark:hover:bg-zinc-800 transition">TPs</button>
-            <button data-category="exercice" class="category-chip h-7 inline-flex items-center justify-center px-2.5 text-xs font-semibold whitespace-nowrap shrink-0 rounded-lg border border-slate-200 dark:border-zinc-700 text-slate-700 dark:text-zinc-300 hover:bg-slate-100 dark:hover:bg-zinc-800 transition">Exercices</button>
-            <button data-category="examen" class="category-chip h-7 inline-flex items-center justify-center px-2.5 text-xs font-semibold whitespace-nowrap shrink-0 rounded-lg border border-slate-200 dark:border-zinc-700 text-slate-700 dark:text-zinc-300 hover:bg-slate-100 dark:hover:bg-zinc-800 transition">Examens</button>
-          </div>
-        </div>
-
-        <p id="view-subtitle" class="text-xs text-slate-500 dark:text-zinc-400 truncate hidden"></p>
-        <div id="active-filters-info" class="hidden"></div>
-      </div>
-
-      <!-- Liste sobre et claire des documents -->
-      <div id="documents-table" class="bg-white dark:bg-zinc-900/60 border border-slate-200 dark:border-zinc-800/80 rounded-2xl divide-y divide-slate-100 dark:divide-zinc-800/80 overflow-hidden shadow-sm">
-        <!-- Rendu dynamique -->
-      </div>
-
-      <!-- État vide -->
-      <div id="documents-empty" class="hidden text-center py-16 px-4 bg-white dark:bg-zinc-900/40 border border-slate-200 dark:border-zinc-800/80 rounded-2xl">
-        <div class="w-12 h-12 rounded-2xl bg-slate-100 dark:bg-zinc-800 text-slate-400 dark:text-zinc-500 flex items-center justify-center mx-auto mb-3">
-          <i data-lucide="file-search" class="w-6 h-6"></i>
-        </div>
-        <h4 class="font-bold text-slate-800 dark:text-zinc-200 text-sm">Aucun document ne correspond à cette sélection</h4>
-        <p class="text-xs text-slate-500 dark:text-zinc-400 mt-1 max-w-sm mx-auto">
-          Sélectionnez une autre matière, réinitialisez vos filtres ou ajoutez le premier document pour ce cours.
-        </p>
-        <button onclick="window.app.setSubjectFilter(null)" class="mt-4 px-3.5 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-zinc-800 dark:hover:bg-zinc-700 text-xs font-semibold text-slate-700 dark:text-zinc-200 transition">
-          Afficher tous les documents
-        </button>
-      </div>
-
-    </main>
-  </div>
-
-  <!-- ==================================================== -->
-  <!-- MODAL : PARAMÈTRES ÉTUDIANT & HORS-LIGNE             -->
-  <!-- ==================================================== -->
-  <div id="settings-modal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm hidden">
-    <div class="w-full max-w-lg bg-slate-50 dark:bg-zinc-900 border border-slate-300 dark:border-zinc-800 rounded-3xl shadow-2xl p-6 sm:p-7 text-slate-900 dark:text-slate-100 max-h-[90vh] overflow-y-auto space-y-5">
-      
-      <!-- Header Paramètres -->
-      <div class="flex items-center justify-between pb-4 border-b border-slate-200 dark:border-zinc-800">
-        <div class="flex items-center gap-3">
-          <div class="w-9 h-9 rounded-xl bg-blue-600 dark:bg-blue-600 text-white flex items-center justify-center shadow-xs">
-            <i data-lucide="settings" class="w-4.5 h-4.5"></i>
-          </div>
-          <div>
-            <h3 class="font-bold text-base text-slate-900 dark:text-white">Paramètres & Espace Étudiant</h3>
-            <p class="text-xs text-slate-600 dark:text-zinc-400 font-medium">Préférences, hors-ligne & statistiques</p>
-          </div>
-        </div>
-        <button id="close-settings-btn" class="p-2 rounded-xl bg-slate-200/80 hover:bg-slate-300 dark:bg-zinc-800 dark:hover:bg-zinc-700 text-slate-700 dark:text-zinc-300 transition" title="Fermer">
-          <i data-lucide="x" class="w-4.5 h-4.5"></i>
-        </button>
-      </div>
-
-      <!-- 1. Promotion & Thème -->
-      <div class="space-y-3.5">
-        <div class="p-4 bg-white dark:bg-zinc-800/80 rounded-2xl border border-slate-250 border-slate-300 dark:border-zinc-700 shadow-xs space-y-2">
-          <label for="settings-promo-select" class="block text-xs font-bold text-slate-900 dark:text-zinc-200 uppercase tracking-wider">
-            Promotion active
-          </label>
-          <select id="settings-promo-select" class="w-full bg-slate-50 dark:bg-zinc-900 border border-slate-300 dark:border-zinc-600 rounded-xl px-3.5 py-2.5 text-xs font-semibold text-slate-900 dark:text-zinc-100 focus:outline-none focus:ring-2 focus:ring-blue-500 cursor-pointer">
-            <option value="prepo">Classe Préparatoire (Prépo - P0)</option>
-            <option value="bac1">Premier Bachelier (Bac 1)</option>
-          </select>
-        </div>
-
-        <div class="p-4 bg-white dark:bg-zinc-800/80 rounded-2xl border border-slate-300 dark:border-zinc-700 shadow-xs flex items-center justify-between">
-          <div>
-            <p class="text-xs font-bold text-slate-900 dark:text-white">Thème d'affichage</p>
-            <p class="text-xs text-slate-600 dark:text-zinc-400 font-medium">Mode sombre pour réviser la nuit</p>
-          </div>
-          <button id="settings-theme-toggle" class="flex items-center gap-2 px-3.5 py-2 rounded-xl bg-slate-900 hover:bg-slate-800 dark:bg-zinc-700 dark:hover:bg-zinc-600 text-white text-xs font-bold shadow-xs transition">
-            <i data-lucide="moon" class="w-3.5 h-3.5"></i>
-            <span id="settings-theme-label">Sombre</span>
-          </button>
-        </div>
-      </div>
-
-      <!-- 2. Statistiques Académiques -->
-      <div class="p-4 bg-white dark:bg-zinc-800/80 rounded-2xl border border-slate-300 dark:border-zinc-700 shadow-xs space-y-2.5">
-        <p class="text-xs font-bold text-slate-900 dark:text-zinc-200 uppercase tracking-wider">Statistiques d'étude</p>
-        <div class="grid grid-cols-2 sm:grid-cols-4 gap-2">
-          <div class="p-2.5 rounded-xl bg-slate-100 dark:bg-zinc-900/80 border border-slate-200 dark:border-zinc-700/60 text-center">
-            <p id="stat-courses-count" class="text-base font-black font-mono text-slate-900 dark:text-white">1</p>
-            <p class="text-[10px] font-bold text-slate-600 dark:text-zinc-400">Matière</p>
-          </div>
-          <div class="p-2.5 rounded-xl bg-slate-100 dark:bg-zinc-900/80 border border-slate-200 dark:border-zinc-700/60 text-center">
-            <p id="stat-total-docs" class="text-base font-black font-mono text-slate-900 dark:text-white">1</p>
-            <p class="text-[10px] font-bold text-slate-600 dark:text-zinc-400">Documents</p>
-          </div>
-          <div class="p-2.5 rounded-xl bg-slate-100 dark:bg-zinc-900/80 border border-slate-200 dark:border-zinc-700/60 text-center">
-            <p id="stat-fav-docs" class="text-base font-black font-mono text-amber-600 dark:text-amber-400">0</p>
-            <p class="text-[10px] font-bold text-slate-600 dark:text-zinc-400">Favoris</p>
-          </div>
-          <div class="p-2.5 rounded-xl bg-slate-100 dark:bg-zinc-900/80 border border-slate-200 dark:border-zinc-700/60 text-center">
-            <p id="stat-completed-docs" class="text-base font-black font-mono text-emerald-600 dark:text-emerald-400">0</p>
-            <p class="text-[10px] font-bold text-slate-600 dark:text-zinc-400">Révisés</p>
-          </div>
-        </div>
-      </div>
-
-      <!-- 3. Actions de synchronisation & Cache -->
-      <div class="p-4 bg-white dark:bg-zinc-800/80 rounded-2xl border border-slate-300 dark:border-zinc-700 shadow-xs space-y-2.5">
-        <p class="text-xs font-bold text-slate-900 dark:text-zinc-200 uppercase tracking-wider">Maintenance & Cache</p>
-        <div class="flex flex-col sm:flex-row gap-2">
-          <button id="settings-reload-btn" class="flex-1 flex items-center justify-center gap-1.5 px-3 py-2 rounded-xl text-xs font-bold bg-slate-100 hover:bg-slate-200 dark:bg-zinc-700 dark:hover:bg-zinc-600 text-slate-800 dark:text-zinc-100 border border-slate-300 dark:border-zinc-600 transition">
-            <i data-lucide="refresh-cw" class="w-3.5 h-3.5"></i>
-            <span>Recharger données</span>
-          </button>
-          <button id="settings-clear-cache-btn" class="flex-1 flex items-center justify-center gap-1.5 px-3 py-2 rounded-xl text-xs font-bold bg-rose-50 hover:bg-rose-100 dark:bg-rose-950/40 dark:hover:bg-rose-900/40 text-rose-700 dark:text-rose-300 border border-rose-200 dark:border-rose-800 transition">
-            <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
-            <span>Vider le cache</span>
-          </button>
-        </div>
-      </div>
-
-      <!-- 4. Notice académique -->
-      <div class="p-4 rounded-2xl bg-blue-50 dark:bg-blue-950/30 border border-blue-200 dark:border-blue-900/60 text-xs text-slate-700 dark:text-zinc-300 space-y-1">
-        <p class="font-bold text-slate-900 dark:text-white flex items-center gap-1.5">
-          <i data-lucide="shield-check" class="w-4 h-4 text-blue-600 dark:text-blue-400"></i>
-          <span>UniDocs • Faculté Polytechnique UNILU</span>
-        </p>
-        <p class="text-slate-600 dark:text-zinc-400 leading-relaxed">Plateforme académique conçue pour garantir un accès direct et rapide aux syllabus, travaux pratiques et examens officiels.</p>
-        <p class="text-slate-500 dark:text-zinc-500 pt-1 font-mono text-[10px]">Version 2.0 • Université de Lubumbashi</p>
-      </div>
-
-    </div>
-  </div>
-
-  <!-- ==================================================== -->
-  <!-- MODAL : ONBOARDING / CHOIX INITIAL DE PROMOTION     -->
-  <!-- ==================================================== -->
-  <div id="promotion-onboarding-modal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm hidden">
-    <div class="w-full max-w-xl bg-white dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800 rounded-3xl shadow-2xl p-6 sm:p-8 text-slate-900 dark:text-slate-100 space-y-6">
-      
-      <div class="text-center space-y-2">
-        <div class="w-14 h-14 rounded-2xl bg-gradient-to-tr from-blue-700 to-indigo-600 text-white flex items-center justify-center mx-auto shadow-md">
-          <i data-lucide="graduation-cap" class="w-7 h-7"></i>
-        </div>
-        <h2 class="text-xl sm:text-2xl font-black tracking-tight text-slate-900 dark:text-white">
-          Bienvenue sur UniDocs UNILU
-        </h2>
-        <p class="text-xs sm:text-sm text-slate-500 dark:text-zinc-400 max-w-md mx-auto">
-          Faculté Polytechnique • Sélectionnez votre promotion pour configurer et personnaliser immédiatement votre espace académique.
-        </p>
-      </div>
-
-      <!-- Cartes de sélection de promotion -->
-      <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-        
-        <!-- Option 1 : Préparatoire -->
-        <button onclick="window.app.selectOnboardingPromotion('prepo')" class="group p-5 rounded-2xl border-2 border-slate-200 dark:border-zinc-700 hover:border-blue-600 dark:hover:border-blue-500 bg-slate-50/50 dark:bg-zinc-800/40 hover:bg-blue-50/30 dark:hover:bg-blue-950/20 text-left transition space-y-3 cursor-pointer">
-          <div class="flex items-center justify-between">
-            <span class="text-xs font-bold font-mono px-2 py-0.5 rounded bg-blue-100 dark:bg-blue-950 text-blue-800 dark:text-blue-300">PREPO</span>
-            <span class="text-[10px] font-bold uppercase px-2 py-0.5 rounded bg-blue-100 dark:bg-blue-950 text-blue-800 dark:text-blue-300">P0</span>
-          </div>
-          <div>
-            <h3 class="font-bold text-sm text-slate-900 dark:text-white group-hover:text-blue-600 dark:group-hover:text-blue-400 transition">
-              Classe Préparatoire
-            </h3>
-            <p class="text-[11px] text-slate-500 dark:text-zinc-400 mt-1 leading-relaxed">
-              Algèbre Générale, Analyse I, Physique I & II, Chimie Générale & Organique, Informatique, Dessin Technique.
-            </p>
-          </div>
-          <div class="pt-2 flex items-center gap-1 text-[11px] font-bold text-blue-600 dark:text-blue-400">
-            <span>Démarrer en Prépo</span>
-            <i data-lucide="arrow-right" class="w-3.5 h-3.5 group-hover:translate-x-1 transition"></i>
-          </div>
-        </button>
-
-        <!-- Option 2 : Bac 1 -->
-        <button onclick="window.app.selectOnboardingPromotion('bac1')" class="group p-5 rounded-2xl border-2 border-slate-200 dark:border-zinc-700 hover:border-indigo-600 dark:hover:border-indigo-500 bg-slate-50/50 dark:bg-zinc-800/40 hover:bg-indigo-50/30 dark:hover:bg-indigo-950/20 text-left transition space-y-3 cursor-pointer">
-          <div class="flex items-center justify-between">
-            <span class="text-xs font-bold font-mono px-2 py-0.5 rounded bg-indigo-100 dark:bg-indigo-950 text-indigo-800 dark:text-indigo-300">BAC1</span>
-            <span class="text-[10px] font-bold uppercase px-2 py-0.5 rounded bg-indigo-100 dark:bg-indigo-950 text-indigo-800 dark:text-indigo-300">Tronc Commun</span>
-          </div>
-          <div>
-            <h3 class="font-bold text-sm text-slate-900 dark:text-white group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition">
-              Premier Bachelier (Bac 1)
-            </h3>
-            <p class="text-[11px] text-slate-500 dark:text-zinc-400 mt-1 leading-relaxed">
-              Analyse II, Algèbre Linéaire, Programmation C & Algo, Thermodynamique, Mécanique Rationnelle.
-            </p>
-          </div>
-          <div class="pt-2 flex items-center gap-1 text-[11px] font-bold text-indigo-600 dark:text-indigo-400">
-            <span>Démarrer en Bac 1</span>
-            <i data-lucide="arrow-right" class="w-3.5 h-3.5 group-hover:translate-x-1 transition"></i>
-          </div>
-        </button>
-
-      </div>
-
-      <p class="text-[11px] text-center text-slate-400 dark:text-zinc-500">
-        Vous pourrez toujours basculer entre les promotions à tout moment via le sélecteur en haut.
-      </p>
-
-    </div>
-  </div>
-
-  <!-- ==================================================== -->
-  <!-- TIROIR DES MATIÈRES SUR MOBILE (BOTTOM SHEET)        -->
-  <!-- ==================================================== -->
-  <div id="mobile-courses-sheet" class="fixed inset-0 z-50 flex flex-col justify-end bg-black/60 backdrop-blur-xs hidden md:hidden">
-    <div class="w-full max-h-[82vh] bg-white dark:bg-zinc-900 rounded-t-3xl border-t border-slate-200 dark:border-zinc-800 shadow-2xl flex flex-col overflow-hidden anim-sheet text-slate-900 dark:text-slate-100">
-      <div class="px-5 py-4 border-b border-slate-100 dark:border-zinc-800 flex items-center justify-between shrink-0">
-        <div>
-          <h3 class="font-bold text-sm text-slate-900 dark:text-white">Matières & Unités de cours</h3>
-          <p id="mobile-sheet-promo-name" class="text-[11px] text-slate-500 dark:text-zinc-400">Toutes les matières</p>
-        </div>
-        <button onclick="window.app.closeMobileCoursesSheet()" class="p-2 rounded-xl bg-slate-100 dark:bg-zinc-800 text-slate-500 dark:text-zinc-400 hover:text-slate-900 dark:hover:text-white transition">
-          <i data-lucide="x" class="w-4 h-4"></i>
-        </button>
-      </div>
-
-      <div id="mobile-courses-list" class="p-4 overflow-y-auto space-y-4 flex-1">
-        <!-- Rendu dynamique -->
       </div>
     </div>
-  </div>
 
-  <!-- ==================================================== -->
-  <!-- BARRE DE NAVIGATION INFÉRIEURE (MOBILE-FIRST)        -->
-  <!-- ==================================================== -->
-  <nav id="mobile-bottom-nav" class="md:hidden fixed bottom-0 left-0 right-0 z-40 bg-white/95 dark:bg-zinc-950/95 border-t border-slate-200 dark:border-zinc-800 backdrop-blur-md px-2 py-1 flex items-center justify-around">
-    <button id="bnav-home" onclick="window.app.handleBottomNav('home')" class="bnav-item active">
-      <i data-lucide="layout-grid" class="w-5 h-5"></i>
-      <span>Accueil</span>
+    <!-- Mobile Dropdown Menu -->
+    <div id="mobile-menu" class="hidden md:hidden pt-3 pb-2 border-t border-slate-100 mt-2 flex flex-col gap-1">
+      <button onclick="app.navigate('home'); app.toggleMobileMenu();" class="flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium text-slate-700 hover:bg-slate-50 text-left">
+        <i data-lucide="library" class="w-4 h-4 text-blue-600"></i> Banque de Ressources
+      </button>
+      <button onclick="app.navigate('courses'); app.toggleMobileMenu();" class="flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium text-slate-700 hover:bg-slate-50 text-left">
+        <i data-lucide="folder-tree" class="w-4 h-4 text-slate-600"></i> Parcourir par Matières
+      </button>
+      <button onclick="app.navigate('tutor'); app.toggleMobileMenu();" class="flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium text-slate-700 hover:bg-slate-50 text-left">
+        <i data-lucide="bot" class="w-4 h-4 text-indigo-600"></i> Tuteur Pédagogique (4 Modes)
+      </button>
+      <button onclick="app.navigate('admin'); app.toggleMobileMenu();" class="flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium text-slate-700 hover:bg-slate-50 text-left">
+        <i data-lucide="shield-check" class="w-4 h-4 text-amber-600"></i> Espace Administration (/admin)
+      </button>
+    </div>
+  </header>
+
+  <!-- Main Dynamic Viewport -->
+  <main id="app-viewport" class="flex-1 overflow-y-auto">
+    <!-- Views injected dynamically via JS -->
+  </main>
+
+  <!-- Mobile Bottom Tab Bar -->
+  <nav id="mobile-tab-bar" class="md:hidden sticky bottom-0 z-30 bg-white border-t border-slate-200 px-2 py-1.5 flex justify-around items-center shadow-lg">
+    <button onclick="app.navigate('home')" id="tab-home" class="flex flex-col items-center gap-1 text-[11px] font-medium py-1 px-3 rounded-lg text-blue-600">
+      <i data-lucide="library" class="w-5 h-5"></i>
+      <span>Explorer</span>
     </button>
-    <button id="bnav-courses" onclick="window.app.handleBottomNav('courses')" class="bnav-item">
-      <i data-lucide="book-open" class="w-5 h-5"></i>
+    <button onclick="app.navigate('courses')" id="tab-courses" class="flex flex-col items-center gap-1 text-[11px] font-medium py-1 px-3 rounded-lg text-slate-500">
+      <i data-lucide="folder-tree" class="w-5 h-5"></i>
       <span>Matières</span>
     </button>
-    <button id="bnav-favs" onclick="window.app.handleBottomNav('favorites')" class="bnav-item">
-      <i data-lucide="star" class="w-5 h-5"></i>
-      <span>Favoris</span>
+    <button onclick="app.navigate('tutor')" id="tab-tutor" class="flex flex-col items-center gap-1 text-[11px] font-medium py-1 px-3 rounded-lg text-slate-500">
+      <i data-lucide="bot" class="w-5 h-5"></i>
+      <span>Tuteur IA</span>
     </button>
-    <button id="bnav-settings" onclick="window.app.handleBottomNav('settings')" class="bnav-item">
-      <i data-lucide="settings" class="w-5 h-5"></i>
-      <span>Paramètres</span>
+    <button onclick="app.navigate('admin')" id="tab-admin" class="flex flex-col items-center gap-1 text-[11px] font-medium py-1 px-3 rounded-lg text-slate-500">
+      <i data-lucide="shield-check" class="w-5 h-5"></i>
+      <span>Admin</span>
     </button>
   </nav>
 
-  <!-- Scripts -->
-  <script src="js/data.js"></script>
-  <script src="js/db.js"></script>
-  <script src="js/supabase.js"></script>
-  <script src="js/pdf-viewer.js"></script>
-  <script src="js/app.js"></script>
+  <!-- User Gemini API Key Modal (Page 36) -->
+  <div id="modal-api-key" class="fixed inset-0 z-50 bg-slate-900/50 backdrop-blur-sm hidden flex items-center justify-center p-4">
+    <div class="bg-white rounded-2xl max-w-md w-full shadow-2xl border border-slate-200 overflow-hidden animate-in fade-in zoom-in duration-200">
+      <div class="p-6 border-b border-slate-100 flex items-start justify-between">
+        <div class="flex items-center gap-3">
+          <div class="w-10 h-10 rounded-xl bg-blue-100 text-blue-600 flex items-center justify-center">
+            <i data-lucide="key-round" class="w-5 h-5"></i>
+          </div>
+          <div>
+            <h3 class="font-bold text-slate-900 text-base">Clé API Gemini Utilisateur</h3>
+            <p class="text-xs text-slate-500">Prévu par la spécification (Page 36)</p>
+          </div>
+        </div>
+        <button onclick="app.closeApiKeyModal()" class="text-slate-400 hover:text-slate-600 p-1">
+          <i data-lucide="x" class="w-5 h-5"></i>
+        </button>
+      </div>
+      <div class="p-6 space-y-4">
+        <p class="text-xs text-slate-600 leading-relaxed">
+          Pour alléger la charge du serveur et bénéficier de quotas étendus sans interruption, vous pouvez renseigner votre propre clé Google AI Studio. Elle reste protégée et n'est jamais divulguée.
+        </p>
+
+        <a href="https://aistudio.google.com/app/apikey" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-2 text-xs font-semibold text-blue-600 hover:text-blue-800 bg-blue-50 px-3 py-2 rounded-lg border border-blue-200/60 w-full justify-center">
+          <i data-lucide="external-link" class="w-3.5 h-3.5"></i>
+          Obtenir ma clé gratuite sur Google AI Studio
+        </a>
+
+        <div>
+          <label class="block text-xs font-semibold text-slate-700 mb-1.5">Votre clé API :</label>
+          <input type="password" id="input-custom-api-key" placeholder="AIzaSy..." class="w-full text-sm px-3.5 py-2.5 rounded-xl border border-slate-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none transition font-mono">
+        </div>
+
+        <div id="api-key-test-feedback" class="text-xs hidden p-3 rounded-xl"></div>
+
+        <div class="flex gap-2 pt-2">
+          <button onclick="app.testAndSaveApiKey()" id="btn-save-key" class="flex-1 bg-blue-600 hover:bg-blue-700 text-white font-semibold text-xs py-2.5 px-4 rounded-xl shadow transition flex items-center justify-center gap-2">
+            <i data-lucide="check" class="w-4 h-4"></i>
+            Tester et Enregistrer
+          </button>
+          <button onclick="app.clearApiKey()" class="bg-slate-100 hover:bg-slate-200 text-slate-700 font-medium text-xs py-2.5 px-3 rounded-xl transition">
+            Effacer
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Global Application Logic -->
+  <script src="/app.js"></script>
 </body>
 </html>
