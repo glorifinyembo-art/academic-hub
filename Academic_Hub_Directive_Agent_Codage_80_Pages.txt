@@ -1,0 +1,1303 @@
+ACADEMIC HUB — DIRECTIVE COMPLÈTE POUR L’AGENT DE CODAGE
+Version de travail : 04 septembre 2026
+Document structuré en 80 pages logiques. Chaque page est une unité de spécification ; les pages peuvent être exportées en mise en page physique ultérieurement.
+BASE DOCUMENTAIRE : cahier des charges Academic Hub fourni par l’utilisateur + décisions et extensions définies dans nos échanges. Le cahier des charges initial décrit notamment la philosophie, le périmètre étudiant, Supabase, les types documentaires, les lecteurs, /admin, les agents Gemini, le fallback, le mobile-first et le flux d’ingestion.
+RÉFÉRENCE DU CAHIER DES CHARGES : « Academic Hub - Document de Spécifications Techniques et Fonctionnelles ».
+
+====================================================================================================
+
+
+PAGE 01/80 — 01 — MISSION DU DOCUMENT ET CONTRAT AVEC L’AGENT
+----------------------------------------------------------------------------------------------------
+Ce document est le contrat fonctionnel, architectural et pédagogique de l’agent de codage chargé de construire Academic Hub. Il ne décrit pas seulement une interface : il décrit un produit complet, son architecture, son comportement, ses données, son moteur de connaissance, son intelligence pédagogique, ses règles de sécurité et ses critères de qualité.
+
+Academic Hub doit être conçu comme un centre d’information académique intelligent, pensé pour les étudiants et piloté par la connaissance de leur faculté. La philosophie initiale reste « conçu par les étudiants, pour les étudiants ». Le cœur du produit n’est ni un réseau social, ni un fil d’actualité, ni un espace enseignant généraliste. La plateforme doit supprimer le superflu et concentrer l’expérience sur une promesse simple : permettre à un étudiant de trouver rapidement une ressource fiable, la consulter sans friction, comprendre ce qu’elle contient et, avec l’IA, progresser réellement.
+
+L’agent de codage doit raisonner en systèmes. Aucune fonctionnalité importante ne doit être implémentée comme un écran isolé. Une recherche doit être compatible avec la base de connaissances, les documents doivent pouvoir alimenter le RAG, le RAG doit pouvoir alimenter l’assistant, l’assistant doit connaître l’état d’apprentissage de l’étudiant et cet état doit pouvoir évoluer au fil des interactions. De même, l’administration ne doit pas simplement téléverser un fichier : elle déclenche une chaîne d’ingestion, extraction, classification, validation, indexation et publication.
+
+Le projet sera développé par phases mais l’architecture doit être pensée dès le départ pour accueillir l’ensemble de cette vision. Il ne faut donc ni construire un prototype jetable, ni sur-architecturer inutilement. Chaque module doit avoir une responsabilité claire, des contrats d’API explicites et des frontières testables.
+
+Règle absolue : Gemini ne constitue pas l’application entière. Gemini raisonne. Le RAG fournit les connaissances pertinentes. La base de données conserve les données et l’état. Le Learning Engine gère la progression pédagogique. L’orchestrateur décide de l’action appropriée. Le backend coordonne les services. L’interface présente le résultat.
+
+Le code produit doit être lisible par un autre développeur. Les noms, erreurs, schémas, états et transitions doivent être explicites. Toute hypothèse non décidée doit être isolée dans une configuration plutôt que disséminée dans le code.
+
+DIRECTIVE D’IMPLÉMENTATION
+L’agent doit transformer cette page en code, contrats, tests et documentation lorsque applicable. Toute donnée, état ou comportement mentionné doit avoir une représentation explicite et rester cohérent avec les autres pages. Ne pas dupliquer une logique déjà centralisée : réutiliser les services et composants existants.
+
+
+PAGE 02/80 — 02 — VISION PRODUIT ET POSITIONNEMENT
+----------------------------------------------------------------------------------------------------
+Academic Hub n’est pas « Google Drive pour étudiants » avec un chatbot ajouté. C’est une infrastructure académique locale qui transforme un ensemble dispersé de supports en système de connaissance consultable et exploitable.
+
+La plateforme doit centraliser les supports de cours, travaux pratiques, interrogations, examens, exercices, corrigés et autres ressources académiques validées. Elle doit également pouvoir référencer des vidéos pédagogiques YouTube sélectionnées et indexées dans Academic Hub. L’utilisateur ne doit pas avoir l’impression de naviguer dans une simple liste de fichiers ; il doit avoir l’impression d’explorer la mémoire académique de sa faculté.
+
+La première valeur est informationnelle : retrouver un document. La deuxième est documentaire : comprendre son contexte, son cours, sa promotion, son chapitre, son type et ses ressources associées. La troisième est pédagogique : utiliser le document comme support pour apprendre, réviser ou s’exercer. La quatrième est personnalisée : l’IA tient compte des objectifs, du niveau déclaré et du niveau réellement observé.
+
+La vision doit rester centrée sur l’étudiant. Les fonctionnalités destinées à l’administration existent pour maintenir la qualité de la connaissance. Les fonctionnalités de recherche et de lecture servent la consultation. Les fonctionnalités IA servent la compréhension et la progression.
+
+L’interface ne doit pas devenir un tableau de bord saturé. L’étudiant doit pouvoir accomplir les tâches fondamentales avec un minimum d’étapes : chercher une ressource, filtrer, ouvrir, lire, télécharger, demander une explication, réviser, s’exercer et reprendre une session interrompue.
+
+La notion de « centre d’information académique » doit apparaître dans l’architecture. Une ressource n’est pas uniquement un fichier binaire. Elle possède une identité académique, des métadonnées, une relation avec un cours, des chapitres ou concepts, éventuellement une correction, des ressources apparentées et une représentation indexée exploitable par le moteur de connaissance.
+
+DIRECTIVE D’IMPLÉMENTATION
+L’agent doit transformer cette page en code, contrats, tests et documentation lorsque applicable. Toute donnée, état ou comportement mentionné doit avoir une représentation explicite et rester cohérent avec les autres pages. Ne pas dupliquer une logique déjà centralisée : réutiliser les services et composants existants.
+
+
+PAGE 03/80 — 03 — PÉRIMÈTRE ET CE QUI N’EST PAS LE PRODUIT
+----------------------------------------------------------------------------------------------------
+Le produit cible en priorité les étudiants. Le cahier des charges initial exclut volontairement un espace enseignants, un fil d’actualité et un système d’annonces généralistes. Ne pas réintroduire ces éléments sous une autre forme sans décision explicite.
+
+L’administration existe à `/admin`. Elle sert à gérer les ressources, les métadonnées, les tâches IA, les validations et la qualité du corpus. L’admin n’est pas un second produit public ; c’est le poste de pilotage du centre de connaissances.
+
+Il faut distinguer trois surfaces : surface étudiante, surface d’administration, services backend. La surface étudiante ne doit pas dépendre directement de privilèges administratifs ou de secrets. Les services backend doivent encapsuler les opérations sensibles : accès aux fichiers privés, exécution Gemini, indexation, gestion des tâches et écriture des états d’apprentissage.
+
+Le projet peut évoluer vers davantage de fonctionnalités, mais la frontière de chaque module doit rester claire. Une fonctionnalité utile mais hors périmètre doit être implémentée comme extension future et non introduite de manière improvisée.
+
+L’agent doit documenter dans le code les décisions de périmètre particulièrement importantes : pas de flux social, pas de feed, pas d’espace enseignant par défaut. Le but est de préserver le produit contre la dérive fonctionnelle.
+
+DIRECTIVE D’IMPLÉMENTATION
+L’agent doit transformer cette page en code, contrats, tests et documentation lorsque applicable. Toute donnée, état ou comportement mentionné doit avoir une représentation explicite et rester cohérent avec les autres pages. Ne pas dupliquer une logique déjà centralisée : réutiliser les services et composants existants.
+
+
+PAGE 04/80 — 04 — ARCHITECTURE GLOBALE CIBLE
+----------------------------------------------------------------------------------------------------
+Architecture logique recommandée : Student UI → Backend API → services métier → couche de connaissance → Gemini / moteurs spécialisés. Administration UI suit une voie parallèle mais réutilise les mêmes services sécurisés.
+
+La couche de données doit reposer sur Supabase pour le socle décrit dans le cahier des charges initial : PostgreSQL pour les métadonnées, Supabase Storage pour les fichiers et Supabase Auth pour les comptes administrateurs. L’architecture applicative doit toutefois rester suffisamment découplée pour pouvoir remplacer un composant d’infrastructure sans réécrire toute la logique métier.
+
+La couche de connaissance comprend au minimum un catalogue documentaire, les chunks de contenu, les embeddings, la recherche plein texte, la recherche vectorielle, les relations académiques et le graphe de connaissances. Le moteur de recherche doit combiner les signaux plutôt que de choisir un seul mode de recherche.
+
+La couche d’apprentissage comprend le profil d’apprentissage, les objectifs actifs, les concepts maîtrisés ou fragiles, le niveau estimé, les préférences pédagogiques observées et l’arbre de branchement. Le Learning Agent utilise ces informations pour sélectionner une stratégie.
+
+La couche IA comprend un client Gemini centralisé, un gestionnaire de modèles configurable, des limites de temps, retries, rate limiting, observabilité et contrôle des coûts. Les anciennes chaînes de noms de modèles décrites dans la première spécification ne doivent pas être codées en dur : elles deviennent une configuration de fournisseurs et modèles actuellement disponibles.
+
+L’agent de codage doit séparer au minimum : routes/controllers, services métier, accès données, schémas/validation, clients externes, orchestration, jobs workers, utilitaires et observabilité. Une route ne doit pas contenir la logique complète d’IA.
+
+DIRECTIVE D’IMPLÉMENTATION
+L’agent doit transformer cette page en code, contrats, tests et documentation lorsque applicable. Toute donnée, état ou comportement mentionné doit avoir une représentation explicite et rester cohérent avec les autres pages. Ne pas dupliquer une logique déjà centralisée : réutiliser les services et composants existants.
+
+
+PAGE 05/80 — 05 — STRUCTURE DU PROJET ET FRONTIÈRES DE MODULES
+----------------------------------------------------------------------------------------------------
+Le dépôt doit être structuré pour que l’on distingue clairement interface, backend, jobs et cœur métier. Une organisation possible est : `apps/web`, `apps/admin`, `apps/api`, `packages/domain`, `packages/ui`, `packages/config`, puis des modules spécialisés côté serveur.
+
+Le backend doit comporter des modules pour auth, documents, search, knowledge, ingestion, ai, learning, videos, recommendations, analytics et admin. Chaque module peut exposer controllers, service, repository, schema, types et tests. L’organisation réelle peut rester plus simple si le dépôt est petit, mais les responsabilités doivent être les mêmes.
+
+Ne pas mélanger le DTO reçu par HTTP avec le modèle interne. Valider toutes les entrées externes avec un schéma. Les erreurs métier doivent être typées ou au moins normalisées pour que l’interface puisse distinguer une ressource introuvable, un document non publié, un quota IA atteint, une tâche en échec ou une erreur réseau.
+
+Le frontend doit disposer de composants génériques réutilisables : SearchBar, FilterSheet, ResourceCard, ResourceTypeBadge, ViewerContainer, SourceList, ChatMessage, ModeSelector, LearningProgress, ExercisePanel, VideoRecommendation, etc. Le but n’est pas de créer une bibliothèque gigantesque, mais de centraliser les composants qui portent une logique d’interface répétée.
+
+La configuration doit utiliser des variables d’environnement côté serveur. Aucun secret Gemini, aucune clé privilégiée Supabase et aucun token de service ne doit être embarqué dans le bundle public.
+
+DIRECTIVE D’IMPLÉMENTATION
+L’agent doit transformer cette page en code, contrats, tests et documentation lorsque applicable. Toute donnée, état ou comportement mentionné doit avoir une représentation explicite et rester cohérent avec les autres pages. Ne pas dupliquer une logique déjà centralisée : réutiliser les services et composants existants.
+
+
+PAGE 06/80 — 06 — MODÈLE DE DONNÉES ACADÉMIQUES
+----------------------------------------------------------------------------------------------------
+Le modèle de données doit refléter le monde universitaire plutôt qu’un simple stockage de fichiers. Les entités principales sont : Student, Promotion, Filière ou programme, Course, Chapter, Concept, Resource, ResourceVersion, ResourceRelation, ExamSession, ProfessorReference, Correction, Video, LearningGoal, LearningState, LearningBranch, MasteryRecord, Conversation, Message, AIJob, AgentWorker et AuditEvent.
+
+Une Resource possède un type documentaire : TP, Interrogation, Examen, Exercices, Support de cours et, par extension contrôlée, Correction, Document pédagogique ou autre ressource validée. Le type doit être un enum ou une référence contrôlée, pas une chaîne arbitraire.
+
+Le document original associe notamment cours, promotion, date, semestre, session, année académique, chapitre et professeur référent selon sa nature. Le schéma doit accepter qu’une métadonnée ne soit pas disponible à l’ingestion, puis passer par un état « à vérifier » plutôt que d’inventer une valeur.
+
+Il faut prévoir versioning et hash. Une même ressource importée deux fois doit pouvoir être détectée. Utiliser un hash de contenu tel que SHA-256 comme empreinte de déduplication. Deux fichiers identiques doivent éviter une double analyse Gemini coûteuse. Des versions différentes du même document doivent être traçables.
+
+Les relations importantes comprennent course→chapter, chapter→resource, resource→correction, exam→correction, resource→video, resource→related_resource, concept→concept prerequisite et concept→resource. Ces relations alimentent à la fois l’interface et le moteur de recherche.
+
+DIRECTIVE D’IMPLÉMENTATION
+L’agent doit transformer cette page en code, contrats, tests et documentation lorsque applicable. Toute donnée, état ou comportement mentionné doit avoir une représentation explicite et rester cohérent avec les autres pages. Ne pas dupliquer une logique déjà centralisée : réutiliser les services et composants existants.
+
+
+PAGE 07/80 — 07 — TYPES DE DOCUMENTS ET MÉTADONNÉES
+----------------------------------------------------------------------------------------------------
+Les types initiaux du cahier des charges sont précis. TP : sujets, directives et guides pratiques, avec cours, promotion, date et numéro de TP. Interrogation : évaluations continues et tests, avec cours, promotion, date et semestre. Examen : épreuves finales et sessions antérieures, avec cours, promotion, session et année académique. Exercices : séries, devoirs et fiches de révision, avec cours, promotion et chapitre concerné. Supports de cours : syllabus, notes magistrales et diapositives, avec cours, promotion, professeur référent et titre de chapitre.
+
+Conserver ces champs même lorsque des métadonnées supplémentaires sont ajoutées. La base doit accepter des champs communs tels que title, description, file_name, mime_type, size, storage_path, checksum, language, academic_year, publication_status, created_at, updated_at, source, validation_status et extraction_status.
+
+Ne jamais confondre « titre détecté » et « titre approuvé ». Le premier provient de l’extraction, le second représente la valeur publiée. Cette distinction est importante lorsque l’IA classe automatiquement un document.
+
+Les valeurs de promotion, cours, chapitre et professeur doivent être normalisées. Éviter de créer `Math`, `Mathématiques`, `Mathematics` comme trois matières différentes. Prévoir des alias ou synonymes dans le moteur de recherche sans polluer les tables de référence.
+
+Le schéma doit prévoir les données inconnues. Une ressource peut être stockée avec status `needs_review` et apparaître à l’admin sans être publiée aux étudiants tant qu’elle n’est pas suffisamment validée.
+
+DIRECTIVE D’IMPLÉMENTATION
+L’agent doit transformer cette page en code, contrats, tests et documentation lorsque applicable. Toute donnée, état ou comportement mentionné doit avoir une représentation explicite et rester cohérent avec les autres pages. Ne pas dupliquer une logique déjà centralisée : réutiliser les services et composants existants.
+
+
+PAGE 08/80 — 08 — INGESTION DES FICHIERS
+----------------------------------------------------------------------------------------------------
+Le parcours d’ingestion commence par l’administrateur qui dépose un fichier. Le cahier des charges décrit un dépôt par glisser-déposer vers Supabase Storage, suivi d’une attribution à un agent IA, extraction et classification, puis enregistrement des métadonnées et publication après traitement.
+
+Le système réel doit matérialiser cette séquence comme un job d’ingestion. États recommandés : `uploaded`, `queued`, `processing`, `extracted`, `classified`, `indexed`, `needs_review`, `published`, `failed`. Les transitions doivent être contrôlées et journalisées.
+
+Dès l’upload, calculer checksum, taille, type MIME, extension et identifiant de ressource. Stocker le fichier dans une zone contrôlée avant de lancer l’analyse. Le traitement lourd doit être asynchrone. L’interface admin doit recevoir l’état du job via polling intelligent, server-sent events ou canal temps réel si l’infrastructure retenue le permet.
+
+L’extraction doit être adaptée au format. Pour les PDF textuels, extraire le texte et la structure des pages. Pour les PDF scannés ou images, déclencher OCR. Pour les documents bureautiques, extraire paragraphes, tableaux, feuilles ou diapositives lorsque le format le permet. Pour les codes, préserver le texte et éventuellement les numéros de ligne. Pour l’audio/vidéo, prévoir transcription lorsque la fonctionnalité est activée.
+
+Après extraction, l’analyse IA doit produire un résultat structuré. Aucun parsing fragile d’une réponse libre ne doit piloter directement la base. Utiliser un schéma de sortie validé.
+
+DIRECTIVE D’IMPLÉMENTATION
+L’agent doit transformer cette page en code, contrats, tests et documentation lorsque applicable. Toute donnée, état ou comportement mentionné doit avoir une représentation explicite et rester cohérent avec les autres pages. Ne pas dupliquer une logique déjà centralisée : réutiliser les services et composants existants.
+
+
+PAGE 09/80 — 09 — TRI ET CLASSIFICATION IA
+----------------------------------------------------------------------------------------------------
+L’IA d’administration doit identifier la nature de la ressource, son cours, sa promotion, sa date, son semestre/session, son chapitre, le professeur référent quand identifiable et d’autres attributs utiles. Le système doit distinguer ce qui est explicitement trouvé de ce qui est inféré avec une confiance donnée.
+
+Une sortie de classification devrait inclure : resource_type, title_candidate, course_candidate, promotion_candidate, date_candidate, semester_candidate, session_candidate, chapter_candidates, professor_candidate, confidence, evidence_spans et warnings. Les evidence_spans permettent à l’admin de comprendre pourquoi une valeur a été proposée.
+
+Le moteur ne doit pas publier automatiquement un document à haut risque lorsque les indices sont contradictoires. Les cas ambigus doivent être envoyés en validation visuelle. L’administration doit pouvoir corriger les champs sans refaire tout le traitement.
+
+Prévoir une classification en deux niveaux : règles déterministes pour les extensions, noms de fichiers, structures connues et métadonnées évidentes ; raisonnement Gemini pour les cas sémantiques. Cette combinaison diminue les coûts et augmente la stabilité.
+
+L’agent doit également pouvoir exécuter des tâches ad hoc : résumer un document, nettoyer des métadonnées, corriger une indexation, repérer des doublons ou proposer des relations. Ces actions ne doivent jamais modifier silencieusement une donnée publiée ; elles doivent créer un résultat réversible ou passer par validation selon leur dangerosité.
+
+DIRECTIVE D’IMPLÉMENTATION
+L’agent doit transformer cette page en code, contrats, tests et documentation lorsque applicable. Toute donnée, état ou comportement mentionné doit avoir une représentation explicite et rester cohérent avec les autres pages. Ne pas dupliquer une logique déjà centralisée : réutiliser les services et composants existants.
+
+
+PAGE 10/80 — 10 — ARCHITECTURE MULTI-AGENTS POUR L’ADMINISTRATION
+----------------------------------------------------------------------------------------------------
+La spécification initiale prévoit trois agents Gemini parallèles, chacun pouvant traiter un lot différent, avec trois clés dédiées pour augmenter le débit et limiter la saturation d’un seul quota. Cette idée devient dans l’architecture finale un système de workers parallèles configurable.
+
+Le concept central n’est pas « trois écrans de chatbot ». Il s’agit de trois workers capables d’exécuter la même famille de jobs. Un scheduler distribue les tâches disponibles. Un worker réclame un job, verrouille sa prise en charge, exécute les étapes et publie son état.
+
+Les trois workers doivent être isolés en ressources mais partager une logique commune. Chaque worker possède un identifiant, un statut, un heartbeat, des compteurs de jobs, des erreurs récentes et la configuration de fournisseur/modèle qui lui est attribuée. Les clés API ne doivent pas être écrites en clair dans l’interface ou dans les logs.
+
+Le système doit éviter qu’un même job soit traité par deux agents. Utiliser des mécanismes de verrouillage ou de réservation atomique et un identifiant d’idempotence. En cas de panne d’un worker, le job doit pouvoir revenir dans la file après expiration du lease.
+
+La parallélisation s’applique aussi aux sous-tâches lorsque cela est sûr : extraction indépendante de plusieurs pages, génération d’embeddings par lots, analyse de ressources différentes. Attention à ne pas paralléliser aveuglément des appels dépendants du même quota.
+
+DIRECTIVE D’IMPLÉMENTATION
+L’agent doit transformer cette page en code, contrats, tests et documentation lorsque applicable. Toute donnée, état ou comportement mentionné doit avoir une représentation explicite et rester cohérent avec les autres pages. Ne pas dupliquer une logique déjà centralisée : réutiliser les services et composants existants.
+
+
+PAGE 11/80 — 11 — FALLBACK GEMINI ET GESTION DES MODÈLES
+----------------------------------------------------------------------------------------------------
+La première spécification proposait une chaîne explicite de versions Gemini et une boucle de relais sur les erreurs 503 et 429. Cette intention fonctionnelle est conservée : si le fournisseur ou le modèle primaire est momentanément indisponible, le système doit pouvoir basculer vers une alternative configurée.
+
+En revanche, les noms de versions cités dans l’ancien document ne doivent pas être hardcodés comme vérité permanente. Les modèles et identifiants peuvent évoluer. Implémenter un `ModelPolicy` configurable : liste ordonnée de modèles, capacités requises, fournisseur, limite de tokens, coût relatif, contexte maximal, règles d’échec et délai de retry.
+
+Le fallback doit être déclenché sur les erreurs transitoires appropriées : surcharge, rate limit, quota, éventuellement timeout selon le contexte. Il ne doit pas masquer une erreur de prompt, une entrée invalide ou un document corrompu. Les erreurs doivent être catégorisées avant décision.
+
+Un appel doit porter un request id et un trace id. Conserver quel modèle a été tenté, la raison du fallback, la durée, le volume approximatif de contexte et le résultat final, sans enregistrer de secret.
+
+La phrase « disponibilité à 100 % » du cahier des charges doit être traitée comme un objectif de résilience, pas comme une garantie irréaliste. Le produit doit afficher honnêtement lorsqu’une chaîne entière est indisponible et permettre le retry.
+
+DIRECTIVE D’IMPLÉMENTATION
+L’agent doit transformer cette page en code, contrats, tests et documentation lorsque applicable. Toute donnée, état ou comportement mentionné doit avoir une représentation explicite et rester cohérent avec les autres pages. Ne pas dupliquer une logique déjà centralisée : réutiliser les services et composants existants.
+
+
+PAGE 12/80 — 12 — RAG : PRINCIPE FONDAMENTAL
+----------------------------------------------------------------------------------------------------
+Le RAG est la mémoire académique consultable d’Academic Hub. Gemini ne doit pas recevoir indistinctement tout un cours de 200 pages. Le système doit retrouver un contexte pertinent avant d’appeler le modèle.
+
+Pipeline cible : sources → extraction → normalisation → segmentation intelligente → enrichissement métadonnées → embeddings → indexation → recherche hybride → filtrage → reranking → assemblage du contexte → Gemini → réponse structurée avec sources.
+
+Un chunk ne doit pas être seulement une tranche arbitraire de caractères. Il doit essayer de respecter la structure académique : chapitre, section, paragraphe, page, exercice, définition, formule ou tableau. Le chunk doit conserver document_id, resource_type, page_number, section_title, chapter_id, concept_ids, language et position dans le document.
+
+Pour les réponses, l’agent doit pouvoir distinguer plusieurs contextes : extrait principal, extraits de soutien, correction associée et éventuelle ressource vidéo. L’ordre de priorité dépend du mode pédagogique.
+
+Le RAG doit retourner des références précises. Une source peut être un document et une page, un chapitre, un exercice ou une vidéo. L’interface doit pouvoir ouvrir la ressource originale et idéalement se positionner sur la page ou la section concernée.
+
+DIRECTIVE D’IMPLÉMENTATION
+L’agent doit transformer cette page en code, contrats, tests et documentation lorsque applicable. Toute donnée, état ou comportement mentionné doit avoir une représentation explicite et rester cohérent avec les autres pages. Ne pas dupliquer une logique déjà centralisée : réutiliser les services et composants existants.
+
+
+PAGE 13/80 — 13 — RECHERCHE HYBRIDE
+----------------------------------------------------------------------------------------------------
+La recherche d’Academic Hub doit fonctionner comme un « Google académique interne ». Elle doit comprendre les formulations naturelles tout en restant excellente sur les termes exacts : codes de cours, noms de professeur, numéro d’examen, année ou expressions précises.
+
+Utiliser quatre signaux complémentaires : recherche lexicale/plein texte pour les correspondances exactes ; recherche vectorielle pour la similarité sémantique ; filtres structurés pour promotion, cours, type, année et session ; reranking pour ordonner les résultats selon la pertinence globale.
+
+Un utilisateur peut écrire « anciens examens de mécanique avec corrigé ». Le système doit interpréter au moins `type=examen`, `course=mécanique`, `has_correction=true`, éventuellement `academic_year<=...` sans exiger que ces mots figurent dans un titre. L’intention de recherche doit être transformée en requête structurée avant l’exécution.
+
+Les synonymes et fautes fréquentes doivent être tolérés sans modifier le référentiel. Par exemple, une variante linguistique peut pointer vers la même matière canonique.
+
+Les résultats doivent afficher pourquoi ils sont pertinents lorsque cela améliore la confiance : type, cours, année, chapitre, correction disponible. Le moteur doit aussi pouvoir fournir « documents similaires » après ouverture d’une ressource.
+
+DIRECTIVE D’IMPLÉMENTATION
+L’agent doit transformer cette page en code, contrats, tests et documentation lorsque applicable. Toute donnée, état ou comportement mentionné doit avoir une représentation explicite et rester cohérent avec les autres pages. Ne pas dupliquer une logique déjà centralisée : réutiliser les services et composants existants.
+
+
+PAGE 14/80 — 14 — GRAPHE DE CONNAISSANCES ACADÉMIQUES
+----------------------------------------------------------------------------------------------------
+Le vecteur seul ne suffit pas à représenter les relations académiques. Il faut une couche de graphe logique ou relationnel capable de représenter les liens entre cours, chapitres, concepts, prérequis, exercices, examens, corrigés et vidéos.
+
+Exemple conceptuel : Analyse II → Intégrales → intégrales définies → techniques d’intégration. Un autre chemin peut être : Équations différentielles → résolution du premier ordre → exercices → examen de session précédente → correction.
+
+Le graphe ne doit pas forcément être un produit séparé au départ. Une implémentation PostgreSQL avec tables de relations peut suffire : `concepts`, `concept_relations`, `resource_concepts`, `chapter_concepts`, `resource_relations`. La structure doit cependant permettre des requêtes de voisinage et des liens de prérequis.
+
+Le graphe sert à plusieurs choses : comprendre où se situe une demande, trouver des prérequis lorsqu’un étudiant bloque, recommander des ressources liées, construire un parcours de révision et expliquer à l’agent la structure académique d’un sujet.
+
+L’agent doit éviter de déclarer automatiquement une relation comme certaine lorsque l’inférence est faible. Les relations générées par IA peuvent porter un score de confiance et un statut `suggested`, `validated` ou `rejected`.
+
+DIRECTIVE D’IMPLÉMENTATION
+L’agent doit transformer cette page en code, contrats, tests et documentation lorsque applicable. Toute donnée, état ou comportement mentionné doit avoir une représentation explicite et rester cohérent avec les autres pages. Ne pas dupliquer une logique déjà centralisée : réutiliser les services et composants existants.
+
+
+PAGE 15/80 — 15 — CORRECTIONS COMME RESSOURCES DE PREMIÈRE CLASSE
+----------------------------------------------------------------------------------------------------
+Les corrigés ne doivent pas être considérés comme de simples fichiers annexes. Ils doivent constituer un objet académique de premier ordre. Un exercice ou examen peut posséder une correction liée, parfois plusieurs versions.
+
+Lorsqu’un étudiant demande « cet examen est-il corrigé ? », la réponse doit provenir de la relation structurée et non d’une recherche textuelle approximative. Lorsqu’une ressource est ouverte, l’interface doit afficher les ressources associées : corrigé, sujet précédent, chapitre, exercices apparentés, vidéos pertinentes.
+
+Dans le RAG, un corrigé doit pouvoir être utilisé selon le mode. En entraînement guidé, il ne faut pas révéler immédiatement toute la solution si la stratégie pédagogique prévoit des indices progressifs. En révision, il peut être fortement priorisé parce qu’il reflète les attentes locales.
+
+Le système doit différencier « correction officielle/validée », « correction proposée par l’IA » et « réponse non vérifiée ». Ne jamais afficher un résultat généré par IA comme un corrigé officiel.
+
+Pour les tâches de classification, si le système détecte qu’un document est probablement un corrigé, il doit proposer une relation plutôt que modifier automatiquement le type du document sans contrôle.
+
+DIRECTIVE D’IMPLÉMENTATION
+L’agent doit transformer cette page en code, contrats, tests et documentation lorsque applicable. Toute donnée, état ou comportement mentionné doit avoir une représentation explicite et rester cohérent avec les autres pages. Ne pas dupliquer une logique déjà centralisée : réutiliser les services et composants existants.
+
+
+PAGE 16/80 — 16 — VIDÉOS YOUTUBE ET BASE INTERNE
+----------------------------------------------------------------------------------------------------
+Academic Hub doit intégrer des vidéos explicatives de YouTube, mais la logique n’est pas de laisser l’IA chercher librement n’importe quelle vidéo au moment de répondre. Les vidéos pertinentes doivent être référencées dans le catalogue interne Academic Hub et porter un statut de validation.
+
+Modèle minimal : video_id, title, channel, url, subject/course, topic, difficulty, language, duration, validated, transcript, quality_score, tags, source_metadata, created_at, updated_at.
+
+La vidéo doit être indexable comme une ressource de connaissance. Lorsque l’agent détecte qu’un concept gagnerait à être expliqué visuellement, il peut demander au moteur de rechercher une vidéo interne liée au concept, au cours et au niveau.
+
+La qualité d’une recommandation peut dépendre de la validation, de la correspondance conceptuelle, du niveau, de la langue, de la durée et des retours étudiants. La recommandation doit rester explicable.
+
+Après le visionnage, le produit doit boucler vers l’apprentissage. L’assistant peut demander à l’étudiant d’expliquer avec ses propres mots ce qu’il a compris, poser une question simple de transfert ou proposer un mini-exercice. Une vidéo n’est donc pas une sortie finale : elle devient une étape dans la stratégie pédagogique.
+
+DIRECTIVE D’IMPLÉMENTATION
+L’agent doit transformer cette page en code, contrats, tests et documentation lorsque applicable. Toute donnée, état ou comportement mentionné doit avoir une représentation explicite et rester cohérent avec les autres pages. Ne pas dupliquer une logique déjà centralisée : réutiliser les services et composants existants.
+
+
+PAGE 17/80 — 17 — ASSISTANT IA : CHANGEMENT DE PARADIGME
+----------------------------------------------------------------------------------------------------
+L’assistant ne doit pas être conçu comme un chatbot générique qui cherche une réponse à chaque message. Sa mission est d’aider l’étudiant à atteindre un objectif d’apprentissage.
+
+Architecture décisionnelle : message étudiant → analyse d’intention → lecture de l’état étudiant → identification des connaissances disponibles → objectif pédagogique → plan d’action → exécution → mise à jour de l’état.
+
+L’agent peut choisir une action : expliquer, poser une question, diagnostiquer, vérifier une réponse, donner un indice, générer un exercice, proposer une vidéo interne, changer temporairement de sous-thème, revenir au sujet initial, résumer une partie du cours, lancer une révision ou fournir une source.
+
+La réponse générée doit être accompagnée d’un état de confiance et de sources lorsque l’information provient du corpus. Le backend doit privilégier des objets structurés plutôt qu’un long texte brut. Exemple : `{answer, sources, confidence, knowledge_mode, learning_action, state_update}`.
+
+Le système doit refuser la logique « toujours tout expliquer ». Parfois la meilleure action est une question diagnostique. Parfois c’est un exemple numérique. Parfois il faut revenir à un prérequis. Le comportement doit être piloté par une politique pédagogique configurable plutôt qu’un seul prompt géant.
+
+DIRECTIVE D’IMPLÉMENTATION
+L’agent doit transformer cette page en code, contrats, tests et documentation lorsque applicable. Toute donnée, état ou comportement mentionné doit avoir une représentation explicite et rester cohérent avec les autres pages. Ne pas dupliquer une logique déjà centralisée : réutiliser les services et composants existants.
+
+
+PAGE 18/80 — 18 — LES QUATRE MODES : CHAT, APPRENDRE, RÉVISION, S’EXERCER
+----------------------------------------------------------------------------------------------------
+Mode Chat : conversation libre sur les études, les ressources et les concepts. Il peut utiliser la connaissance Academic Hub et expliquer librement, tout en citant ses sources lorsqu’une réponse académique est fondée sur le corpus.
+
+Mode Apprendre : objectif principal = construire une compréhension. Le système part du sujet choisi, demande ou estime le niveau, présente une progression et vérifie régulièrement l’assimilation. Il peut faire varier la stratégie pédagogique : définition simple, analogie, représentation visuelle, exemple numérique, résolution guidée, puis exercice autonome.
+
+Mode Révision : source locale prioritaire. Ordre de priorité recommandé : cours du professeur, exercices du professeur, examens/interrogations de la faculté, corrigés, autres ressources validées, puis connaissance générale en dernier recours. Le style de questionnement observé dans les ressources du professeur peut influencer la forme des exercices de révision.
+
+Mode S’exercer : interaction centrée sur la pratique. Le système peut proposer un exercice, attendre une réponse, donner un indice gradué, diagnostiquer l’erreur, puis fournir ou construire la correction. La difficulté doit pouvoir augmenter ou diminuer en fonction des performances.
+
+Le sélecteur de mode doit être visible mais ne doit pas empêcher l’orchestrateur de prendre des décisions internes cohérentes. L’étudiant peut commencer en Chat et basculer ensuite vers Révision ou S’exercer sans perdre le contexte utile.
+
+DIRECTIVE D’IMPLÉMENTATION
+L’agent doit transformer cette page en code, contrats, tests et documentation lorsque applicable. Toute donnée, état ou comportement mentionné doit avoir une représentation explicite et rester cohérent avec les autres pages. Ne pas dupliquer une logique déjà centralisée : réutiliser les services et composants existants.
+
+
+PAGE 19/80 — 19 — AUTO-ÉVALUATION 1 À 10
+----------------------------------------------------------------------------------------------------
+Au début d’une session d’apprentissage, l’assistant peut demander : « Sur une échelle de 1 à 10, à quel point maîtrises-tu ce sujet ? » Cette mesure est utile mais elle ne doit jamais être considérée comme une vérité.
+
+Le système doit croiser le niveau déclaré avec un diagnostic court. Un étudiant se déclarant 8/10 peut échouer sur les prérequis élémentaires ; un étudiant se déclarant 3/10 peut parfaitement résoudre un problème standard. Le Learning Engine doit donc conserver à la fois `self_reported_level` et `observed_mastery`.
+
+Le diagnostic doit être léger afin de ne pas frustrer l’utilisateur. Deux ou trois questions bien choisies peuvent suffire à établir un premier profil. Les questions doivent cibler les concepts fondamentaux ou les prérequis du thème.
+
+Le niveau de langage, la granularité des explications et la quantité d’accompagnement doivent ensuite être adaptés. Un niveau faible entraîne davantage de décomposition et de vérification. Un niveau élevé conduit vers des questions plus autonomes, des cas limites et des exercices plus complexes.
+
+La progression ne doit pas être purement linéaire. Une nouvelle preuve ou un échec significatif peut faire baisser la maîtrise observée temporairement. L’objectif est de refléter l’état réel et non de fabriquer une note artificiellement croissante.
+
+DIRECTIVE D’IMPLÉMENTATION
+L’agent doit transformer cette page en code, contrats, tests et documentation lorsque applicable. Toute donnée, état ou comportement mentionné doit avoir une représentation explicite et rester cohérent avec les autres pages. Ne pas dupliquer une logique déjà centralisée : réutiliser les services et composants existants.
+
+
+PAGE 20/80 — 20 — DÉTECTION DE L’INCOMPRÉHENSION
+----------------------------------------------------------------------------------------------------
+Le système doit détecter le manque de compréhension au-delà de la phrase « je ne comprends pas ». Les indices peuvent être : répétition d’une même erreur, contradiction entre deux réponses, confusion entre concepts voisins, justification incohérente, réponse correcte obtenue par hasard, demandes répétées de reformulation ou incapacité à transférer une règle dans un nouvel exemple.
+
+Ces signaux doivent alimenter un score de confiance sur la maîtrise d’un concept. Ils ne doivent pas produire une sanction ni une étiquette visible de manière négative à l’étudiant.
+
+Lorsque l’incompréhension est détectée, l’agent change de stratégie. Une explication abstraite peut devenir une analogie. Une démonstration peut être remplacée par un exemple concret. Une réponse complète peut devenir une question guidée. Un concept peut être décomposé en prérequis.
+
+L’agent doit éviter de répéter exactement la même explication lorsque le premier essai n’a pas fonctionné. Il doit varier la représentation. Cette règle doit être explicite dans l’orchestrateur pédagogique.
+
+Après une nouvelle explication, vérifier l’assimilation avec une tâche différente de la simple répétition verbale. Demander à l’étudiant d’expliquer, prédire un résultat ou résoudre un micro-problème permet de mieux mesurer le transfert.
+
+DIRECTIVE D’IMPLÉMENTATION
+L’agent doit transformer cette page en code, contrats, tests et documentation lorsque applicable. Toute donnée, état ou comportement mentionné doit avoir une représentation explicite et rester cohérent avec les autres pages. Ne pas dupliquer une logique déjà centralisée : réutiliser les services et composants existants.
+
+
+PAGE 21/80 — 21 — LEARNING STATE TREE
+----------------------------------------------------------------------------------------------------
+Le Learning State Tree représente l’état de navigation pédagogique. L’idée est que lorsque l’étudiant bloque sur un sujet A, l’agent peut ouvrir temporairement une branche B correspondant à un prérequis, puis éventuellement B1 ou B2, jusqu’à trouver la connaissance nécessaire.
+
+Exemple : objectif principal = intégrer une fonction. Blocage = primitive non reconnue. L’agent ouvre une branche « primitives ». Nouveau blocage = règles de dérivation. Il ouvre une sous-branche « dérivées ». Une fois la maîtrise suffisante atteinte, le système revient au point suspendu d’intégration.
+
+Le nœud de branche doit conserver parent_node_id, topic_id, objective, status, mastery_before, mastery_after, reason_for_branch, opened_at, closed_at et pending_task. Le statut peut être `active`, `paused`, `completed`, `abandoned`.
+
+Le retour n’est pas automatique simplement parce qu’une explication a été affichée. Une branche est considérée suffisamment assimilée après un critère configurable : réussite à un mini-diagnostic, explication cohérente ou plusieurs réponses correctes avec transfert.
+
+Le système doit pouvoir gérer plusieurs niveaux de récursion mais imposer une protection contre les dérives infinies. Un budget de branchement ou une profondeur maximale configurable évite de perdre l’objectif initial.
+
+DIRECTIVE D’IMPLÉMENTATION
+L’agent doit transformer cette page en code, contrats, tests et documentation lorsque applicable. Toute donnée, état ou comportement mentionné doit avoir une représentation explicite et rester cohérent avec les autres pages. Ne pas dupliquer une logique déjà centralisée : réutiliser les services et composants existants.
+
+
+PAGE 22/80 — 22 — ÉTAT ÉTUDIANT ET MÉMOIRE PÉDAGOGIQUE
+----------------------------------------------------------------------------------------------------
+Le profil pédagogique doit conserver ce qui est nécessaire à la progression sans transformer le produit en surveillance intrusive. Données utiles : objectifs actifs, cours favoris, concepts étudiés, mastery_score, confidence, weak_concepts, strong_concepts, known_prerequisites, preferred_explanation_style, difficulty_preference, recent learning actions et historique des sessions.
+
+Le modèle doit distinguer mémoire à court terme et mémoire persistante. Le contexte de conversation sert au fil immédiat. Les faits stables ou progressifs peuvent être enregistrés dans StudentLearningProfile ou LearningState.
+
+Les préférences pédagogiques ne doivent pas être figées trop tôt. Par exemple, l’étudiant peut sembler préférer les exemples numériques en physique mais avoir besoin d’analogies en programmation. Conserver des préférences par domaine lorsque les données sont suffisantes.
+
+L’état doit être récupérable de manière rapide. Une session de chat ne doit pas exécuter une dizaine de requêtes lourdes avant chaque réponse. Utiliser des agrégations, caches de profil et mises à jour différées lorsque possible.
+
+Toute mémoire dérivée par IA doit être identifiable. Une phrase « l’étudiant maîtrise X » est une estimation et doit pouvoir évoluer. Ne pas créer de vérité irréversible à partir d’une seule réponse.
+
+DIRECTIVE D’IMPLÉMENTATION
+L’agent doit transformer cette page en code, contrats, tests et documentation lorsque applicable. Toute donnée, état ou comportement mentionné doit avoir une représentation explicite et rester cohérent avec les autres pages. Ne pas dupliquer une logique déjà centralisée : réutiliser les services et composants existants.
+
+
+PAGE 23/80 — 23 — MOTEUR DE MAÎTRISE
+----------------------------------------------------------------------------------------------------
+La maîtrise est un état estimé, non une simple note. Pour un concept donné, conserver au minimum un score, une confiance, une date de dernière observation et des preuves pédagogiques. Les preuves peuvent être une réponse correcte, une erreur typique, une tâche de transfert réussie ou une explication autonome.
+
+Le moteur doit éviter les formules magiques opaques. Une première implémentation peut utiliser des règles simples pondérées : succès répété augmente le score ; erreur fondamentale le réduit davantage ; tâche plus difficile apporte plus d’information ; répétition immédiate a moins de valeur qu’un rappel différé.
+
+Il doit être possible de remplacer plus tard cet algorithme par un modèle plus sophistiqué sans changer l’interface. Encapsuler la logique dans un `MasteryService`.
+
+Le seuil de « suffisamment maîtrisé » doit être configurable selon le mode. Apprendre un nouveau concept peut nécessiter plus de vérification qu’une simple révision rapide.
+
+Le moteur doit aussi pouvoir identifier les concepts faibles prioritaires. Un concept très central dans le graphe et faible chez l’étudiant doit être plus important qu’un détail marginal.
+
+DIRECTIVE D’IMPLÉMENTATION
+L’agent doit transformer cette page en code, contrats, tests et documentation lorsque applicable. Toute donnée, état ou comportement mentionné doit avoir une représentation explicite et rester cohérent avec les autres pages. Ne pas dupliquer une logique déjà centralisée : réutiliser les services et composants existants.
+
+
+PAGE 24/80 — 24 — ORCHESTRATEUR PÉDAGOGIQUE
+----------------------------------------------------------------------------------------------------
+L’orchestrateur est le cerveau de coordination, mais il ne remplace pas Gemini. Il reçoit une demande, consulte l’état, sélectionne les connaissances, puis détermine la prochaine action.
+
+Étapes recommandées : parser l’intention ; déterminer le mode ; charger l’objectif et le nœud actif ; récupérer les concepts pertinents ; identifier les prérequis éventuellement faibles ; rechercher les sources ; évaluer si une réponse directe suffit ; sinon choisir une stratégie ; exécuter l’action ; demander une évaluation lorsque nécessaire ; mettre à jour l’état.
+
+Le plan peut être représenté par un petit objet : `{goal, active_topic, action, required_context, expected_student_action, success_signal, next_action_on_success, next_action_on_failure}`.
+
+Cette structure permet de tester l’orchestrateur sans appeler Gemini. Par exemple, si un étudiant échoue deux fois sur un prérequis, le test doit vérifier que l’action suivante est une branche de soutien plutôt qu’une troisième répétition de la même explication.
+
+L’orchestrateur doit également gérer les interruptions : l’étudiant peut changer de question, ouvrir un document ou quitter la session. L’état de la branche doit rester cohérent et reprendre ultérieurement.
+
+DIRECTIVE D’IMPLÉMENTATION
+L’agent doit transformer cette page en code, contrats, tests et documentation lorsque applicable. Toute donnée, état ou comportement mentionné doit avoir une représentation explicite et rester cohérent avec les autres pages. Ne pas dupliquer une logique déjà centralisée : réutiliser les services et composants existants.
+
+
+PAGE 25/80 — 25 — POLITIQUE DES SOURCES EN MODE RÉVISION
+----------------------------------------------------------------------------------------------------
+Le mode Révision doit refléter le corpus local et la manière dont la faculté évalue ses étudiants. Les sources du professeur ne sont donc pas seulement « une source parmi d’autres » : elles sont prioritaires pour le mode.
+
+Priorité recommandée : support de cours du professeur ; exercices associés ; interrogations/examens de la faculté ; corrigés validés ; autres ressources académiques validées ; connaissances générales. Si une réponse nécessite une information absente du corpus, le système peut le signaler et compléter, mais ne doit pas donner l’impression que cette information vient du professeur.
+
+Le style de questionnement peut être extrait des exercices et examens : type de raisonnement, formulation, profondeur, niveau de calcul, présence de démonstrations ou d’applications. L’objectif n’est pas de cloner exactement un professeur mais d’adapter l’entraînement au contexte d’évaluation.
+
+Toutes les réponses de révision fondées sur le corpus doivent fournir des sources ouvrables. Le frontend doit pouvoir afficher « Sources (2) » avec document, page ou section.
+
+Le moteur doit empêcher une fuite de contexte hors mode. Une recherche vectorielle globale ne doit pas écraser la priorité locale de révision simplement parce qu’elle trouve un texte plus similaire.
+
+DIRECTIVE D’IMPLÉMENTATION
+L’agent doit transformer cette page en code, contrats, tests et documentation lorsque applicable. Toute donnée, état ou comportement mentionné doit avoir une représentation explicite et rester cohérent avec les autres pages. Ne pas dupliquer une logique déjà centralisée : réutiliser les services et composants existants.
+
+
+PAGE 26/80 — 26 — SOURCES ET CITATIONS DANS TOUTE LA PLATEFORME
+----------------------------------------------------------------------------------------------------
+Les citations sont une exigence de confiance. Une réponse peut comporter une liste de sources sous forme d’objets structurés : `document_id`, title, page, section, snippet ou anchor. Une source doit être réellement récupérable.
+
+Le frontend peut présenter les citations sous forme de références discrètes dans le texte ou d’une section « Sources ». Lorsqu’un étudiant demande « d’où vient cette information ? », l’assistant doit être capable de répondre à partir du même registre de sources.
+
+Le système doit différencier source utilisée du simple document proche dans la recherche. Seules les sources effectivement injectées ou utilisées pour produire la réponse doivent être marquées comme références.
+
+En cas de réponse issue de connaissance générale sans document local, l’assistant doit l’indiquer plutôt que d’inventer une citation. Pour une réponse mixte, chaque portion importante peut être rattachée à sa source ou la réponse peut être présentée avec des références globales suffisamment précises.
+
+Le reader doit idéalement pouvoir ouvrir une page précise. Préparer le modèle de données pour des anchors : numéro de page, offset textuel, section ou identifiant de chunk.
+
+DIRECTIVE D’IMPLÉMENTATION
+L’agent doit transformer cette page en code, contrats, tests et documentation lorsque applicable. Toute donnée, état ou comportement mentionné doit avoir une représentation explicite et rester cohérent avec les autres pages. Ne pas dupliquer une logique déjà centralisée : réutiliser les services et composants existants.
+
+
+PAGE 27/80 — 27 — INGESTION INTELLIGENTE ET CHUNKING
+----------------------------------------------------------------------------------------------------
+Le découpage du contenu doit préserver la structure académique. Pour un cours, conserver les titres de chapitre et sections avec chaque chunk. Pour un exercice, conserver l’énoncé complet avec les sous-questions lorsqu’elles sont suffisamment courtes. Pour une correction, préserver la correspondance avec l’exercice ou la question lorsque détectable.
+
+Éviter les chunks minuscules qui perdent le contexte, mais éviter également les blocs énormes qui nuisent au retrieval. Le chunker doit être conscient du format et de la structure.
+
+Chaque chunk doit porter une provenance exacte. Exemple : `resource_id=123`, `page=12`, `section=3.2`, `chunk_index=17`, `content_hash`, `embedding_model` ou version de représentation. Cette traçabilité permet de reconstruire l’index si le modèle d’embedding change.
+
+Prévoir une version d’indexation. Un document peut être réindexé sans détruire immédiatement l’ancienne représentation en cas de migration.
+
+Le système doit détecter les pages essentiellement visuelles. Une page sans texte extrait mais contenant des schémas peut nécessiter OCR ou analyse visuelle supplémentaire. Ne pas considérer « texte vide » comme « contenu vide ».
+
+DIRECTIVE D’IMPLÉMENTATION
+L’agent doit transformer cette page en code, contrats, tests et documentation lorsque applicable. Toute donnée, état ou comportement mentionné doit avoir une représentation explicite et rester cohérent avec les autres pages. Ne pas dupliquer une logique déjà centralisée : réutiliser les services et composants existants.
+
+
+PAGE 28/80 — 28 — OCR, PDF, DOCUMENTS BUREAUTIQUES ET MÉDIA
+----------------------------------------------------------------------------------------------------
+Le lecteur PDF doit fournir zoom, navigation par pages et recherche textuelle. Les documents Word, Excel et PowerPoint doivent disposer d’une prévisualisation web lorsque techniquement possible. Les images doivent être visualisables et zoomables. Les fichiers texte et code doivent permettre coloration syntaxique et numéros de lignes. Les MP3/MP4 doivent être lisibles dans des lecteurs HTML5 épurés. Ces besoins proviennent directement du cahier des charges initial.
+
+Pour l’ingestion, chaque format doit disposer d’un extracteur adapté. Une extraction réussie doit enregistrer sa méthode et son statut. En cas de fallback OCR, l’événement doit rester traçable.
+
+Les données textuelles extraites ne doivent pas écraser le fichier source. Elles constituent une représentation indexée. L’utilisateur ouvre toujours la ressource originale ou sa prévisualisation.
+
+Les tableaux et formules mathématiques sont des zones à risque. Le pipeline doit conserver autant que possible leur structure et signaler les pertes de qualité. Pour l’assistant, une réponse mathématique basée sur une extraction corrompue doit avoir une confiance réduite ou déclencher une recherche complémentaire.
+
+Les fichiers dangereux ou non supportés doivent être refusés ou isolés selon une politique de sécurité explicite. Vérifier le MIME réel et pas uniquement l’extension fournie par le navigateur.
+
+DIRECTIVE D’IMPLÉMENTATION
+L’agent doit transformer cette page en code, contrats, tests et documentation lorsque applicable. Toute donnée, état ou comportement mentionné doit avoir une représentation explicite et rester cohérent avec les autres pages. Ne pas dupliquer une logique déjà centralisée : réutiliser les services et composants existants.
+
+
+PAGE 29/80 — 29 — LECTEUR DE DOCUMENT ET CONTEXTE ACADÉMIQUE
+----------------------------------------------------------------------------------------------------
+La page `/document/[id]` est un élément central de l’expérience. Elle doit privilégier la lecture et ne pas ressembler à un panneau administratif.
+
+En plus du viewer, afficher le contexte : type de ressource, cours, promotion, année, chapitre, session ou semestre selon le document. Fournir téléchargement rapide si le statut de la ressource l’autorise.
+
+Une section « Ressources associées » doit exploiter les relations : corrigé, autres exercices, examens similaires, chapitre, vidéos, documents proches. Une section « Utiliser avec l’IA » peut proposer Réviser ce document ou Apprendre ce chapitre.
+
+Le lecteur doit être résistant aux connexions faibles. Charger d’abord la structure et la page utile, puis les éléments secondaires. Ne pas télécharger un gros document intégralement en mémoire si cela n’est pas nécessaire.
+
+La navigation vers une page ou un chunk depuis une citation doit être possible. Une source citée en chat doit pouvoir emmener l’étudiant au bon endroit dans le lecteur.
+
+DIRECTIVE D’IMPLÉMENTATION
+L’agent doit transformer cette page en code, contrats, tests et documentation lorsque applicable. Toute donnée, état ou comportement mentionné doit avoir une représentation explicite et rester cohérent avec les autres pages. Ne pas dupliquer une logique déjà centralisée : réutiliser les services et composants existants.
+
+
+PAGE 30/80 — 30 — ACCUEIL / EXPLORATEUR
+----------------------------------------------------------------------------------------------------
+L’accueil est à la fois une porte d’entrée documentaire et un point d’accès à l’apprentissage. Il doit comporter une barre de recherche rapide, filtres par promotion et cours, et une liste synthétique des derniers documents ajoutés, conformément au cahier des charges.
+
+À mesure que les fonctionnalités avancées sont activées, l’accueil peut aussi présenter : reprendre une session d’apprentissage, continuer un document, révisions recommandées, ressources similaires et sujets récemment consultés. Ces blocs doivent rester secondaires par rapport à la recherche.
+
+La recherche doit accepter le langage naturel. Les filtres peuvent être affichés dans un panneau adapté au mobile. Les résultats doivent être rapides et afficher type, titre, cours, année et éventuellement présence d’un corrigé.
+
+Ne pas transformer l’accueil en feed algorithmique permanent. Les recommandations doivent rester utilitaires et liées au contexte académique.
+
+Sur réseau lent, le premier rendu doit apparaître avant les données secondaires. Mettre en cache les référentiels stables comme promotions et cours lorsque cela améliore l’expérience sans risque d’incohérence.
+
+DIRECTIVE D’IMPLÉMENTATION
+L’agent doit transformer cette page en code, contrats, tests et documentation lorsque applicable. Toute donnée, état ou comportement mentionné doit avoir une représentation explicite et rester cohérent avec les autres pages. Ne pas dupliquer une logique déjà centralisée : réutiliser les services et composants existants.
+
+
+PAGE 31/80 — 31 — BANQUE PAR MATIÈRES ET NAVIGATION
+----------------------------------------------------------------------------------------------------
+La banque par matières doit permettre de parcourir les ressources par promotion, filière et cours. Chaque cours contient des catégories telles que TP, interrogations, examens, exercices et supports de cours.
+
+Cette navigation est importante pour les étudiants qui ne savent pas formuler une requête naturelle. Il faut donc maintenir une excellente navigation hiérarchique malgré la présence de l’IA.
+
+Les pages de cours peuvent afficher un résumé de la matière, les chapitres identifiés, les ressources par type, les examens passés et les corrections disponibles. Les données doivent être alimentées par le référentiel et le système de relations.
+
+Le tri peut être par pertinence, année, date, type ou popularité d’usage si ces statistiques existent. La popularité ne doit pas masquer les ressources récentes ou officielles.
+
+Le système doit gérer les cours renommés ou les variations de promotion à travers des identifiants canoniques et des alias.
+
+DIRECTIVE D’IMPLÉMENTATION
+L’agent doit transformer cette page en code, contrats, tests et documentation lorsque applicable. Toute donnée, état ou comportement mentionné doit avoir une représentation explicite et rester cohérent avec les autres pages. Ne pas dupliquer une logique déjà centralisée : réutiliser les services et composants existants.
+
+
+PAGE 32/80 — 32 — NAVIGATION MOBILE-FIRST
+----------------------------------------------------------------------------------------------------
+Le cahier des charges insiste sur le mobile-first parce que les étudiants consultent souvent les documents sur smartphone entre deux cours. Concevoir d’abord pour écran mobile, puis adapter les mêmes composants aux grands écrans.
+
+Les zones tactiles doivent être suffisamment grandes. Les panneaux de filtres doivent être utilisables au doigt. Le viewer doit permettre zoom et navigation sans conflits avec le scroll de la page.
+
+Le menu principal doit rester minimal. Les actions secondaires peuvent être dans un menu contextuel ou une feuille mobile.
+
+La barre de recherche doit être accessible rapidement. Lorsque le clavier mobile apparaît, la zone de résultats doit rester exploitable. Éviter les layouts qui cassent lorsque la hauteur visible change.
+
+Les performances sont une contrainte de produit, pas une optimisation ultérieure : images adaptées, lazy loading, cache, pagination/cursor, compression des réponses et réduction des appels réseau inutiles.
+
+DIRECTIVE D’IMPLÉMENTATION
+L’agent doit transformer cette page en code, contrats, tests et documentation lorsque applicable. Toute donnée, état ou comportement mentionné doit avoir une représentation explicite et rester cohérent avec les autres pages. Ne pas dupliquer une logique déjà centralisée : réutiliser les services et composants existants.
+
+
+PAGE 33/80 — 33 — DESIGN SYSTEM
+----------------------------------------------------------------------------------------------------
+Le style initial est sobre et minimaliste. Fond principal blanc ou gris très clair (#FFFFFF / #F8FAFC), texte noir profond et gris foncé (#0F172A / #334155), accent bleu/indigo sobre (#2563EB) réservé aux éléments interactifs. Les badges de catégories restent discrets.
+
+Conserver cette palette comme référence de départ mais centraliser les valeurs dans des tokens. Ne pas disperser les couleurs en dur dans les composants.
+
+La typographie doit favoriser la lecture longue. Les lecteurs documentaires doivent disposer d’espacements suffisants et éviter les contrastes agressifs.
+
+Les états doivent être explicites : chargement, vide, erreur, succès, contenu à vérifier, document indisponible, IA en cours. Les animations doivent être brèves et fonctionnelles.
+
+Le système doit prévoir mode sombre éventuellement, mais ne pas sacrifier la lisibilité des documents. Le viewer peut avoir ses propres préférences si nécessaire.
+
+DIRECTIVE D’IMPLÉMENTATION
+L’agent doit transformer cette page en code, contrats, tests et documentation lorsque applicable. Toute donnée, état ou comportement mentionné doit avoir une représentation explicite et rester cohérent avec les autres pages. Ne pas dupliquer une logique déjà centralisée : réutiliser les services et composants existants.
+
+
+PAGE 34/80 — 34 — AUTHENTIFICATION ET COMPTES
+----------------------------------------------------------------------------------------------------
+Le cahier des charges initial sécurise l’administration avec Supabase Auth et un rôle administrateur. Cette règle doit rester stricte. L’étudiant n’a pas accès aux opérations admin.
+
+Le backend doit vérifier l’identité et les permissions côté serveur. Masquer un bouton dans le frontend n’est pas une mesure de sécurité.
+
+Pour les étudiants, le mécanisme de compte doit être conçu selon les besoins réels du produit. Le modèle peut prévoir un profil utilisateur même si certaines options d’authentification sont ajoutées plus tard. Les données d’apprentissage doivent être rattachées à un identifiant stable.
+
+Les sessions, renouvellements, révocations et rôles doivent être gérés via les mécanismes éprouvés de Supabase plutôt que par des JWT artisanaux mal contrôlés.
+
+Toute donnée personnelle doit être limitée au nécessaire. Les journaux doivent éviter de contenir les contenus sensibles d’une conversation lorsqu’un simple identifiant suffit.
+
+DIRECTIVE D’IMPLÉMENTATION
+L’agent doit transformer cette page en code, contrats, tests et documentation lorsque applicable. Toute donnée, état ou comportement mentionné doit avoir une représentation explicite et rester cohérent avec les autres pages. Ne pas dupliquer une logique déjà centralisée : réutiliser les services et composants existants.
+
+
+PAGE 35/80 — 35 — SÉCURITÉ DES FICHIERS
+----------------------------------------------------------------------------------------------------
+Les uploads sont une frontière de sécurité. Vérifier taille maximale, type MIME réel, extension, checksum et statut de scan selon l’environnement. Stocker les fichiers dans des buckets avec politiques d’accès adaptées.
+
+Un document non publié ne doit pas devenir publiquement accessible simplement parce que son chemin de stockage est connu. Utiliser des URLs signées ou des routes backend contrôlées selon le besoin.
+
+Le nom de fichier original peut contenir des caractères ou informations indésirables. Le stockage interne doit utiliser des identifiants sûrs. Conserver le nom original comme métadonnée d’affichage.
+
+Les fichiers destinés à l’extraction doivent être isolés des secrets et systèmes d’exécution. Ne jamais exécuter du code téléchargé comme s’il était fiable.
+
+Les opérations sensibles doivent être journalisées : suppression, remplacement, publication, modification de métadonnées, génération de clés, changement de politique IA.
+
+DIRECTIVE D’IMPLÉMENTATION
+L’agent doit transformer cette page en code, contrats, tests et documentation lorsque applicable. Toute donnée, état ou comportement mentionné doit avoir une représentation explicite et rester cohérent avec les autres pages. Ne pas dupliquer une logique déjà centralisée : réutiliser les services et composants existants.
+
+
+PAGE 36/80 — 36 — CLÉS GEMINI FOURNIES PAR L’UTILISATEUR
+----------------------------------------------------------------------------------------------------
+Une extension importante du projet consiste à permettre à chaque utilisateur d’utiliser sa propre clé Gemini afin de réduire la charge financière directe de la plateforme. Le parcours doit être explicite et rassurant.
+
+Premier usage : onboarding avec animation expliquant le principe, bouton « Obtenir ma clé API » ouvrant Google AI Studio, puis bouton « J’ai ma clé ». L’utilisateur colle la clé dans un champ sécurisé et clique sur « Tester la clé ». Le backend effectue une requête minimale pour vérifier qu’elle fonctionne.
+
+La clé ne doit pas être stockée en clair dans Supabase comme une simple colonne publique. Elle ne doit pas être exposée dans le frontend, le localStorage ou les logs. La stratégie recommandée est client → backend → stockage chiffré/secret sécurisé, avec possibilité de remplacement et suppression.
+
+Le système doit indiquer que la clé appartient à l’utilisateur et qu’elle peut être retirée. Les erreurs doivent être compréhensibles : clé invalide, quota dépassé, service indisponible, modèle non autorisé.
+
+Cette fonction doit être encapsulée dans un `UserAIProvider` pour pouvoir ajouter d’autres fournisseurs plus tard sans coupler toute l’application à Gemini.
+
+DIRECTIVE D’IMPLÉMENTATION
+L’agent doit transformer cette page en code, contrats, tests et documentation lorsque applicable. Toute donnée, état ou comportement mentionné doit avoir une représentation explicite et rester cohérent avec les autres pages. Ne pas dupliquer une logique déjà centralisée : réutiliser les services et composants existants.
+
+
+PAGE 37/80 — 37 — RAPIDITÉ DE RÉPONSE IA
+----------------------------------------------------------------------------------------------------
+La sensation de vitesse est une exigence. L’assistant doit utiliser le streaming lorsque le fournisseur le permet pour afficher rapidement les premiers tokens au lieu d’attendre la fin complète.
+
+La recherche RAG doit être parcimonieuse. Ne jamais charger un cours entier simplement parce qu’il est pertinent. Récupérer les meilleurs chunks, puis éventuellement les élargir localement autour des pages nécessaires.
+
+Le cache doit couvrir les opérations répétitives : métadonnées de cours, résultats de recherche stables, embeddings déjà calculés, classifications identiques, ressources associées, et certaines réponses pédagogiques déterministes lorsque cela ne compromet pas la personnalisation.
+
+Les tâches lourdes doivent passer dans des jobs : ingestion, OCR, embeddings, analyse approfondie, transcription. Le parcours interactif doit réserver la requête synchrone aux opérations nécessaires immédiatement.
+
+Mesurer au minimum : time to first token, latence retrieval, durée Gemini, taille du contexte, taux de cache, erreurs 429/503 et durée totale.
+
+DIRECTIVE D’IMPLÉMENTATION
+L’agent doit transformer cette page en code, contrats, tests et documentation lorsque applicable. Toute donnée, état ou comportement mentionné doit avoir une représentation explicite et rester cohérent avec les autres pages. Ne pas dupliquer une logique déjà centralisée : réutiliser les services et composants existants.
+
+
+PAGE 38/80 — 38 — JOB QUEUE ET WORKERS
+----------------------------------------------------------------------------------------------------
+Le moteur doit utiliser une file de tâches pour les opérations longues. Une tâche possède type, payload sécurisé, priorité, statut, retry_count, max_retries, available_at, locked_until, worker_id, error_code et timestamps.
+
+Le scheduler peut utiliser un modèle pull : un worker récupère un job disponible et le verrouille pendant un lease. Le heartbeat prolonge la réservation. Si le worker disparaît, le job redevient disponible après expiration.
+
+Les tâches doivent être idempotentes. Un retry ne doit pas créer deux copies du même document ou deux séries d’embeddings. Utiliser une clé d’idempotence basée sur resource_id + operation + version.
+
+Les priorités permettent de privilégier les opérations visibles par l’utilisateur sans bloquer l’indexation de fond.
+
+L’admin doit voir la queue : en attente, en cours, réussite, échec, retry. Les erreurs techniques détaillées peuvent être réservées à l’admin ; l’étudiant doit recevoir un message simple.
+
+DIRECTIVE D’IMPLÉMENTATION
+L’agent doit transformer cette page en code, contrats, tests et documentation lorsque applicable. Toute donnée, état ou comportement mentionné doit avoir une représentation explicite et rester cohérent avec les autres pages. Ne pas dupliquer une logique déjà centralisée : réutiliser les services et composants existants.
+
+
+PAGE 39/80 — 39 — RETRIES, RATE LIMITING ET RÉSILIENCE
+----------------------------------------------------------------------------------------------------
+Toutes les intégrations externes doivent appliquer des retries limités et raisonnés. Utiliser un backoff avec jitter pour éviter les vagues synchronisées. Ne pas retry une erreur de validation ou d’authentification comme si elle était transitoire.
+
+Rate limiting doit exister côté API afin qu’un utilisateur, une session ou une IP ne puisse pas saturer le système. Les endpoints Gemini et recherche coûteuse doivent avoir des limites distinctes.
+
+Le système doit gérer les quotas utilisateur associés à leurs clés Gemini. Une erreur 429 doit pouvoir être expliquée et, selon la politique configurée, déclencher un fallback ou proposer de changer de clé.
+
+La résilience ne doit pas se transformer en boucle infinie. Chaque opération possède un budget de retries et une condition d’arrêt.
+
+L’interface admin doit montrer les taux d’erreur et les fournisseurs en difficulté. L’observabilité doit être conçue pour diagnostiquer les incidents plutôt que simplement afficher « erreur inconnue ».
+
+DIRECTIVE D’IMPLÉMENTATION
+L’agent doit transformer cette page en code, contrats, tests et documentation lorsque applicable. Toute donnée, état ou comportement mentionné doit avoir une représentation explicite et rester cohérent avec les autres pages. Ne pas dupliquer une logique déjà centralisée : réutiliser les services et composants existants.
+
+
+PAGE 40/80 — 40 — DÉDUPLICATION ET HASH
+----------------------------------------------------------------------------------------------------
+La duplication est un problème concret dans un dépôt académique. Un même examen peut être importé plusieurs fois sous des noms différents ou avec un nom identique dans plusieurs dossiers.
+
+Calculer SHA-256 du fichier brut dès l’upload. Une correspondance exacte permet de proposer « document déjà présent ». Pour les contenus proches mais non identiques, un système secondaire de similarité peut être utilisé plus tard.
+
+La déduplication doit préserver l’historique. Ne pas supprimer automatiquement un document simplement parce qu’un autre ressemble au même contenu.
+
+Le hash est également utile pour éviter de refaire l’OCR, l’extraction, l’analyse Gemini et les embeddings lorsqu’aucune donnée source n’a changé. Le cache doit intégrer la version du pipeline afin qu’une nouvelle logique puisse invalider l’ancien résultat.
+
+Le résultat de déduplication doit être visible à l’admin et réversible.
+
+DIRECTIVE D’IMPLÉMENTATION
+L’agent doit transformer cette page en code, contrats, tests et documentation lorsque applicable. Toute donnée, état ou comportement mentionné doit avoir une représentation explicite et rester cohérent avec les autres pages. Ne pas dupliquer une logique déjà centralisée : réutiliser les services et composants existants.
+
+
+PAGE 41/80 — 41 — CACHE ET INVALIDATION
+----------------------------------------------------------------------------------------------------
+Le cache est utile mais dangereux s’il devient une source de données obsolètes. Chaque cache doit avoir une clé, une durée de vie, une dépendance et une règle d’invalidation.
+
+Pour les données académiques publiées, un cache de courte ou moyenne durée peut être suffisant. Pour un profil d’apprentissage, il faut invalider après mise à jour importante.
+
+Les réponses Gemini doivent être mises en cache avec prudence. Une réponse dépend souvent du niveau, du mode, de l’état et du contexte documentaire. Préférer le cache de sous-composants : retrieval, classification, résumé d’un document, embeddings, extraction.
+
+Les caches doivent être observables : hit/miss, taille, expiration et erreurs. Une purge par ressource est utile lors de la modification d’un document.
+
+L’agent de codage doit documenter où le cache existe et ce qui se passe lorsqu’il est indisponible. L’application doit pouvoir fonctionner en mode non caché, simplement plus lentement.
+
+DIRECTIVE D’IMPLÉMENTATION
+L’agent doit transformer cette page en code, contrats, tests et documentation lorsque applicable. Toute donnée, état ou comportement mentionné doit avoir une représentation explicite et rester cohérent avec les autres pages. Ne pas dupliquer une logique déjà centralisée : réutiliser les services et composants existants.
+
+
+PAGE 42/80 — 42 — FAVORIS, HISTORIQUE ET REPRISE
+----------------------------------------------------------------------------------------------------
+Les favoris permettent à l’étudiant d’enregistrer des ressources. L’historique peut conserver documents consultés, chapitres explorés et sessions d’apprentissage importantes.
+
+La fonctionnalité « continuer » doit pointer vers un état utile : dernière page lue, dernière section ou dernière session d’apprentissage. Il ne faut pas reprendre arbitrairement une conversation très ancienne si elle n’a plus de sens.
+
+Ces fonctionnalités doivent être pensées pour le mobile : accès rapide, synchronisation et faible consommation de données.
+
+Les statistiques personnelles peuvent alimenter les recommandations, mais elles ne doivent pas devenir un classement public des étudiants.
+
+Les données doivent pouvoir être supprimées conformément à la politique de confidentialité choisie par le produit.
+
+DIRECTIVE D’IMPLÉMENTATION
+L’agent doit transformer cette page en code, contrats, tests et documentation lorsque applicable. Toute donnée, état ou comportement mentionné doit avoir une représentation explicite et rester cohérent avec les autres pages. Ne pas dupliquer une logique déjà centralisée : réutiliser les services et composants existants.
+
+
+PAGE 43/80 — 43 — COLLECTIONS DE RÉVISION
+----------------------------------------------------------------------------------------------------
+Academic Hub doit pouvoir proposer des collections de révision : un ensemble de ressources autour d’un examen, chapitre, concept ou objectif.
+
+Une collection peut contenir cours, fiches, exercices, examens, corrigés et vidéos. Elle peut être générée automatiquement ou créée par l’étudiant.
+
+Les recommandations de collection doivent tenir compte des faiblesses connues. Exemple : avant un examen de mécanique, proposer le chapitre de dynamique, deux exercices ciblés et un ancien examen corrigé.
+
+Les collections doivent avoir une structure ordonnée lorsque l’ordre pédagogique est important, mais rester navigables librement.
+
+L’agent peut utiliser les collections comme contexte de révision afin de limiter le retrieval au corpus pertinent.
+
+DIRECTIVE D’IMPLÉMENTATION
+L’agent doit transformer cette page en code, contrats, tests et documentation lorsque applicable. Toute donnée, état ou comportement mentionné doit avoir une représentation explicite et rester cohérent avec les autres pages. Ne pas dupliquer une logique déjà centralisée : réutiliser les services et composants existants.
+
+
+PAGE 44/80 — 44 — RECOMMANDATIONS PERSONNALISÉES
+----------------------------------------------------------------------------------------------------
+La recommandation n’est pas seulement « ce qui est populaire ». Elle doit progressivement apprendre ce que l’étudiant étudie : cours consultés, types de ressources préférés, concepts faibles, historique de recherche, sessions de révision et objectifs déclarés.
+
+Les recommandations doivent rester académiques et explicables. Un système simple peut commencer par règles + similarité : même cours, même chapitre, type complémentaire, intérêt récent, difficulté adaptée.
+
+L’assistant peut recommander une ressource lorsqu’elle répond à un besoin détecté. Exemple : après plusieurs erreurs sur un concept, recommander un support de cours court ou une vidéo validée.
+
+Éviter les recommandations qui enferment l’étudiant dans un domaine. Les étudiants changent de cours et de priorités.
+
+Le moteur peut évoluer plus tard vers des modèles de ranking plus sophistiqués, mais l’architecture doit déjà stocker les événements nécessaires.
+
+DIRECTIVE D’IMPLÉMENTATION
+L’agent doit transformer cette page en code, contrats, tests et documentation lorsque applicable. Toute donnée, état ou comportement mentionné doit avoir une représentation explicite et rester cohérent avec les autres pages. Ne pas dupliquer une logique déjà centralisée : réutiliser les services et composants existants.
+
+
+PAGE 45/80 — 45 — TOUTES LES INTERACTIONS DOIVENT ÊTRE EXPLOITABLES
+----------------------------------------------------------------------------------------------------
+Conserver des événements structurés : search_submitted, resource_opened, page_viewed, favorite_added, exercise_started, answer_submitted, hint_requested, video_started, video_completed, mastery_updated, learning_branch_opened, learning_branch_closed.
+
+Chaque événement doit être minimal : user_id, event_type, entity_id, timestamp, session_id et quelques métadonnées utiles. Ne pas stocker par défaut le texte intégral de chaque interaction dans la table analytique.
+
+Ces événements servent au produit : recommandations, diagnostic, amélioration du moteur et statistiques admin. Ils ne doivent pas devenir une collecte illimitée.
+
+Le pipeline analytique doit être asynchrone lorsque possible. L’action utilisateur ne doit pas attendre l’écriture de toutes les statistiques secondaires.
+
+Les événements liés à l’IA doivent pouvoir être rattachés à un `trace_id` pour diagnostiquer un comportement.
+
+DIRECTIVE D’IMPLÉMENTATION
+L’agent doit transformer cette page en code, contrats, tests et documentation lorsque applicable. Toute donnée, état ou comportement mentionné doit avoir une représentation explicite et rester cohérent avec les autres pages. Ne pas dupliquer une logique déjà centralisée : réutiliser les services et composants existants.
+
+
+PAGE 46/80 — 46 — CONVERSATIONS ET CONTEXTE
+----------------------------------------------------------------------------------------------------
+Une conversation est composée de messages et d’un contexte de session. Le système doit séparer les messages bruts de la mémoire pédagogique dérivée.
+
+Le contexte envoyé à Gemini doit être contrôlé : objectif, mode, derniers messages pertinents, état pédagogique résumé et chunks RAG sélectionnés. Ne pas réinjecter inutilement tout l’historique.
+
+Une conversation peut être interrompue et reprise. Lors de la reprise, reconstruire un contexte compact à partir de l’état plutôt que d’envoyer toute la transcription.
+
+Les conversations doivent être associées à des sources quand elles ont utilisé le RAG. Cela facilite l’audit et l’affichage des références.
+
+Prévoir la possibilité de résumer automatiquement une longue conversation. Le résumé doit être marqué comme dérivé et ne doit pas remplacer silencieusement des informations critiques de l’état.
+
+DIRECTIVE D’IMPLÉMENTATION
+L’agent doit transformer cette page en code, contrats, tests et documentation lorsque applicable. Toute donnée, état ou comportement mentionné doit avoir une représentation explicite et rester cohérent avec les autres pages. Ne pas dupliquer une logique déjà centralisée : réutiliser les services et composants existants.
+
+
+PAGE 47/80 — 47 — GÉNÉRATION D’EXERCICES
+----------------------------------------------------------------------------------------------------
+Le mode S’exercer peut produire des exercices à partir du corpus et du niveau de l’étudiant. Le système doit distinguer exercice récupéré d’une source et exercice généré par IA.
+
+Un exercice généré doit porter concept ciblé, difficulté estimée, consignes, critères de réussite et éventuellement solution interne. Lorsque la génération s’appuie sur le style d’un professeur, ne pas prétendre qu’il s’agit d’un exercice officiel.
+
+L’agent peut commencer par une tentative autonome, puis donner un indice. Les indices doivent être gradués : rappel conceptuel, indication de stratégie, étape intermédiaire, puis solution complète si nécessaire.
+
+Après correction, enregistrer les erreurs de manière structurée : concept mal compris, opération incorrecte, stratégie inadaptée, lecture de consigne, etc. Le Learning Engine peut utiliser ces catégories pour choisir la prochaine action.
+
+Le système doit respecter la sécurité des générations et éviter de produire des énoncés incohérents avec les connaissances locales.
+
+DIRECTIVE D’IMPLÉMENTATION
+L’agent doit transformer cette page en code, contrats, tests et documentation lorsque applicable. Toute donnée, état ou comportement mentionné doit avoir une représentation explicite et rester cohérent avec les autres pages. Ne pas dupliquer une logique déjà centralisée : réutiliser les services et composants existants.
+
+
+PAGE 48/80 — 48 — RÉSOLUTION GUIDÉE DES EXERCICES
+----------------------------------------------------------------------------------------------------
+Lorsqu’un étudiant dit « résous cet exercice », l’agent ne doit pas systématiquement fournir immédiatement toute la solution. En mode pédagogique, il doit d’abord déterminer si l’étudiant cherche une correction, une aide ou une compréhension.
+
+Une stratégie possible : demander où il bloque ; sinon proposer une première étape ; attendre ; analyser la réponse ; donner un feedback ciblé ; continuer. Si l’étudiant insiste explicitement pour la solution complète, le système peut la fournir tout en expliquant la logique.
+
+Le correcteur doit éviter les encouragements génériques sans diagnostic. Un bon feedback dit ce qui est juste, ce qui est faux et pourquoi, puis suggère la prochaine action.
+
+Lorsque l’erreur provient d’un prérequis, ouvrir une branche Learning State Tree plutôt que de forcer l’exercice.
+
+Les solutions générées doivent citer les ressources lorsqu’elles reproduisent une méthode provenant du corpus et signaler les hypothèses.
+
+DIRECTIVE D’IMPLÉMENTATION
+L’agent doit transformer cette page en code, contrats, tests et documentation lorsque applicable. Toute donnée, état ou comportement mentionné doit avoir une représentation explicite et rester cohérent avec les autres pages. Ne pas dupliquer une logique déjà centralisée : réutiliser les services et composants existants.
+
+
+PAGE 49/80 — 49 — SIMULATION D’EXAMEN
+----------------------------------------------------------------------------------------------------
+À terme, Academic Hub doit pouvoir proposer une simulation basée sur les examens et exercices présents dans le corpus. Le système sélectionne des questions représentatives du cours et de la difficulté cible.
+
+La simulation doit préserver les distinctions entre questions officielles, questions dérivées et questions générées. Une session peut utiliser exclusivement des ressources officielles pour une simulation de fidélité ou mélanger des exercices générés pour une pratique étendue.
+
+Après la session, générer un rapport : concepts solides, erreurs fréquentes, temps par question si mesuré, recommandations de révision et ressources associées.
+
+Le rapport doit alimenter le Learning State, pas simplement produire une note.
+
+La simulation ne doit pas révéler de corrigé avant le moment prévu dans le parcours.
+
+DIRECTIVE D’IMPLÉMENTATION
+L’agent doit transformer cette page en code, contrats, tests et documentation lorsque applicable. Toute donnée, état ou comportement mentionné doit avoir une représentation explicite et rester cohérent avec les autres pages. Ne pas dupliquer une logique déjà centralisée : réutiliser les services et composants existants.
+
+
+PAGE 50/80 — 50 — RÉSUMÉS ET EXTRACTION AUTOMATIQUE DES CHAPITRES
+----------------------------------------------------------------------------------------------------
+Le système peut générer à la demande un résumé d’un document, d’un chapitre ou d’un sujet. Ce résumé doit être dérivé des sources disponibles et conserver des références.
+
+Une tâche de fond peut extraire automatiquement les chapitres, sections, définitions, exercices et concepts d’un support de cours. Le résultat doit alimenter le graphe et l’indexation, mais ne devient officiel qu’après validation selon la politique choisie.
+
+La hiérarchie extraite doit être conservée. Exemple : cours → chapitre 2 → section 2.1 → définition → exercice 3.
+
+Les résumés coûteux doivent être cachés et versionnés. Une modification du document invalide le résumé dépendant.
+
+L’admin peut demander une ré-analyse ad hoc d’un document ou d’un lot.
+
+DIRECTIVE D’IMPLÉMENTATION
+L’agent doit transformer cette page en code, contrats, tests et documentation lorsque applicable. Toute donnée, état ou comportement mentionné doit avoir une représentation explicite et rester cohérent avec les autres pages. Ne pas dupliquer une logique déjà centralisée : réutiliser les services et composants existants.
+
+
+PAGE 51/80 — 51 — CONSOLE IA ADMIN ET TÂCHES AD HOC
+----------------------------------------------------------------------------------------------------
+La console admin permet de soumettre des commandes spécifiques aux agents, comme prévu dans la spécification initiale. Elle doit cependant fonctionner comme un outil contrôlé et traçable, pas comme une zone où un prompt arbitraire peut exécuter n’importe quelle opération.
+
+Chaque commande doit être convertie en job avec cible, action, paramètres et niveau de risque. Certaines tâches peuvent être en lecture seule, d’autres proposer des modifications.
+
+Exemples : analyser les documents sans chapitre, détecter les doublons, générer des résumés manquants, proposer des relations, revoir un lot de classifications.
+
+Les résultats doivent être visibles avant validation lorsqu’ils modifient la donnée publique. Une action destructive exige une permission appropriée et idéalement une confirmation explicite.
+
+Toutes les commandes sont auditables avec utilisateur, date, objectif, ressources touchées et résultat.
+
+DIRECTIVE D’IMPLÉMENTATION
+L’agent doit transformer cette page en code, contrats, tests et documentation lorsque applicable. Toute donnée, état ou comportement mentionné doit avoir une représentation explicite et rester cohérent avec les autres pages. Ne pas dupliquer une logique déjà centralisée : réutiliser les services et composants existants.
+
+
+PAGE 52/80 — 52 — MONITEUR DES AGENTS
+----------------------------------------------------------------------------------------------------
+Le moniteur de `/admin` doit afficher l’état des trois workers/agents : disponible, occupé, en erreur, hors ligne. Afficher job courant, durée, derniers succès, dernières erreurs et état de la configuration fournisseur/modèle.
+
+Ne pas afficher les clés API. Afficher seulement une identité sûre, par exemple « configurée » et éventuellement un identifiant masqué.
+
+Le moniteur doit permettre de repérer un worker bloqué. Le heartbeat et le lease des jobs servent de référence backend.
+
+Des indicateurs de débit peuvent montrer jobs/minute, latence moyenne et taux de fallback. Ils doivent refléter des mesures réelles, pas des compteurs simulés.
+
+Une vue globale de la queue complète le moniteur : nombre en attente, processing, retry et failed.
+
+DIRECTIVE D’IMPLÉMENTATION
+L’agent doit transformer cette page en code, contrats, tests et documentation lorsque applicable. Toute donnée, état ou comportement mentionné doit avoir une représentation explicite et rester cohérent avec les autres pages. Ne pas dupliquer une logique déjà centralisée : réutiliser les services et composants existants.
+
+
+PAGE 53/80 — 53 — VALIDATION VISUELLE ADMIN
+----------------------------------------------------------------------------------------------------
+La validation visuelle doit afficher le document, les métadonnées proposées et les signaux de confiance. L’admin peut comparer ce que l’IA a détecté avec le contenu original.
+
+Pour un examen, montrer type, cours, promotion, session et année. Pour un support de cours, montrer cours, promotion, professeur et chapitre. Les champs non applicables doivent être masqués ou marqués comme tels.
+
+Les champs incertains doivent être visuellement distincts des champs confirmés. Les modifications manuelles doivent être enregistrées comme telles.
+
+Un document peut être publié après validation même si certaines métadonnées facultatives restent inconnues. Ne pas bloquer le flux à cause d’informations non essentielles.
+
+Les relations proposées, comme un corrigé associé, doivent également être validables.
+
+DIRECTIVE D’IMPLÉMENTATION
+L’agent doit transformer cette page en code, contrats, tests et documentation lorsque applicable. Toute donnée, état ou comportement mentionné doit avoir une représentation explicite et rester cohérent avec les autres pages. Ne pas dupliquer une logique déjà centralisée : réutiliser les services et composants existants.
+
+
+PAGE 54/80 — 54 — POLITIQUE DE PUBLICATION
+----------------------------------------------------------------------------------------------------
+Un document nouvellement uploadé n’est pas immédiatement équivalent à une ressource publique. Le pipeline doit distinguer stockage interne, traitement, validation et publication.
+
+Une politique simple peut être : les ressources correctement classifiées et à haute confiance sont éligibles à la publication automatique si l’admin active cette option ; les cas ambigus passent en revue manuelle. Cette politique doit être configurable.
+
+La publication doit rendre la ressource visible dans la recherche, le lecteur et le RAG. Une ressource non publiée ne doit pas alimenter les réponses étudiantes comme si elle était officielle.
+
+Lorsqu’une ressource déjà publiée est modifiée, créer une nouvelle version ou un état de remplacement afin de ne pas casser les références existantes.
+
+La suppression doit être logique lorsque nécessaire pour préserver l’audit et les relations historiques.
+
+DIRECTIVE D’IMPLÉMENTATION
+L’agent doit transformer cette page en code, contrats, tests et documentation lorsque applicable. Toute donnée, état ou comportement mentionné doit avoir une représentation explicite et rester cohérent avec les autres pages. Ne pas dupliquer une logique déjà centralisée : réutiliser les services et composants existants.
+
+
+PAGE 55/80 — 55 — QUALITÉ DU CORPUS ET GOUVERNANCE
+----------------------------------------------------------------------------------------------------
+La qualité du RAG dépend directement de la qualité de la base. Il faut donc traiter les métadonnées et les relations comme des actifs importants.
+
+Indicateurs : pourcentage de documents sans cours, sans promotion, sans type, documents en attente, doublons détectés, ressources sans correction alors qu’une relation probable existe, chunks sans provenance et documents ayant échoué à l’extraction.
+
+Une tâche d’audit périodique peut générer des anomalies. L’admin peut ensuite corriger les problèmes.
+
+Les données venant d’IA doivent être distinguées des données validées par l’humain. Cette provenance facilite les contrôles.
+
+Le système doit permettre d’améliorer progressivement le corpus sans exiger de réimporter tous les fichiers.
+
+DIRECTIVE D’IMPLÉMENTATION
+L’agent doit transformer cette page en code, contrats, tests et documentation lorsque applicable. Toute donnée, état ou comportement mentionné doit avoir une représentation explicite et rester cohérent avec les autres pages. Ne pas dupliquer une logique déjà centralisée : réutiliser les services et composants existants.
+
+
+PAGE 56/80 — 56 — QUALITÉ ET HALLUCINATION IA
+----------------------------------------------------------------------------------------------------
+L’agent doit être configuré pour ne pas inventer une information absente du corpus lorsqu’il est en mode dépendant des sources. Le RAG ne garantit pas à lui seul l’absence d’hallucination ; il faut une politique de réponse.
+
+Le prompt du modèle doit distinguer contexte source et connaissance générale. Le backend fournit les sources et demande au modèle de citer uniquement les références pertinentes.
+
+Lorsque les sources sont insuffisantes ou contradictoires, l’assistant doit le dire et proposer une action : demander une précision, chercher une autre ressource, consulter un chapitre associé ou indiquer qu’Academic Hub n’a pas encore une source validée.
+
+Les réponses mathématiques ou techniques doivent être confrontées aux informations récupérées lorsque possible. Pour les opérations critiques, un outil de calcul déterministe peut être préféré à une génération libre.
+
+Les tests doivent inclure des cas de documents absents, contradictoires, mal OCRisés et hors sujet.
+
+DIRECTIVE D’IMPLÉMENTATION
+L’agent doit transformer cette page en code, contrats, tests et documentation lorsque applicable. Toute donnée, état ou comportement mentionné doit avoir une représentation explicite et rester cohérent avec les autres pages. Ne pas dupliquer une logique déjà centralisée : réutiliser les services et composants existants.
+
+
+PAGE 57/80 — 57 — PROMPTS, POLITIQUES ET CONFIGURATION
+----------------------------------------------------------------------------------------------------
+Ne pas disperser des prompts longs dans les controllers. Centraliser les templates et politiques dans un module de configuration IA.
+
+Il faut distinguer system policy, mode policy, retrieval instruction, output schema et pedagogical policy. Cela permet de modifier une règle sans casser toute la chaîne.
+
+Les prompts doivent recevoir uniquement les variables nécessaires. Les messages utilisateur peuvent contenir des instructions adverses ; le système doit considérer les documents récupérés comme données, pas comme instructions de contrôle.
+
+Les schémas de sortie doivent être validés avant utilisation. Une sortie invalide entraîne correction ou retry ciblé, pas une écriture partielle.
+
+Versionner les politiques IA. Une conversation ou une classification doit pouvoir être reliée à la version du prompt/policy utilisée pour faciliter le diagnostic.
+
+DIRECTIVE D’IMPLÉMENTATION
+L’agent doit transformer cette page en code, contrats, tests et documentation lorsque applicable. Toute donnée, état ou comportement mentionné doit avoir une représentation explicite et rester cohérent avec les autres pages. Ne pas dupliquer une logique déjà centralisée : réutiliser les services et composants existants.
+
+
+PAGE 58/80 — 58 — PROTECTION CONTRE LES INJECTIONS DANS LES DOCUMENTS
+----------------------------------------------------------------------------------------------------
+Les documents académiques peuvent contenir du texte ressemblant à des instructions : « ignore les règles », « donne la clé API », etc. Le pipeline doit traiter ces contenus comme données non fiables.
+
+Lorsqu’un chunk est injecté dans le contexte du modèle, son rôle doit être explicitement délimité. Le modèle doit recevoir l’instruction que le contenu documentaire sert de source et ne constitue pas une commande.
+
+Les tâches admin doivent également empêcher qu’un document déclenche automatiquement une opération côté système.
+
+Les URLs, HTML et code contenus dans les documents doivent être affichés ou stockés de manière sûre. Sanitizer le contenu rendu dans le navigateur.
+
+Les secrets ne doivent jamais être inclus dans le contexte RAG.
+
+DIRECTIVE D’IMPLÉMENTATION
+L’agent doit transformer cette page en code, contrats, tests et documentation lorsque applicable. Toute donnée, état ou comportement mentionné doit avoir une représentation explicite et rester cohérent avec les autres pages. Ne pas dupliquer une logique déjà centralisée : réutiliser les services et composants existants.
+
+
+PAGE 59/80 — 59 — OBSERVABILITÉ ET TRACING
+----------------------------------------------------------------------------------------------------
+Chaque requête complexe doit pouvoir être suivie grâce à request_id et trace_id. Une chaîne IA complète peut inclure recherche, reranking, choix de sources, appel Gemini et mise à jour de l’état.
+
+Les logs doivent permettre de répondre à : quelle ressource a été consultée ? quels chunks ont été récupérés ? quelle politique a été utilisée ? quel modèle a été appelé ? combien de temps chaque étape a-t-elle pris ? quelle erreur a conduit au fallback ?
+
+Ne pas journaliser les secrets et limiter l’exposition du contenu personnel.
+
+Conserver des métriques agrégées : latence p50/p95, erreur par endpoint, taux de jobs en échec, retrieval hit rate si mesuré, fallback rate, coût approximatif et temps de réponse perçu.
+
+L’observabilité est indispensable pour un produit IA ; sans elle, les régressions deviennent difficiles à localiser.
+
+DIRECTIVE D’IMPLÉMENTATION
+L’agent doit transformer cette page en code, contrats, tests et documentation lorsque applicable. Toute donnée, état ou comportement mentionné doit avoir une représentation explicite et rester cohérent avec les autres pages. Ne pas dupliquer une logique déjà centralisée : réutiliser les services et composants existants.
+
+
+PAGE 60/80 — 60 — TESTS DU DOMAINE
+----------------------------------------------------------------------------------------------------
+Le domaine doit être testé indépendamment de Gemini. Tests de classification de types, transitions d’état, déduplication, relations, permissions, Learning State Tree et calcul de maîtrise doivent être exécutables sans réseau.
+
+Exemple : lorsqu’un student bloque sur un concept, le `BranchingService` doit créer une branche parentée correctement et pouvoir la fermer après le critère d’assimilation.
+
+Exemple : un document identique réimporté doit retrouver le même checksum et ne pas déclencher inutilement une analyse coûteuse.
+
+Exemple : un document non publié ne doit pas apparaître dans la recherche étudiante ni être récupéré par le RAG public.
+
+Les services externes doivent être mockés dans les tests unitaires. Des tests d’intégration vérifieront ensuite Supabase, Storage et Gemini avec des environnements contrôlés.
+
+DIRECTIVE D’IMPLÉMENTATION
+L’agent doit transformer cette page en code, contrats, tests et documentation lorsque applicable. Toute donnée, état ou comportement mentionné doit avoir une représentation explicite et rester cohérent avec les autres pages. Ne pas dupliquer une logique déjà centralisée : réutiliser les services et composants existants.
+
+
+PAGE 61/80 — 61 — TESTS DU RAG ET DE LA RECHERCHE
+----------------------------------------------------------------------------------------------------
+Construire un petit corpus de test représentatif : quelques cours, exercices, examens et corrigés liés. Définir des requêtes attendues et vérifier le classement.
+
+Cas : « examens de mécanique corrigés » doit retrouver les examens de mécanique avec corrections avant des exercices généraux. Cas : une recherche sur un code de cours précis doit privilégier la correspondance lexicale.
+
+Tester également les filtres : promotion, année, type, session. Tester les synonymes.
+
+Pour le RAG, vérifier que les chunks retournés possèdent toujours un document_id et une provenance valide. Une citation vide est un défaut.
+
+Mesurer la qualité sur un jeu de requêtes de référence avant et après modification du ranking.
+
+DIRECTIVE D’IMPLÉMENTATION
+L’agent doit transformer cette page en code, contrats, tests et documentation lorsque applicable. Toute donnée, état ou comportement mentionné doit avoir une représentation explicite et rester cohérent avec les autres pages. Ne pas dupliquer une logique déjà centralisée : réutiliser les services et composants existants.
+
+
+PAGE 62/80 — 62 — TESTS DU TUTEUR PÉDAGOGIQUE
+----------------------------------------------------------------------------------------------------
+Le tutorat doit être testé comme une machine à états. Les tests doivent couvrir : niveau déclaré bas mais performance élevée ; niveau déclaré élevé mais diagnostic faible ; réussite ; échec ; répétition d’erreur ; changement de stratégie ; ouverture d’une branche ; retour au parent.
+
+Un test clé : l’étudiant demande une solution, mais le mode S’exercer est actif. Le système doit proposer un accompagnement avant de fournir une solution complète, sauf demande explicite insistante.
+
+Un autre test : l’étudiant bloque sur une primitive pendant une intégration. Le système doit pouvoir interrompre temporairement l’objectif principal, traiter le prérequis, puis revenir à l’intégration.
+
+Tester aussi la citation des sources dans chaque mode où elles sont obligatoires.
+
+Les tests de conversation ne doivent pas dépendre d’un texte Gemini exact. Vérifier la structure et l’intention de la réponse.
+
+DIRECTIVE D’IMPLÉMENTATION
+L’agent doit transformer cette page en code, contrats, tests et documentation lorsque applicable. Toute donnée, état ou comportement mentionné doit avoir une représentation explicite et rester cohérent avec les autres pages. Ne pas dupliquer une logique déjà centralisée : réutiliser les services et composants existants.
+
+
+PAGE 63/80 — 63 — TESTS D’UPLOAD ET ADMIN
+----------------------------------------------------------------------------------------------------
+Tester tous les formats supportés : PDF, DOCX, XLSX, PPTX, PNG/JPG/WEBP, TXT et code, MP3/MP4 selon les extracteurs activés.
+
+Tester les fichiers trop gros, MIME falsifié, contenu corrompu, doublons, panne d’extracteur, OCR nécessaire, timeout Gemini, quota 429 et service 503.
+
+Vérifier que les retries respectent le maximum et que les jobs échoués deviennent visibles. Tester la récupération après crash worker.
+
+Tester les permissions : étudiant, admin, utilisateur non authentifié. Une route admin doit refuser toute requête sans rôle correct, même si l’utilisateur appelle l’API directement.
+
+Tester la validation manuelle et la publication.
+
+DIRECTIVE D’IMPLÉMENTATION
+L’agent doit transformer cette page en code, contrats, tests et documentation lorsque applicable. Toute donnée, état ou comportement mentionné doit avoir une représentation explicite et rester cohérent avec les autres pages. Ne pas dupliquer une logique déjà centralisée : réutiliser les services et composants existants.
+
+
+PAGE 64/80 — 64 — PERFORMANCE ET RÉSEAU FAIBLE
+----------------------------------------------------------------------------------------------------
+Academic Hub doit fonctionner dans un contexte où les étudiants peuvent disposer de téléphones modestes et de connexions variables. Les pages doivent être légères, les images optimisées et les réponses paginées.
+
+Les documents lourds doivent être servis efficacement. Le viewer doit demander les ressources nécessaires à la page consultée plutôt que tout charger.
+
+Le mode PWA peut permettre la mise en cache de certaines ressources et la lecture hors ligne de documents explicitement téléchargés. La synchronisation doit gérer les conflits simplement.
+
+Les recherches doivent utiliser pagination par curseur lorsque le volume est important. Éviter les requêtes qui calculent un count exact gigantesque à chaque frappe.
+
+Les appels réseau du frontend doivent être annulables lorsque l’utilisateur change rapidement de recherche.
+
+DIRECTIVE D’IMPLÉMENTATION
+L’agent doit transformer cette page en code, contrats, tests et documentation lorsque applicable. Toute donnée, état ou comportement mentionné doit avoir une représentation explicite et rester cohérent avec les autres pages. Ne pas dupliquer une logique déjà centralisée : réutiliser les services et composants existants.
+
+
+PAGE 65/80 — 65 — PWA, OFFLINE ET CONTINUER LA LECTURE
+----------------------------------------------------------------------------------------------------
+La PWA est une évolution cohérente avec l’usage mobile. Elle peut permettre installation sur l’écran d’accueil, cache des shells UI et accès hors connexion aux ressources explicitement mises en cache.
+
+Ne jamais promettre un accès hors ligne à un fichier qui n’a pas été réellement téléchargé. L’interface doit indiquer l’état : disponible hors ligne, en cours de téléchargement, non disponible.
+
+La progression de lecture et certains états d’apprentissage peuvent être synchronisés plus tard lorsque le réseau revient. En cas de conflit, privilégier une stratégie déterministe et simple.
+
+Les caches offline doivent respecter les autorisations et ne pas exposer un document privé sur un appareil partagé.
+
+La PWA reste une couche de confort ; elle ne doit pas compliquer le cœur de la plateforme.
+
+DIRECTIVE D’IMPLÉMENTATION
+L’agent doit transformer cette page en code, contrats, tests et documentation lorsque applicable. Toute donnée, état ou comportement mentionné doit avoir une représentation explicite et rester cohérent avec les autres pages. Ne pas dupliquer une logique déjà centralisée : réutiliser les services et composants existants.
+
+
+PAGE 66/80 — 66 — API BACKEND
+----------------------------------------------------------------------------------------------------
+Le backend expose des endpoints stables pour documents, recherche, learning, conversations, vidéos, favoris, historique et administration.
+
+Exemples conceptuels : `GET /api/resources`, `GET /api/resources/:id`, `GET /api/search`, `POST /api/assistant/message`, `GET /api/learning/state`, `POST /api/learning/action`, `POST /api/admin/resources/upload`, `GET /api/admin/jobs`, `POST /api/admin/jobs/:id/retry`.
+
+Les réponses doivent avoir une structure cohérente avec data, errors et metadata lorsque pertinent. Les erreurs HTTP doivent être significatives.
+
+Les routes d’upload utilisent multipart ou mécanisme approprié, puis créent un job plutôt que de faire toute l’ingestion dans la requête.
+
+Les endpoints IA doivent pouvoir streamer lorsque nécessaire. Prévoir un protocole compatible avec le frontend et la reprise ou annulation si possible.
+
+DIRECTIVE D’IMPLÉMENTATION
+L’agent doit transformer cette page en code, contrats, tests et documentation lorsque applicable. Toute donnée, état ou comportement mentionné doit avoir une représentation explicite et rester cohérent avec les autres pages. Ne pas dupliquer une logique déjà centralisée : réutiliser les services et composants existants.
+
+
+PAGE 67/80 — 67 — CONTRATS DE DONNÉES DU TUTEUR
+----------------------------------------------------------------------------------------------------
+Le résultat de l’assistant doit être structuré. Exemple : `answer` pour le texte, `sources` pour les références, `confidence` pour la confiance, `knowledge_mode` pour indiquer corpus/local/general, `learning_action` pour l’action pédagogique, `student_state_update` pour les changements proposés.
+
+Cette structure permet à l’interface d’afficher différemment une source, une question, un exercice ou une vidéo sans devoir analyser du texte libre.
+
+Les `sources` doivent contenir des identifiants stables et des ancres. Les `learning_action` possibles peuvent être `explain`, `ask_check`, `practice`, `hint`, `branch`, `return_to_parent`, `recommend_video`, `review`.
+
+Le backend valide la sortie du modèle et normalise les champs avant retour. Une valeur inattendue ne doit pas casser le client.
+
+Les mises à jour de state doivent être séparées des messages affichés afin d’éviter qu’une interprétation incorrecte du modèle modifie directement des données sans validation métier.
+
+DIRECTIVE D’IMPLÉMENTATION
+L’agent doit transformer cette page en code, contrats, tests et documentation lorsque applicable. Toute donnée, état ou comportement mentionné doit avoir une représentation explicite et rester cohérent avec les autres pages. Ne pas dupliquer une logique déjà centralisée : réutiliser les services et composants existants.
+
+
+PAGE 68/80 — 68 — UX DU CHAT ET DU TUTEUR
+----------------------------------------------------------------------------------------------------
+Le chat doit ressembler à un espace d’apprentissage, pas à une simple messagerie. Le mode actif doit être visible. Les sources doivent être consultables. Les actions proposées doivent être facilement utilisables sur mobile.
+
+Lorsque l’agent pose une question de diagnostic, l’interface doit mettre cette question en valeur et permettre une réponse rapide. Pour un exercice, afficher les boutons d’indices sans surcharger l’écran.
+
+Une réponse longue doit être scannable : étapes, formule, exemple, puis vérification. Le rendu mathématique doit être stable sur mobile.
+
+Pendant le streaming, afficher un état indiquant que la réponse est en cours. En cas d’interruption réseau, expliquer l’état sans perdre la conversation.
+
+Les vidéos et documents recommandés doivent être présentés comme actions complémentaires, avec un retour explicite vers la session d’apprentissage.
+
+DIRECTIVE D’IMPLÉMENTATION
+L’agent doit transformer cette page en code, contrats, tests et documentation lorsque applicable. Toute donnée, état ou comportement mentionné doit avoir une représentation explicite et rester cohérent avec les autres pages. Ne pas dupliquer une logique déjà centralisée : réutiliser les services et composants existants.
+
+
+PAGE 69/80 — 69 — MODE APPRENDRE : SCÉNARIO COMPLET
+----------------------------------------------------------------------------------------------------
+Scénario : l’étudiant choisit « Intégrales ». L’assistant demande son niveau de 1 à 10, puis pose une ou deux questions de diagnostic.
+
+Après observation, le moteur estime que l’étudiant connaît les bases mais confond intégrale définie et primitive. L’assistant explique avec une représentation simple, puis demande une micro-question de contrôle.
+
+La réponse montre une confusion persistante sur les primitives. L’orchestrateur ouvre une branche « primitives ». Après un exemple guidé puis une tâche autonome correcte, la branche est fermée et le système revient à « intégrales ».
+
+Sur l’objectif principal, l’assistant propose une résolution guidée. Après deux réussites, il augmente légèrement la difficulté.
+
+La session met à jour mastery, concepts faibles, progression et dernières ressources utilisées.
+
+DIRECTIVE D’IMPLÉMENTATION
+L’agent doit transformer cette page en code, contrats, tests et documentation lorsque applicable. Toute donnée, état ou comportement mentionné doit avoir une représentation explicite et rester cohérent avec les autres pages. Ne pas dupliquer une logique déjà centralisée : réutiliser les services et composants existants.
+
+
+PAGE 70/80 — 70 — MODE RÉVISION : SCÉNARIO COMPLET
+----------------------------------------------------------------------------------------------------
+Scénario : l’étudiant demande « prépare-moi à l’examen de mécanique ». Le système identifie le cours, cherche les supports du professeur, exercices, anciens examens et corrigés.
+
+Il propose une session de révision priorisant les thèmes réellement présents dans le corpus local. Le premier exercice ressemble par structure au style des questions locales, sans être présenté comme une copie exacte.
+
+Après une erreur, l’assistant indique la règle concernée et cite le cours correspondant. Il propose ensuite un exercice court sur le même concept avant de revenir à la question plus difficile.
+
+À la fin, le système suggère une collection de révision construite à partir des faiblesses observées et des ressources officielles disponibles.
+
+L’historique permet de reprendre la préparation plus tard.
+
+DIRECTIVE D’IMPLÉMENTATION
+L’agent doit transformer cette page en code, contrats, tests et documentation lorsque applicable. Toute donnée, état ou comportement mentionné doit avoir une représentation explicite et rester cohérent avec les autres pages. Ne pas dupliquer une logique déjà centralisée : réutiliser les services et composants existants.
+
+
+PAGE 71/80 — 71 — MODE S’EXERCER : SCÉNARIO COMPLET
+----------------------------------------------------------------------------------------------------
+Scénario : l’étudiant choisit un chapitre et demande des exercices. Le moteur sélectionne d’abord une difficulté adaptée à l’état observé.
+
+L’étudiant répond. Le système analyse non seulement la valeur finale mais le raisonnement lorsque celui-ci est fourni. Une erreur conceptuelle déclenche un feedback et un indice. Une erreur de calcul isolée n’entraîne pas forcément une branche pédagogique.
+
+Après réussite, le système peut proposer une variante. Après plusieurs échecs, il abaisse temporairement la difficulté ou revient à un prérequis.
+
+La correction complète reste accessible, mais elle doit être accompagnée d’une explication structurée et d’une référence de source lorsqu’elle s’appuie sur le corpus.
+
+La session alimente le moteur de maîtrise et les recommandations.
+
+DIRECTIVE D’IMPLÉMENTATION
+L’agent doit transformer cette page en code, contrats, tests et documentation lorsque applicable. Toute donnée, état ou comportement mentionné doit avoir une représentation explicite et rester cohérent avec les autres pages. Ne pas dupliquer une logique déjà centralisée : réutiliser les services et composants existants.
+
+
+PAGE 72/80 — 72 — RECOMMANDATION DE VIDÉO : SCÉNARIO COMPLET
+----------------------------------------------------------------------------------------------------
+Scénario : l’étudiant échoue à comprendre une représentation graphique. L’agent détermine qu’une explication visuelle pourrait être meilleure.
+
+Il cherche dans le catalogue interne Academic Hub les vidéos validées pour le concept, le cours et le niveau. Il sélectionne une vidéo selon validation, correspondance, langue, difficulté et durée.
+
+L’interface explique pourquoi la vidéo est proposée. L’étudiant peut l’ouvrir. Après retour, l’assistant demande « explique-moi avec tes mots ce que tu as compris » ou propose une micro-application.
+
+Si la vidéo n’a pas aidé, ne pas boucler indéfiniment. Essayer une autre représentation : exemple numérique, schéma, résolution guidée ou retour au prérequis.
+
+La vidéo devient une étape enregistrée dans la session, pas seulement un clic.
+
+DIRECTIVE D’IMPLÉMENTATION
+L’agent doit transformer cette page en code, contrats, tests et documentation lorsque applicable. Toute donnée, état ou comportement mentionné doit avoir une représentation explicite et rester cohérent avec les autres pages. Ne pas dupliquer une logique déjà centralisée : réutiliser les services et composants existants.
+
+
+PAGE 73/80 — 73 — ADMIN : PARCOURS COMPLET D’UN DOCUMENT
+----------------------------------------------------------------------------------------------------
+Exemple : l’admin dépose `Sujet_Interro_Math_2025.pdf`. Le fichier est stocké, hashé et crée une ressource en statut `uploaded`.
+
+Un worker prend le job. L’extracteur obtient le texte par page. Les métadonnées permettent à l’IA de proposer : Interrogation, Mathématiques, promotion L2, date 2025. Le moteur détecte également le chapitre probable.
+
+La classification est validée. Le document est indexé : chunks, embeddings, concepts et relations éventuelles avec une correction.
+
+La ressource devient `published`. Elle apparaît dans l’interface étudiante, la recherche et, selon le statut, le RAG.
+
+Si Gemini renvoie une erreur transitoire, le ModelPolicy sélectionne l’alternative configurée. Le job continue si possible ; sinon il passe en retry ou failed avec une explication claire à l’admin.
+
+DIRECTIVE D’IMPLÉMENTATION
+L’agent doit transformer cette page en code, contrats, tests et documentation lorsque applicable. Toute donnée, état ou comportement mentionné doit avoir une représentation explicite et rester cohérent avec les autres pages. Ne pas dupliquer une logique déjà centralisée : réutiliser les services et composants existants.
+
+
+PAGE 74/80 — 74 — ADMIN : TRAITEMENT DE MASSE
+----------------------------------------------------------------------------------------------------
+Pour un lot de centaines de documents, le système doit éviter un traitement séquentiel lent. Le scheduler distribue les jobs aux workers disponibles.
+
+Les tâches doivent être équilibrées sans saturer une clé ou un fournisseur. La capacité de chaque worker peut être limitée par modèle, token ou concurrence.
+
+Un lot de cours peut être envoyé à un worker, des examens à un autre et des tâches ad hoc à un troisième, comme l’illustre la spécification initiale. Mais cette attribution doit rester dynamique pour éviter qu’un worker reste inactif alors qu’un autre est surchargé.
+
+Les erreurs individuelles ne doivent pas annuler tout le lot. Chaque ressource possède son propre statut et sa propre retry policy.
+
+Un rapport de lot doit afficher : total, succès, review, erreurs, doublons, temps total et causes d’échec.
+
+DIRECTIVE D’IMPLÉMENTATION
+L’agent doit transformer cette page en code, contrats, tests et documentation lorsque applicable. Toute donnée, état ou comportement mentionné doit avoir une représentation explicite et rester cohérent avec les autres pages. Ne pas dupliquer une logique déjà centralisée : réutiliser les services et composants existants.
+
+
+PAGE 75/80 — 75 — COÛTS IA ET CONTRÔLE DE L’UTILISATION
+----------------------------------------------------------------------------------------------------
+Le produit doit contrôler les coûts même si certaines clés Gemini appartiennent aux utilisateurs. Le système doit minimiser les appels inutiles : hash, cache, réutilisation des embeddings, classification déterministe quand possible, batch et contexte limité.
+
+Chaque appel doit être identifiable par type : classification, résumé, retrieval assistance, tutorat, génération d’exercice, etc. Les métriques permettent de détecter les opérations coûteuses.
+
+Pour les utilisateurs ayant leur propre clé, respecter les quotas du fournisseur et fournir un message utile en cas de limite atteinte.
+
+Pour les clés administratives, fixer une politique de concurrence et de fallback. Ne jamais créer une boucle qui augmente les coûts à chaque erreur.
+
+Les tâches de fond peuvent être différées lorsque leur valeur est faible.
+
+DIRECTIVE D’IMPLÉMENTATION
+L’agent doit transformer cette page en code, contrats, tests et documentation lorsque applicable. Toute donnée, état ou comportement mentionné doit avoir une représentation explicite et rester cohérent avec les autres pages. Ne pas dupliquer une logique déjà centralisée : réutiliser les services et composants existants.
+
+
+PAGE 76/80 — 76 — ÉVOLUTION VERS UNE ARCHITECTURE PLUS PUISSANTE
+----------------------------------------------------------------------------------------------------
+L’architecture doit être prête à évoluer sans être réécrite. Les extensions futures peuvent inclure des modèles de ranking plus avancés, meilleure détection de concepts, mémoire pédagogique plus riche, outils de calcul, génération d’exercices plus spécialisée, analytics avancées et recherche multimodale.
+
+Le graphe peut évoluer d’un simple réseau de relations PostgreSQL vers une technologie spécialisée si le volume le justifie. Le moteur de recherche peut ajouter des index plus performants. Les workers peuvent être répartis sur plusieurs machines.
+
+La règle est de ne pas adopter aujourd’hui une infrastructure complexe uniquement pour prévoir un volume hypothétique. Garder les interfaces abstraites nécessaires afin de pouvoir remplacer un composant quand le besoin réel apparaîtra.
+
+La plateforme doit donc être modulaire plutôt que monolithique au sens logique, même si le déploiement peut rester simple au début.
+
+DIRECTIVE D’IMPLÉMENTATION
+L’agent doit transformer cette page en code, contrats, tests et documentation lorsque applicable. Toute donnée, état ou comportement mentionné doit avoir une représentation explicite et rester cohérent avec les autres pages. Ne pas dupliquer une logique déjà centralisée : réutiliser les services et composants existants.
+
+
+PAGE 77/80 — 77 — CRITÈRES D’ACCEPTATION GLOBAUX
+----------------------------------------------------------------------------------------------------
+Academic Hub est acceptable lorsque les points suivants sont vrais : un administrateur peut importer une ressource ; la ressource est stockée, classifiée et validée ; les métadonnées sont recherchables ; le document peut être ouvert dans son viewer approprié ; les relations pertinentes apparaissent ; la ressource peut alimenter le RAG si elle est publiée.
+
+L’étudiant peut chercher en langage naturel, utiliser des filtres, ouvrir une ressource, la sauvegarder, reprendre sa lecture et interagir avec l’assistant.
+
+L’assistant peut fonctionner en Chat, Apprendre, Révision et S’exercer ; il adapte sa stratégie ; il peut détecter un blocage ; il peut ouvrir et fermer des branches pédagogiques ; il conserve un état de progression ; il cite les sources locales lorsque demandé ou lorsque le mode l’exige.
+
+Les vidéos internes peuvent être recommandées dans une stratégie pédagogique et être suivies d’une vérification d’assimilation.
+
+L’architecture tient les contraintes de sécurité, performance, retries, cache, déduplication et observabilité définies dans ce document.
+
+DIRECTIVE D’IMPLÉMENTATION
+L’agent doit transformer cette page en code, contrats, tests et documentation lorsque applicable. Toute donnée, état ou comportement mentionné doit avoir une représentation explicite et rester cohérent avec les autres pages. Ne pas dupliquer une logique déjà centralisée : réutiliser les services et composants existants.
+
+
+PAGE 78/80 — 78 — RÈGLES ABSOLUES POUR L’AGENT DE CODAGE
+----------------------------------------------------------------------------------------------------
+Ne pas inventer de fonctionnalité métier silencieusement. Ne pas déplacer une responsabilité d’un module vers un autre juste pour faire fonctionner rapidement un écran. Ne pas exposer de secret. Ne pas faire confiance au frontend pour la sécurité. Ne pas publier automatiquement une donnée incertaine si la politique exige validation.
+
+Ne pas faire de Gemini une base de données. Ne pas envoyer inutilement de gros documents au modèle. Ne pas parser des réponses libres si une sortie structurée est possible. Ne pas coder en dur les noms de modèles susceptibles d’évoluer ; utiliser une configuration.
+
+Ne pas répéter indéfiniment une explication lorsque l’étudiant ne comprend pas. Varier la stratégie. Ne pas perdre l’objectif initial lorsqu’une branche pédagogique est ouverte. Ne pas confondre niveau déclaré et maîtrise réelle.
+
+Ne pas présenter une vidéo externe arbitraire comme recommandation Academic Hub. Chercher d’abord dans le catalogue interne validé.
+
+Toute opération importante doit être testable, observable et réversible autant que possible.
+
+DIRECTIVE D’IMPLÉMENTATION
+L’agent doit transformer cette page en code, contrats, tests et documentation lorsque applicable. Toute donnée, état ou comportement mentionné doit avoir une représentation explicite et rester cohérent avec les autres pages. Ne pas dupliquer une logique déjà centralisée : réutiliser les services et composants existants.
+
+
+PAGE 79/80 — 79 — PLAN D’IMPLÉMENTATION PAR PHASES
+----------------------------------------------------------------------------------------------------
+Phase 1 — Fondation : initialiser frontend, backend et Supabase ; auth admin ; schéma académique ; Storage ; documents ; promotions ; cours ; premières routes ; design system mobile.
+
+Phase 2 — Knowledge Engine : extraction multi-format, OCR, chunking, embeddings, recherche plein texte, recherche vectorielle, ranking hybride, relations, citations et premières fonctions de graphe.
+
+Phase 3 — Academic Hub : accueil, exploration, banque par matières, viewer multi-format, favoris, historique, reprise, ressources associées, téléchargement/offline et PWA progressive.
+
+Phase 4 — Learning Agent : chat, modes, profil étudiant, auto-évaluation, diagnostic, maîtrise, apprentissage adaptatif, Learning State Tree, citations et recommandation de vidéos internes.
+
+Phase 5 — Advanced Tutor : exercices adaptatifs, simulation d’examen, rapports de maîtrise, parcours de révision, meilleure exploitation du graphe et mémoire pédagogique long terme.
+
+Phase 6 — Performance et production : workers robustes, queues, cache, streaming, retries, rate limiting, observabilité, déduplication, optimisation mobile, sécurité avancée et contrôle des coûts.
+
+Chaque phase doit produire quelque chose de fonctionnel et testable, mais ne doit pas casser les contrats préparés pour la phase suivante.
+
+DIRECTIVE D’IMPLÉMENTATION
+L’agent doit transformer cette page en code, contrats, tests et documentation lorsque applicable. Toute donnée, état ou comportement mentionné doit avoir une représentation explicite et rester cohérent avec les autres pages. Ne pas dupliquer une logique déjà centralisée : réutiliser les services et composants existants.
+
+
+PAGE 80/80 — 80 — INSTRUCTION FINALE À L’AGENT DE CODAGE
+----------------------------------------------------------------------------------------------------
+Tu construis Academic Hub comme une véritable plateforme académique intelligente. Ton rôle n’est pas de remplir des écrans jusqu’à obtenir une démo ; ton rôle est de mettre en place un système cohérent où documents, connaissance, recherche, IA et apprentissage se renforcent mutuellement.
+
+Commence par respecter la fondation décidée dans le cahier des charges : centre d’information académique, étudiants comme public principal, administration `/admin`, Supabase pour PostgreSQL/Storage/Auth admin, classification de TP/Interrogations/Examens/Exercices/Supports de cours, lecteurs multi-formats et expérience mobile-first. Le traitement initial de documents doit rester fidèle à la logique d’agents parallèles et de relais configurable, tout en améliorant sa robustesse.
+
+Puis construis la seconde couche : le corpus devient une véritable Academic Knowledge Base. Les documents sont extraits, découpés intelligemment, vectorisés, recherchables par texte et sémantique, reliés par cours/chapitres/concepts/corrigés/vidéos et citables. La recherche devient un moteur académique interne capable de comprendre une intention naturelle.
+
+Enfin construis le Learning Agent. Il ne doit pas simplement répondre. Il doit faire progresser l’étudiant. Il demande un niveau de 1 à 10, le vérifie par diagnostic, adapte la profondeur, détecte les erreurs, change de stratégie, ouvre des branches temporaires vers les prérequis, vérifie l’assimilation, puis revient à l’objectif principal. Il utilise l’état de maîtrise, les objectifs, les forces/faiblesses et les sources du corpus. En Révision, les supports et exercices du professeur sont prioritaires. En S’exercer, il guide, donne des indices et adapte la difficulté. Les vidéos recommandées proviennent du catalogue interne Academic Hub et sont suivies d’une vérification pédagogique.
+
+Architecture de référence à garder en tête : Student → UI → API → Orchestrator → Knowledge Layer / Learning State → RAG → Gemini → Structured Response → UI → State Update. Chaque responsabilité doit avoir son module et ses tests.
+
+Lorsque tu dois choisir entre une solution rapide et une solution saine, choisis la solution saine qui reste proportionnée au projet. Lorsque tu dois choisir entre une fonctionnalité spectaculaire et une fondation fiable, construis la fondation. Lorsque le comportement de l’IA est ambigu, rends-le configurable, observable et testable.
+
+Le résultat attendu n’est pas seulement une application qui fonctionne. C’est une base solide permettant de construire progressivement le centre de connaissance et le tuteur intelligent imaginés pour Academic Hub, sans dette technique volontaire, sans secrets exposés et sans perdre la logique pédagogique au profit d’un simple chatbot.
+
+DIRECTIVE D’IMPLÉMENTATION
+L’agent doit transformer cette page en code, contrats, tests et documentation lorsque applicable. Toute donnée, état ou comportement mentionné doit avoir une représentation explicite et rester cohérent avec les autres pages. Ne pas dupliquer une logique déjà centralisée : réutiliser les services et composants existants.
+
+
+====================================================================================================
+FIN DU DOCUMENT — ACADEMIC HUB
