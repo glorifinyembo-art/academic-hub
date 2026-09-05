@@ -64,17 +64,19 @@ router.get('/videos', (req, res) => {
 // 4. Learning Agent & Chat
 router.post('/assistant/message', async (req, res) => {
   try {
-    const { studentId, message, mode, courseId, userApiKey } = req.body;
-    if (!message) {
-      return res.status(400).json({ success: false, error: 'Message requis.' });
+    const { studentId, message, mode, courseId, attachedDocId, userApiKey, image } = req.body;
+    if (!message && !image) {
+      return res.status(400).json({ success: false, error: 'Message ou image requis.' });
     }
 
     const response = await learningEngine.processInteraction({
       studentId: studentId || 'default-student',
-      message,
+      message: message || "Analyse de l'image jointe",
       mode: mode || 'chat',
       courseId: courseId || '',
-      userApiKey: userApiKey || ''
+      attachedDocId: attachedDocId || '',
+      userApiKey: userApiKey || '',
+      image: image || null
     });
 
     res.json({ success: true, data: response });

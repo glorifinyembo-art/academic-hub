@@ -1,9 +1,10 @@
 // Academic Hub — Client-Side Application Core
 // Conçu par les étudiants, pour les étudiants.
+// Interface épurée, minimaliste et orientée mobile-first.
 
 class AcademicHubApp {
   constructor() {
-    this.currentView = 'home';
+    this.currentView = 'tutor'; // 'tutor' (Principal screen) | 'documents' | 'document' | 'history' | 'settings' | 'admin'
     this.resources = [];
     this.courses = [];
     this.promotions = [];
@@ -12,7 +13,7 @@ class AcademicHubApp {
     this.currentDocZoom = 100;
     this.docSearchQuery = '';
 
-    // Filter state
+    // Search and filter state
     this.filters = {
       search: '',
       promotionId: '',
@@ -24,18 +25,55 @@ class AcademicHubApp {
     // Tutor state
     this.tutorMode = 'chat'; // 'chat' | 'apprendre' | 'revision' | 'exercer'
     this.tutorCourseId = '';
+    this.isTutorLoading = false;
     this.tutorMessages = [
       {
-        id: 'msg-init-1',
+        id: 'msg-user-1',
+        sender: 'user',
+        text: "Bonjour, j'ai besoin d'aide pour mes révisions de mécanique du point.",
+        timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+      },
+      {
+        id: 'msg-tutor-1',
         sender: 'tutor',
-        text: `Bienvenue sur le **Tuteur Pédagogique d'Academic Hub** !\n\nJe suis connecté à la base de connaissances de votre faculté (supports de cours, annales d'examens, interrogations et corrigés officiels).\n\nChoisissez un mode selon votre objectif d'étude :\n• **Chat** : Pour poser n'importe quelle question sur un cours.\n• **Apprendre** : Auto-évaluation de 1 à 10, diagnostic et progression étape par étape.\n• **Révision** : Priorité absolue aux annales et exigences du professeur.\n• **S'exercer** : Problèmes guidés avec indices progressifs sans donner la solution tout de suite !`,
+        text: "Bonjour! Je peux vous aider à réviser la mécanique du point. Quel point précis souhaitez-vous aborder : les lois de Newton ou la cinématique?",
         sources: [],
         timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
       }
     ];
 
+    // History of past chat sessions
+    this.chatHistory = [
+      {
+        id: 'session-1',
+        title: 'Intégration par parties & Primitives',
+        mode: 'apprendre',
+        date: 'Aujourd\'hui, 10:45',
+        course: 'Analyse II (MATH201)',
+        preview: 'Explication géométrique et application aux fractions rationnelles...'
+      },
+      {
+        id: 'session-2',
+        title: 'Préparation Examen Mécanique du Point',
+        mode: 'revision',
+        date: 'Hier, 16:20',
+        course: 'Physique I (PHYS101)',
+        preview: 'Oscillateur harmonique amorti et bilan énergétique...'
+      },
+      {
+        id: 'session-3',
+        title: 'Exercices guidés sur les Graphes (Dijkstra)',
+        mode: 'exercer',
+        date: '03 Sept. 2026',
+        course: 'Algorithmique & Graphes (INFO201)',
+        preview: 'Complexité avec file de priorité et recherche du plus court chemin...'
+      }
+    ];
+
     // Student learning profile
     this.studentProfile = {
+      name: 'Alex S.',
+      filiere: 'Licence 2 — Sciences Physiques & Informatique',
       declaredLevel: 6,
       observedMastery: 0.62,
       activeGoal: 'Maîtrise du Calcul Intégral & Primitives',
@@ -57,19 +95,21 @@ class AcademicHubApp {
   async init() {
     this.updateApiKeyBadge();
     await this.fetchBaseData();
-    this.render();
+    this.populateUploadCourseSelect();
 
-    // Check URL parameters (e.g. ?view=document&id=res-exam-math-2025)
+    // Check URL parameters
     const params = new URLSearchParams(window.location.search);
     const viewParam = params.get('view');
     const idParam = params.get('id');
-    if (viewParam && ['home', 'courses', 'document', 'tutor', 'admin'].includes(viewParam)) {
+
+    if (viewParam && ['documents', 'home', 'courses', 'document', 'tutor', 'history', 'settings', 'admin'].includes(viewParam)) {
       if (viewParam === 'document' && idParam) {
         this.selectedResourceId = idParam;
       }
-      this.navigate(viewParam, false);
+      const targetView = viewParam === 'home' ? 'documents' : viewParam;
+      this.navigate(targetView, false);
     } else {
-      this.navigate('home', false);
+      this.navigate('tutor', false);
     }
   }
 
@@ -106,12 +146,58 @@ class AcademicHubApp {
     }
   }
 
+  populateUploadCourseSelect() {
+    const sel = document.getElementById('upload-course-select');
+    if (!sel || !this.courses) return;
+    sel.innerHTML = this.courses.map(c => `<option value="${c.id}">${c.code} — ${c.name}</option>`).join('');
+  }
+
+  // Modern Drawer Toggle
+  toggleDrawer(show) {
+    const drawer = document.getElementById('sidebar-drawer');
+    const overlay = document.getElementById('sidebar-overlay');
+    if (!drawer || !overlay) return;
+
+    if (show) {
+      drawer.classList.remove('-translate-x-full');
+      drawer.classList.add('translate-x-0');
+      overlay.classList.remove('opacity-0', 'pointer-events-none');
+      overlay.classList.add('opacity-100', 'pointer-events-auto');
+    } else {
+      drawer.classList.add('-translate-x-full');
+      drawer.classList.remove('translate-x-0');
+      overlay.classList.remove('opacity-100', 'pointer-events-auto');
+      overlay.classList.add('opacity-0', 'pointer-events-none');
+    }
+  }
+
+  // Navigation Controller
   navigate(viewName, updateUrl = true) {
+    // Map legacy 'home' or 'courses' to 'documents' if needed
+    if (viewName === 'home') viewName = 'documents';
+
     this.currentView = viewName;
+    this.toggleDrawer(false);
+
     if (viewName === 'admin') {
       this.loadAdminWorkers();
     }
 
+    // Update Header Dynamic Title
+    const headerTitle = document.getElementById('header-page-title');
+    if (headerTitle) {
+      const titles = {
+        'tutor': 'Academic Hub - Discussion',
+        'documents': 'Documents & Cours',
+        'document': 'Consultation du Document',
+        'history': 'Historique des Discussions',
+        'settings': 'Paramètres & Compte',
+        'admin': 'Administration (/admin)'
+      };
+      headerTitle.innerText = titles[viewName] || 'Academic Hub - Discussion';
+    }
+
+    // Update URL query params
     if (updateUrl) {
       const url = new URL(window.location.href);
       url.searchParams.set('view', viewName);
@@ -123,24 +209,17 @@ class AcademicHubApp {
       window.history.pushState({}, '', url);
     }
 
-    // Update Desktop Nav UI
-    ['home', 'courses', 'tutor', 'admin'].forEach(v => {
-      const el = document.getElementById(`nav-${v}`);
-      if (el) {
-        if (v === viewName || (v === 'home' && viewName === 'document')) {
-          el.className = 'px-3.5 py-1.5 rounded-lg bg-white text-blue-600 shadow-sm border border-slate-200/60 font-semibold';
+    // Update Drawer Active Item
+    ['tutor', 'documents', 'history', 'settings', 'admin'].forEach(dNav => {
+      const drawerItem = document.getElementById(`drawer-nav-${dNav}`);
+      if (drawerItem) {
+        const isActive = (dNav === viewName) || (dNav === 'documents' && viewName === 'document');
+        if (isActive) {
+          drawerItem.classList.add('bg-blue-600/20', 'text-blue-400', 'font-semibold');
+          drawerItem.classList.remove('text-slate-300');
         } else {
-          el.className = 'px-3.5 py-1.5 rounded-lg transition-all text-slate-600 hover:text-slate-900';
-        }
-      }
-
-      // Update mobile tabs
-      const tabEl = document.getElementById(`tab-${v}`);
-      if (tabEl) {
-        if (v === viewName || (v === 'home' && viewName === 'document')) {
-          tabEl.className = 'flex flex-col items-center gap-1 text-[11px] font-bold py-1 px-3 rounded-lg text-blue-600';
-        } else {
-          tabEl.className = 'flex flex-col items-center gap-1 text-[11px] font-medium py-1 px-3 rounded-lg text-slate-400';
+          drawerItem.classList.remove('bg-blue-600/20', 'text-blue-400', 'font-semibold');
+          drawerItem.classList.add('text-slate-300');
         }
       }
     });
@@ -149,25 +228,20 @@ class AcademicHubApp {
     window.scrollTo(0, 0);
   }
 
-  toggleMobileMenu() {
-    const menu = document.getElementById('mobile-menu');
-    if (menu) menu.classList.toggle('hidden');
-  }
-
-  // Type Badges styling helper
+  // Type Badges styling helper (Consistent & Minimalist)
   getTypeBadge(type) {
     const map = {
-      'TP': { bg: 'bg-emerald-50', text: 'text-emerald-700', border: 'border-emerald-200', icon: 'flask-conical' },
-      'Interrogation': { bg: 'bg-amber-50', text: 'text-amber-700', border: 'border-amber-200', icon: 'file-check' },
-      'Examen': { bg: 'bg-rose-50', text: 'text-rose-700', border: 'border-rose-200', icon: 'award' },
-      'Exercices': { bg: 'bg-blue-50', text: 'text-blue-700', border: 'border-blue-200', icon: 'edit-3' },
-      'Supports de Cours': { bg: 'bg-purple-50', text: 'text-purple-700', border: 'border-purple-200', icon: 'book-open' },
-      'Corrigé': { bg: 'bg-teal-50', text: 'text-teal-700', border: 'border-teal-200', icon: 'check-circle-2' },
+      'Supports de Cours': { bg: 'bg-purple-50', text: 'text-purple-700', border: 'border-purple-200/80', icon: 'book-open', label: 'Cours' },
+      'Exercices': { bg: 'bg-blue-50', text: 'text-blue-700', border: 'border-blue-200/80', icon: 'edit-3', label: 'TD & Exercices' },
+      'Examen': { bg: 'bg-rose-50', text: 'text-rose-700', border: 'border-rose-200/80', icon: 'award', label: 'Examen' },
+      'Interrogation': { bg: 'bg-amber-50', text: 'text-amber-700', border: 'border-amber-200/80', icon: 'file-check', label: 'Interro' },
+      'TP': { bg: 'bg-emerald-50', text: 'text-emerald-700', border: 'border-emerald-200/80', icon: 'flask-conical', label: 'TP' },
+      'Corrigé': { bg: 'bg-teal-50', text: 'text-teal-700', border: 'border-teal-200/80', icon: 'check-circle-2', label: 'Corrigé' },
     };
-    const conf = map[type] || { bg: 'bg-slate-50', text: 'text-slate-700', border: 'border-slate-200', icon: 'file-text' };
-    return `<span class="inline-flex items-center gap-1 text-[11px] font-bold px-2 py-0.5 rounded-full border ${conf.bg} ${conf.text} ${conf.border}">
+    const conf = map[type] || { bg: 'bg-slate-50', text: 'text-slate-700', border: 'border-slate-200', icon: 'file-text', label: type };
+    return `<span class="inline-flex items-center gap-1 text-[11px] font-semibold px-2 py-0.5 rounded-md border ${conf.bg} ${conf.text} ${conf.border}">
       <i data-lucide="${conf.icon}" class="w-3 h-3"></i>
-      ${type}
+      ${conf.label}
     </span>`;
   }
 
@@ -176,173 +250,169 @@ class AcademicHubApp {
     const container = document.getElementById('app-viewport');
     if (!container) return;
 
-    if (this.currentView === 'home') {
-      container.innerHTML = this.renderHomeView();
-    } else if (this.currentView === 'courses') {
-      container.innerHTML = this.renderCoursesView();
+    if (this.currentView === 'documents') {
+      container.innerHTML = this.renderDocumentsView();
     } else if (this.currentView === 'document') {
       container.innerHTML = this.renderDocumentView();
     } else if (this.currentView === 'tutor') {
       container.innerHTML = this.renderTutorView();
+    } else if (this.currentView === 'history') {
+      container.innerHTML = this.renderHistoryView();
+    } else if (this.currentView === 'settings') {
+      container.innerHTML = this.renderSettingsView();
     } else if (this.currentView === 'admin') {
       container.innerHTML = this.renderAdminView();
     }
 
-    // Re-initialize lucide icons for newly rendered DOM elements
+    // Re-initialize lucide icons
     if (window.lucide) {
       window.lucide.createIcons();
     }
   }
 
   // ==========================================
-  // VIEW 1: HOME & HYBRID SEARCH EXPLORER
+  // VIEW 1: CLEAN & AIRY DOCUMENTS EXPLORER (Image 1 & 4)
   // ==========================================
-  renderHomeView() {
-    // Apply client-side filters
+  renderDocumentsView() {
+    // Apply search and filter logic
     const filtered = this.resources.filter(r => {
       if (this.filters.promotionId && r.promotionId !== this.filters.promotionId) return false;
       if (this.filters.courseId && r.courseId !== this.filters.courseId) return false;
       if (this.filters.type && r.type !== this.filters.type) return false;
       if (this.filters.hasCorrection === 'true' && !r.hasCorrection) return false;
       if (this.filters.search) {
-        const q = this.filters.search.toLowerCase();
-        const inTitle = r.title.toLowerCase().includes(q);
-        const inProf = r.professor.toLowerCase().includes(q);
+        const q = this.filters.search.toLowerCase().trim();
+        const inTitle = (r.title || '').toLowerCase().includes(q);
+        const inProf = (r.professor || '').toLowerCase().includes(q);
         const inContent = (r.content || '').toLowerCase().includes(q);
         const inChapter = (r.chapter || '').toLowerCase().includes(q);
-        if (!inTitle && !inProf && !inContent && !inChapter) return false;
+        const inCourse = (r.courseName || '').toLowerCase().includes(q);
+        if (!inTitle && !inProf && !inContent && !inChapter && !inCourse) return false;
       }
       return true;
     });
 
-    const examsWithCorr = this.resources.filter(r => (r.type === 'Examen' || r.type === 'Interrogation') && r.hasCorrection).length;
+    const activeFilterCount = (this.filters.promotionId ? 1 : 0) + (this.filters.type ? 1 : 0) + (this.filters.hasCorrection ? 1 : 0);
 
     return `
-    <div class="max-w-7xl mx-auto px-4 py-6 sm:px-6 space-y-6">
+    <div class="max-w-4xl mx-auto px-4 py-4 sm:px-6 space-y-4">
       
-      <!-- Clean Welcome & Search Hero -->
-      <div class="bg-gradient-to-b from-white to-slate-50 border border-slate-200/80 rounded-2xl p-5 sm:p-7 shadow-sm">
-        <div class="max-w-3xl">
-          <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-50 text-blue-700 text-xs font-semibold mb-3 border border-blue-200/60">
-            <span class="w-1.5 h-1.5 rounded-full bg-blue-600 animate-pulse"></span>
-            Mémoire Académique de la Faculté — Semestre 1 & 2
-          </div>
-          <h1 class="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight leading-tight">
-            Tous vos cours, examens et travaux dirigés, centralisés & vérifiés.
-          </h1>
-          <p class="text-slate-600 text-sm sm:text-base mt-2 leading-relaxed">
-            Consultez instantanément les annales corrigées, fiches de révision et sujets pratiques. Posez vos questions au tuteur IA nourri par les supports de vos professeurs.
-          </p>
-        </div>
-
-        <!-- Natural Language Search Bar -->
-        <div class="mt-5">
-          <div class="relative flex items-center">
-            <i data-lucide="search" class="w-5 h-5 text-slate-400 absolute left-4 pointer-events-none"></i>
-            <input 
-              type="text" 
-              id="search-input"
-              value="${this.filters.search}" 
-              placeholder="Ex : Examen Analyse 2 avec corrigé, TP Arbre AVL, Théorème Énergie mécanique..." 
-              oninput="app.onSearchInput(this.value)"
-              class="w-full bg-white text-slate-900 pl-11 pr-24 py-3.5 rounded-xl border border-slate-300 focus:border-blue-600 focus:ring-4 focus:ring-blue-100 outline-none text-sm transition shadow-sm"
-            >
-            ${this.filters.search ? `
-              <button onclick="app.clearSearch()" class="absolute right-12 text-slate-400 hover:text-slate-600 p-1">
-                <i data-lucide="x" class="w-4 h-4"></i>
-              </button>
-            ` : ''}
-            <button onclick="app.triggerSearch()" class="absolute right-2 bg-blue-600 hover:bg-blue-700 text-white font-semibold text-xs px-3.5 py-2 rounded-lg transition shadow-sm flex items-center gap-1.5">
-              <span>Chercher</span>
-            </button>
-          </div>
-        </div>
-
-        <!-- Quick Filter Pills -->
-        <div class="mt-4 flex flex-wrap items-center gap-2 pt-2 border-t border-slate-100">
-          <span class="text-xs font-semibold text-slate-500 mr-1 flex items-center gap-1">
-            <i data-lucide="sliders-horizontal" class="w-3.5 h-3.5"></i> Filtres :
-          </span>
-
-          <!-- Promotion selector -->
-          <select onchange="app.setFilter('promotionId', this.value)" class="text-xs font-medium px-2.5 py-1.5 rounded-lg border border-slate-200 bg-white text-slate-700 hover:border-slate-300 focus:outline-none">
-            <option value="">Toutes les promotions</option>
-            ${this.promotions.map(p => `<option value="${p.id}" ${this.filters.promotionId === p.id ? 'selected' : ''}>${p.name}</option>`).join('')}
-          </select>
-
-          <!-- Type selector -->
-          <select onchange="app.setFilter('type', this.value)" class="text-xs font-medium px-2.5 py-1.5 rounded-lg border border-slate-200 bg-white text-slate-700 hover:border-slate-300 focus:outline-none">
-            <option value="">Tous les types</option>
-            <option value="Examen" ${this.filters.type === 'Examen' ? 'selected' : ''}>Examens</option>
-            <option value="Interrogation" ${this.filters.type === 'Interrogation' ? 'selected' : ''}>Interrogations</option>
-            <option value="TP" ${this.filters.type === 'TP' ? 'selected' : ''}>Travaux Pratiques (TP)</option>
-            <option value="Exercices" ${this.filters.type === 'Exercices' ? 'selected' : ''}>Exercices / TD</option>
-            <option value="Supports de Cours" ${this.filters.type === 'Supports de Cours' ? 'selected' : ''}>Supports de Cours</option>
-            <option value="Corrigé" ${this.filters.type === 'Corrigé' ? 'selected' : ''}>Corrigés Officiels</option>
-          </select>
-
-          <!-- Has correction toggle -->
-          <button 
-            onclick="app.toggleCorrectionFilter()" 
-            class="text-xs font-medium px-3 py-1.5 rounded-lg border transition flex items-center gap-1.5 ${this.filters.hasCorrection === 'true' ? 'bg-teal-50 text-teal-700 border-teal-300 font-semibold' : 'bg-white text-slate-600 border-slate-200 hover:border-slate-300'}"
-          >
-            <i data-lucide="check-circle-2" class="w-3.5 h-3.5 text-teal-600"></i>
-            <span>Avec corrigé vérifié</span>
+      <!-- Top Search Bar (Clean & Accessible) -->
+      <div class="relative flex items-center">
+        <i data-lucide="search" class="w-4 h-4 text-slate-400 absolute left-3.5 pointer-events-none"></i>
+        <input 
+          type="text" 
+          id="search-input"
+          value="${this.filters.search}" 
+          placeholder="Rechercher un document, cours, examen..." 
+          oninput="app.onSearchInput(this.value)"
+          class="w-full bg-white text-slate-900 pl-10 pr-20 py-2.5 rounded-xl border border-slate-200 focus:border-blue-600 focus:ring-2 focus:ring-blue-100 outline-none text-xs sm:text-sm transition shadow-2xs placeholder:text-slate-400 font-medium"
+        >
+        ${this.filters.search ? `
+          <button onclick="app.clearSearch()" class="absolute right-10 text-slate-400 hover:text-slate-600 p-1">
+            <i data-lucide="x" class="w-4 h-4"></i>
           </button>
-
-          ${(this.filters.search || this.filters.promotionId || this.filters.type || this.filters.hasCorrection) ? `
-            <button onclick="app.resetFilters()" class="text-xs text-rose-600 hover:text-rose-800 font-medium px-2 py-1 ml-auto flex items-center gap-1">
-              <i data-lucide="rotate-ccw" class="w-3 h-3"></i> Réinitialiser
-            </button>
-          ` : ''}
-        </div>
+        ` : ''}
+        <button onclick="app.triggerSearch()" class="absolute right-1.5 bg-blue-600 hover:bg-blue-700 text-white font-semibold text-[11px] px-3 py-1.5 rounded-lg transition shadow-2xs">
+          Chercher
+        </button>
       </div>
 
-      <!-- Quick Faculty Metrics -->
-      <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 text-center">
-        <div class="bg-white border border-slate-200 rounded-xl p-3 shadow-xs">
-          <div class="text-xl font-black text-slate-900">${this.resources.length}</div>
-          <div class="text-[11px] font-medium text-slate-500 uppercase tracking-wide">Documents Actifs</div>
-        </div>
-        <div class="bg-white border border-slate-200 rounded-xl p-3 shadow-xs">
-          <div class="text-xl font-black text-teal-600">${examsWithCorr}</div>
-          <div class="text-[11px] font-medium text-slate-500 uppercase tracking-wide">Épreuves Corrigées</div>
-        </div>
-        <div class="bg-white border border-slate-200 rounded-xl p-3 shadow-xs">
-          <div class="text-xl font-black text-blue-600">${this.courses.length}</div>
-          <div class="text-[11px] font-medium text-slate-500 uppercase tracking-wide">Cours & Filières</div>
-        </div>
-        <div class="bg-white border border-slate-200 rounded-xl p-3 shadow-xs">
-          <div class="text-xl font-black text-indigo-600">100%</div>
-          <div class="text-[11px] font-medium text-slate-500 uppercase tracking-wide">Validé par la Faculté</div>
-        </div>
+      <!-- Discreet & Horizontal Filter Pills -->
+      <div class="flex items-center gap-1.5 overflow-x-auto pb-1 text-xs no-scrollbar">
+        <!-- All Pill -->
+        <button 
+          onclick="app.setFilter('type', '')" 
+          class="px-3 py-1.5 rounded-lg font-medium whitespace-nowrap transition border ${!this.filters.type ? 'bg-blue-600 text-white border-blue-600 shadow-2xs font-semibold' : 'bg-white text-slate-600 border-slate-200 hover:border-slate-300'}"
+        >
+          Tous
+        </button>
+
+        <!-- Supports de Cours Pill -->
+        <button 
+          onclick="app.setFilter('type', 'Supports de Cours')" 
+          class="px-3 py-1.5 rounded-lg font-medium whitespace-nowrap transition border ${this.filters.type === 'Supports de Cours' ? 'bg-purple-600 text-white border-purple-600 shadow-2xs font-semibold' : 'bg-white text-slate-600 border-slate-200 hover:border-slate-300'}"
+        >
+          Cours
+        </button>
+
+        <!-- Exercices / TD Pill -->
+        <button 
+          onclick="app.setFilter('type', 'Exercices')" 
+          class="px-3 py-1.5 rounded-lg font-medium whitespace-nowrap transition border ${this.filters.type === 'Exercices' ? 'bg-blue-600 text-white border-blue-600 shadow-2xs font-semibold' : 'bg-white text-slate-600 border-slate-200 hover:border-slate-300'}"
+        >
+          TD / Exercices
+        </button>
+
+        <!-- Examens Pill -->
+        <button 
+          onclick="app.setFilter('type', 'Examen')" 
+          class="px-3 py-1.5 rounded-lg font-medium whitespace-nowrap transition border ${this.filters.type === 'Examen' ? 'bg-rose-600 text-white border-rose-600 shadow-2xs font-semibold' : 'bg-white text-slate-600 border-slate-200 hover:border-slate-300'}"
+        >
+          Examens
+        </button>
+
+        <!-- Interrogations Pill -->
+        <button 
+          onclick="app.setFilter('type', 'Interrogation')" 
+          class="px-3 py-1.5 rounded-lg font-medium whitespace-nowrap transition border ${this.filters.type === 'Interrogation' ? 'bg-amber-600 text-white border-amber-600 shadow-2xs font-semibold' : 'bg-white text-slate-600 border-slate-200 hover:border-slate-300'}"
+        >
+          Interrogations
+        </button>
+
+        <!-- TP Pill -->
+        <button 
+          onclick="app.setFilter('type', 'TP')" 
+          class="px-3 py-1.5 rounded-lg font-medium whitespace-nowrap transition border ${this.filters.type === 'TP' ? 'bg-emerald-600 text-white border-emerald-600 shadow-2xs font-semibold' : 'bg-white text-slate-600 border-slate-200 hover:border-slate-300'}"
+        >
+          TPs
+        </button>
+
+        <!-- Corrigés Pill -->
+        <button 
+          onclick="app.setFilter('type', 'Corrigé')" 
+          class="px-3 py-1.5 rounded-lg font-medium whitespace-nowrap transition border ${this.filters.type === 'Corrigé' ? 'bg-teal-600 text-white border-teal-600 shadow-2xs font-semibold' : 'bg-white text-slate-600 border-slate-200 hover:border-slate-300'}"
+        >
+          Corrigés
+        </button>
+
+        <!-- Promotion Dropdown (Compact) -->
+        <select 
+          onchange="app.setFilter('promotionId', this.value)" 
+          class="text-xs font-medium px-2.5 py-1.5 rounded-lg border border-slate-200 bg-white text-slate-700 hover:border-slate-300 focus:outline-none shrink-0"
+        >
+          <option value="">Toutes les promotions</option>
+          ${this.promotions.map(p => `<option value="${p.id}" ${this.filters.promotionId === p.id ? 'selected' : ''}>${p.name}</option>`).join('')}
+        </select>
+
+        ${(this.filters.search || activeFilterCount > 0) ? `
+          <button onclick="app.resetFilters()" class="text-xs text-rose-600 hover:text-rose-800 font-medium px-2 py-1 flex items-center gap-1 shrink-0 ml-auto">
+            <i data-lucide="rotate-ccw" class="w-3 h-3"></i> Effacer
+          </button>
+        ` : ''}
       </div>
 
-      <!-- Resources Grid / List -->
-      <div>
-        <div class="flex items-center justify-between mb-4">
-          <h2 class="text-base sm:text-lg font-bold text-slate-900 flex items-center gap-2">
-            <i data-lucide="book-marked" class="w-5 h-5 text-blue-600"></i>
-            Ressources Académiques (${filtered.length})
-          </h2>
-          <span class="text-xs text-slate-500">Classées par pertinence & date</span>
-        </div>
+      <!-- Document List Header -->
+      <div class="flex items-center justify-between text-xs text-slate-500 pt-1">
+        <span>${filtered.length} document${filtered.length > 1 ? 's' : ''} disponible${filtered.length > 1 ? 's' : ''}</span>
+        <span class="text-[11px] text-slate-400">Classés par année & pertinence</span>
+      </div>
 
+      <!-- Airy & Uniform Document Cards List (Image 1 style) -->
+      <div class="space-y-3">
         ${filtered.length === 0 ? `
-          <div class="bg-white border border-slate-200 rounded-2xl p-12 text-center max-w-md mx-auto space-y-3">
-            <div class="w-12 h-12 rounded-full bg-slate-100 text-slate-400 flex items-center justify-center mx-auto">
-              <i data-lucide="search-x" class="w-6 h-6"></i>
+          <div class="bg-white border border-slate-200/90 rounded-2xl p-8 text-center max-w-sm mx-auto space-y-3 shadow-2xs my-6">
+            <div class="w-10 h-10 rounded-full bg-slate-100 text-slate-400 flex items-center justify-center mx-auto">
+              <i data-lucide="search-x" class="w-5 h-5"></i>
             </div>
-            <h3 class="font-bold text-slate-800 text-sm">Aucun document ne correspond à vos filtres</h3>
-            <p class="text-xs text-slate-500">Essayez d'élargir votre recherche ou de réinitialiser la promotion et les filtres de type.</p>
-            <button onclick="app.resetFilters()" class="text-xs bg-slate-100 hover:bg-slate-200 font-semibold px-4 py-2 rounded-xl text-slate-700 transition">
-              Réinitialiser les filtres
+            <div class="font-bold text-slate-800 text-sm">Aucun document trouvé</div>
+            <p class="text-xs text-slate-500">Modifiez votre recherche ou réinitialisez les filtres.</p>
+            <button onclick="app.resetFilters()" class="text-xs bg-slate-100 hover:bg-slate-200 font-semibold px-3 py-1.5 rounded-xl text-slate-700 transition">
+              Réinitialiser
             </button>
           </div>
         ` : `
-          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            ${filtered.map(r => this.renderResourceCard(r)).join('')}
-          </div>
+          ${filtered.map(r => this.renderResourceCard(r)).join('')}
         `}
       </div>
 
@@ -350,171 +420,66 @@ class AcademicHubApp {
     `;
   }
 
+  // Uniform, Minimalist Card Component (Image 1 style)
   renderResourceCard(res) {
     const course = this.courses.find(c => c.id === res.courseId);
     const promo = this.promotions.find(p => p.id === res.promotionId);
 
     return `
-    <div class="bg-white rounded-2xl border border-slate-200/90 hover:border-blue-400 hover:shadow-md transition duration-200 flex flex-col justify-between overflow-hidden group">
-      <div class="p-5 space-y-3">
-        
-        <!-- Header badge & Year -->
-        <div class="flex items-start justify-between gap-2">
-          ${this.getTypeBadge(res.type)}
-          <span class="text-[11px] font-semibold text-slate-500 bg-slate-100 px-2 py-0.5 rounded-md">
-            ${res.academicYear || '2024-2025'}
-          </span>
-        </div>
-
-        <!-- Title -->
-        <div>
-          <h3 onclick="app.openDocument('${res.id}')" class="font-bold text-slate-900 text-sm leading-snug group-hover:text-blue-600 cursor-pointer transition line-clamp-2">
-            ${res.title}
-          </h3>
-          <p class="text-xs text-slate-500 mt-1 line-clamp-1 font-medium">
-            ${course ? `${course.code} — ${course.name}` : 'Matière universitaire'}
-          </p>
-        </div>
-
-        <!-- Academic Context Details -->
-        <div class="pt-2 border-t border-slate-100 flex flex-wrap gap-x-3 gap-y-1 text-[11px] text-slate-600">
-          <span class="flex items-center gap-1"><i data-lucide="user-check" class="w-3.5 h-3.5 text-slate-400"></i>${res.professor || 'Département'}</span>
-          <span class="flex items-center gap-1"><i data-lucide="layers" class="w-3.5 h-3.5 text-slate-400"></i>${promo ? promo.cycle : 'Licence'}</span>
-          ${res.hasCorrection ? `
-            <span class="flex items-center gap-1 text-teal-700 font-semibold bg-teal-50 px-1.5 py-0.2 rounded">
-              <i data-lucide="check" class="w-3 h-3 text-teal-600"></i> Corrigé lié
-            </span>
-          ` : ''}
-        </div>
-
+    <div onclick="app.openDocument('${res.id}')" class="bg-white rounded-2xl border border-slate-200/90 hover:border-blue-400 hover:shadow-xs transition duration-150 p-4 space-y-2.5 cursor-pointer group">
+      
+      <!-- Top Row: Type Badge + Year -->
+      <div class="flex items-center justify-between gap-2">
+        ${this.getTypeBadge(res.type)}
+        <span class="text-[11px] font-semibold text-slate-500 bg-slate-100 px-2 py-0.5 rounded-md">
+          ${res.academicYear || '2024-2025'}
+        </span>
       </div>
 
-      <!-- Action Footer -->
-      <div class="bg-slate-50/80 px-5 py-3 border-t border-slate-100 flex items-center justify-between gap-2">
-        <button onclick="app.openDocument('${res.id}')" class="flex-1 bg-white hover:bg-blue-600 hover:text-white text-slate-700 border border-slate-200 hover:border-blue-600 font-semibold text-xs py-2 px-3 rounded-xl transition flex items-center justify-center gap-1.5 shadow-2xs">
-          <i data-lucide="eye" class="w-3.5 h-3.5"></i>
-          <span>Lire le document</span>
-        </button>
-        <button onclick="app.startTutorOnResource('${res.id}')" title="Réviser avec l'IA" class="bg-blue-50 hover:bg-blue-100 text-blue-700 border border-blue-200/60 p-2 rounded-xl transition">
-          <i data-lucide="sparkles" class="w-4 h-4"></i>
-        </button>
-      </div>
-    </div>
-    `;
-  }
-
-  // ==========================================
-  // VIEW 2: COURSES BANK & FOLDER TREE
-  // ==========================================
-  renderCoursesView() {
-    return `
-    <div class="max-w-7xl mx-auto px-4 py-6 sm:px-6 space-y-6">
-      <div class="border-b border-slate-200 pb-4">
-        <h1 class="text-2xl font-extrabold text-slate-900 tracking-tight flex items-center gap-2.5">
-          <i data-lucide="folder-tree" class="w-6 h-6 text-blue-600"></i>
-          Banque par Matières & Filières
-        </h1>
-        <p class="text-slate-600 text-xs sm:text-sm mt-1">
-          Arborescence académique structurée : cours, travaux pratiques, examens et corrigés de chaque promotion.
+      <!-- Document Title -->
+      <div>
+        <h3 class="font-bold text-slate-900 text-sm leading-snug group-hover:text-blue-600 transition line-clamp-2">
+          ${res.title}
+        </h3>
+        <p class="text-xs text-slate-500 mt-0.5 line-clamp-1 font-medium">
+          ${course ? `${course.code} — ${course.name}` : 'Matière universitaire'}
         </p>
       </div>
 
-      <div class="space-y-8">
-        ${this.promotions.map(promo => {
-          const promoCourses = this.courses.filter(c => c.promotionId === promo.id);
-          if (promoCourses.length === 0) return '';
-
-          return `
-          <div class="space-y-4">
-            <div class="flex items-center gap-3">
-              <div class="w-3 h-3 rounded-full bg-blue-600"></div>
-              <h2 class="text-base sm:text-lg font-bold text-slate-900">${promo.name}</h2>
-              <span class="text-xs bg-slate-100 text-slate-600 font-medium px-2.5 py-0.5 rounded-full border border-slate-200">
-                ${promo.faculty}
-              </span>
-            </div>
-
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-              ${promoCourses.map(course => this.renderCourseFolderCard(course)).join('')}
-            </div>
-          </div>
-          `;
-        }).join('')}
-      </div>
-    </div>
-    `;
-  }
-
-  renderCourseFolderCard(course) {
-    const courseResources = this.resources.filter(r => r.courseId === course.id);
-    const tpCount = courseResources.filter(r => r.type === 'TP').length;
-    const interroCount = courseResources.filter(r => r.type === 'Interrogation').length;
-    const examenCount = courseResources.filter(r => r.type === 'Examen').length;
-    const coursCount = courseResources.filter(r => r.type === 'Supports de Cours').length;
-
-    return `
-    <div class="bg-white rounded-2xl border border-slate-200 p-5 shadow-xs space-y-4 hover:border-slate-300 transition">
-      <div class="flex items-start justify-between gap-3">
-        <div>
-          <span class="text-xs font-mono font-bold text-blue-700 bg-blue-50 px-2 py-0.5 rounded border border-blue-200/50">
-            ${course.code}
-          </span>
-          <h3 class="font-bold text-slate-900 text-base mt-1.5 leading-snug">${course.name}</h3>
-          <p class="text-xs text-slate-500 mt-1 font-medium">Référent : ${course.professor}</p>
+      <!-- Metadata & Badges Footer -->
+      <div class="pt-2 border-t border-slate-100 flex items-center justify-between text-[11px] text-slate-600">
+        <div class="flex items-center gap-3 truncate">
+          <span class="flex items-center gap-1"><i data-lucide="user-check" class="w-3.5 h-3.5 text-slate-400"></i>${res.professor || 'Département'}</span>
+          <span class="flex items-center gap-1 text-slate-400">•</span>
+          <span class="truncate">${promo ? promo.cycle : 'Licence'}</span>
         </div>
-        <button onclick="app.launchRevisionForCourse('${course.id}')" class="text-xs font-semibold bg-blue-50 hover:bg-blue-100 text-blue-700 px-3 py-1.5 rounded-xl border border-blue-200/60 transition flex items-center gap-1.5">
-          <i data-lucide="sparkles" class="w-3.5 h-3.5"></i>
-          <span>Réviser</span>
-        </button>
+
+        <div class="flex items-center gap-2 shrink-0">
+          ${res.hasCorrection ? `
+            <span class="inline-flex items-center gap-1 text-teal-700 font-semibold bg-teal-50 px-2 py-0.5 rounded border border-teal-200/60 text-[10px]">
+              <i data-lucide="check" class="w-3 h-3 text-teal-600"></i> Corrigé
+            </span>
+          ` : ''}
+          <span class="text-slate-400 group-hover:text-blue-600 transition">
+            <i data-lucide="chevron-right" class="w-4 h-4"></i>
+          </span>
+        </div>
       </div>
 
-      <p class="text-xs text-slate-600 leading-relaxed">${course.description}</p>
-
-      <!-- Sub-folder category counts -->
-      <div class="grid grid-cols-4 gap-2 pt-3 border-t border-slate-100 text-center">
-        <button onclick="app.filterByCourseAndType('${course.id}', 'TP')" class="bg-slate-50 hover:bg-emerald-50 hover:border-emerald-200 p-2 rounded-xl border border-slate-200/80 transition">
-          <div class="text-sm font-bold text-emerald-700">${tpCount}</div>
-          <div class="text-[10px] text-slate-500 font-medium">TPs</div>
-        </button>
-        <button onclick="app.filterByCourseAndType('${course.id}', 'Interrogation')" class="bg-slate-50 hover:bg-amber-50 hover:border-amber-200 p-2 rounded-xl border border-slate-200/80 transition">
-          <div class="text-sm font-bold text-amber-700">${interroCount}</div>
-          <div class="text-[10px] text-slate-500 font-medium">Interros</div>
-        </button>
-        <button onclick="app.filterByCourseAndType('${course.id}', 'Examen')" class="bg-slate-50 hover:bg-rose-50 hover:border-rose-200 p-2 rounded-xl border border-slate-200/80 transition">
-          <div class="text-sm font-bold text-rose-700">${examenCount}</div>
-          <div class="text-[10px] text-slate-500 font-medium">Examens</div>
-        </button>
-        <button onclick="app.filterByCourseAndType('${course.id}', 'Supports de Cours')" class="bg-slate-50 hover:bg-purple-50 hover:border-purple-200 p-2 rounded-xl border border-slate-200/80 transition">
-          <div class="text-sm font-bold text-purple-700">${coursCount}</div>
-          <div class="text-[10px] text-slate-500 font-medium">Syllabus</div>
-        </button>
-      </div>
-
-      <!-- Chapters list -->
-      <div class="space-y-1.5 pt-2">
-        <div class="text-[11px] font-bold uppercase tracking-wider text-slate-400">Chapitres au programme :</div>
-        ${course.chapters.map(c => `
-          <div class="text-xs text-slate-700 flex items-center gap-2">
-            <span class="w-1.5 h-1.5 rounded-full bg-slate-300"></span>
-            <span class="font-medium text-slate-800">Ch. ${c.number} :</span>
-            <span class="truncate">${c.title}</span>
-          </div>
-        `).join('')}
-      </div>
     </div>
     `;
   }
 
   // ==========================================
-  // VIEW 3: MULTI-FORMAT DOCUMENT READER
+  // VIEW 2: MULTI-FORMAT DOCUMENT READER
   // ==========================================
   renderDocumentView() {
     const res = this.resources.find(r => r.id === this.selectedResourceId);
     if (!res) {
       return `
-      <div class="max-w-xl mx-auto px-4 py-16 text-center space-y-4">
-        <p class="text-sm text-slate-600">Document introuvable ou retiré du centre d'information.</p>
-        <button onclick="app.navigate('home')" class="bg-blue-600 text-white text-xs font-semibold px-4 py-2.5 rounded-xl">Retour aux ressources</button>
+      <div class="max-w-md mx-auto px-4 py-16 text-center space-y-4">
+        <p class="text-sm text-slate-600">Document introuvable ou retiré.</p>
+        <button onclick="app.navigate('documents')" class="bg-blue-600 text-white text-xs font-semibold px-4 py-2 rounded-xl">Retour aux documents</button>
       </div>
       `;
     }
@@ -532,177 +497,110 @@ class AcademicHubApp {
     const courseVideo = (this.videos || []).find(v => v.courseId === res.courseId);
 
     return `
-    <div class="max-w-7xl mx-auto px-4 py-4 sm:px-6 space-y-4">
+    <div class="max-w-4xl mx-auto px-4 py-4 sm:px-6 space-y-4">
       
-      <!-- Top Reader Navigation Bar -->
-      <div class="bg-white rounded-2xl border border-slate-200 p-3 sm:p-4 flex flex-wrap items-center justify-between gap-3 shadow-xs">
-        <div class="flex items-center gap-3">
-          <button onclick="app.navigate('home')" class="p-2 rounded-xl text-slate-600 hover:bg-slate-100 transition border border-slate-200">
+      <!-- Top Action Bar -->
+      <div class="bg-white rounded-2xl border border-slate-200/90 p-3.5 flex items-center justify-between gap-3 shadow-2xs">
+        <div class="flex items-center gap-3 min-w-0">
+          <button onclick="app.navigate('documents')" class="p-2 rounded-xl text-slate-600 hover:bg-slate-100 transition border border-slate-200 shrink-0" title="Retour">
             <i data-lucide="arrow-left" class="w-4 h-4"></i>
           </button>
-          <div>
+          <div class="truncate">
             <div class="flex items-center gap-2">
               ${this.getTypeBadge(res.type)}
               <span class="text-xs font-semibold text-slate-500">${res.academicYear || '2024-2025'}</span>
             </div>
-            <h1 class="font-bold text-slate-900 text-sm sm:text-base line-clamp-1 mt-0.5">${res.title}</h1>
+            <h1 class="font-bold text-slate-900 text-sm truncate mt-0.5">${res.title}</h1>
           </div>
         </div>
 
-        <!-- Reader Controls -->
-        <div class="flex items-center gap-2">
-          <!-- Zoom Controls -->
-          <div class="hidden sm:flex items-center bg-slate-100 rounded-lg p-0.5 border border-slate-200 text-xs">
-            <button onclick="app.changeZoom(-10)" class="px-2 py-1 hover:bg-white rounded text-slate-700 font-bold">-</button>
-            <span class="px-2 font-mono font-medium text-slate-600">${this.currentDocZoom}%</span>
-            <button onclick="app.changeZoom(10)" class="px-2 py-1 hover:bg-white rounded text-slate-700 font-bold">+</button>
-          </div>
-
-          <button onclick="app.downloadFile('${res.id}')" class="bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold text-xs px-3 py-2 rounded-xl transition flex items-center gap-1.5 border border-slate-200">
+        <div class="flex items-center gap-2 shrink-0">
+          <button onclick="app.downloadFile('${res.id}')" class="bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold text-xs px-3 py-2 rounded-xl transition flex items-center gap-1.5 border border-slate-200/80">
             <i data-lucide="download" class="w-3.5 h-3.5"></i>
             <span class="hidden sm:inline">Télécharger</span>
           </button>
-
-          <button onclick="app.startTutorOnResource('${res.id}')" class="bg-blue-600 hover:bg-blue-700 text-white font-semibold text-xs px-3.5 py-2 rounded-xl transition flex items-center gap-1.5 shadow-sm">
-            <i data-lucide="bot" class="w-3.5 h-3.5"></i>
-            <span>Tuteur IA</span>
+          <button onclick="app.startTutorOnResource('${res.id}')" class="bg-blue-600 hover:bg-blue-700 text-white font-semibold text-xs px-3.5 py-2 rounded-xl transition flex items-center gap-1.5 shadow-2xs">
+            <i data-lucide="sparkles" class="w-3.5 h-3.5"></i>
+            <span>Réviser avec l'IA</span>
           </button>
         </div>
       </div>
 
-      <!-- Main Layout: Viewer (Left) + Academic Context & Relations (Right) -->
-      <div class="grid grid-cols-1 lg:grid-cols-12 gap-5">
+      <!-- Main Reader Content -->
+      <div class="bg-white rounded-2xl border border-slate-200/90 overflow-hidden shadow-2xs">
         
-        <!-- Viewer Container (75% / 8 cols on desktop) -->
-        <div class="lg:col-span-8 bg-white rounded-2xl border border-slate-200 overflow-hidden shadow-xs flex flex-col min-h-[550px]">
-          
-          <!-- Document Header toolbar -->
-          <div class="bg-slate-50 border-b border-slate-200 px-4 py-2.5 flex items-center justify-between text-xs text-slate-600">
-            <div class="flex items-center gap-2">
-              <i data-lucide="file-text" class="w-4 h-4 text-blue-600"></i>
-              <span class="font-mono font-semibold">${res.fileName || 'document.pdf'}</span>
-              <span class="text-slate-400">(${res.fileSize || '380 Ko'})</span>
-            </div>
-            <div class="flex items-center gap-2">
-              <span class="text-[11px] bg-slate-200/80 px-2 py-0.5 rounded font-mono">SHA-256: ${(res.checksum || '').substring(0, 10)}...</span>
-            </div>
+        <!-- Viewer Header Bar -->
+        <div class="bg-slate-50 border-b border-slate-200 px-4 py-2.5 flex items-center justify-between text-xs text-slate-600">
+          <div class="flex items-center gap-2 truncate">
+            <i data-lucide="file-text" class="w-4 h-4 text-blue-600 shrink-0"></i>
+            <span class="font-mono font-semibold truncate">${res.fileName || 'document.pdf'}</span>
+            <span class="text-slate-400">(${res.fileSize || '380 Ko'})</span>
           </div>
-
-          <!-- Document Render Area (Zoomable) -->
-          <div class="p-6 sm:p-8 flex-1 overflow-auto bg-slate-50/50">
-            <div style="font-size: ${this.currentDocZoom}%; line-height: 1.6;" class="max-w-3xl mx-auto bg-white p-6 sm:p-10 rounded-xl shadow-sm border border-slate-200/80 transition-all duration-150">
-              
-              ${res.format === 'code' ? `
-                <div class="font-mono text-xs text-slate-800 whitespace-pre-wrap bg-slate-900 text-slate-100 p-5 rounded-xl overflow-x-auto leading-relaxed">
-                  ${this.escapeHtml(res.content)}
-                </div>
-              ` : `
-                <div class="prose prose-slate max-w-none text-slate-800 text-xs sm:text-sm whitespace-pre-wrap font-serif leading-relaxed">
-                  ${this.escapeHtml(res.content)}
-                </div>
-              `}
-
-            </div>
+          <!-- Zoom Controls -->
+          <div class="flex items-center bg-slate-200/70 rounded-lg p-0.5 text-xs font-bold">
+            <button onclick="app.changeZoom(-10)" class="px-2 py-0.5 hover:bg-white rounded text-slate-700">-</button>
+            <span class="px-2 font-mono text-[11px] font-medium text-slate-700">${this.currentDocZoom}%</span>
+            <button onclick="app.changeZoom(10)" class="px-2 py-0.5 hover:bg-white rounded text-slate-700">+</button>
           </div>
-
         </div>
 
-        <!-- Academic Context & Relations Sidebar (4 cols) -->
-        <div class="lg:col-span-4 space-y-4">
-          
-          <!-- Official Meta Card -->
-          <div class="bg-white rounded-2xl border border-slate-200 p-5 shadow-xs space-y-3">
-            <h2 class="font-bold text-slate-900 text-sm flex items-center gap-2 border-b border-slate-100 pb-2">
-              <i data-lucide="info" class="w-4 h-4 text-blue-600"></i>
-              Contexte Académique
-            </h2>
-
-            <div class="space-y-2 text-xs">
-              <div>
-                <span class="text-slate-500 font-medium">Matière :</span>
-                <p class="font-semibold text-slate-800">${course ? `${course.code} — ${course.name}` : 'Matière'}</p>
-              </div>
-              <div>
-                <span class="text-slate-500 font-medium">Promotion & Faculté :</span>
-                <p class="font-semibold text-slate-800">${promo ? `${promo.name} (${promo.faculty})` : 'Licence'}</p>
-              </div>
-              <div>
-                <span class="text-slate-500 font-medium">Professeur référent :</span>
-                <p class="font-semibold text-slate-800">${res.professor || 'Département'}</p>
-              </div>
-              <div>
-                <span class="text-slate-500 font-medium">Session / Période :</span>
-                <p class="font-semibold text-slate-800">${res.session || 'Session Principale'} (${res.semester || 'S1'})</p>
-              </div>
-              <div>
-                <span class="text-slate-500 font-medium">Chapitre rattaché :</span>
-                <p class="font-semibold text-slate-800">${res.chapter || 'Général'}</p>
-              </div>
-            </div>
-          </div>
-
-          <!-- Associated Resources (Page 15: Corrigés de Première Classe) -->
-          <div class="bg-white rounded-2xl border border-slate-200 p-5 shadow-xs space-y-3">
-            <h2 class="font-bold text-slate-900 text-sm flex items-center gap-2 border-b border-slate-100 pb-2">
-              <i data-lucide="link-2" class="w-4 h-4 text-teal-600"></i>
-              Ressources Associées
-            </h2>
-
-            <!-- Official Correction Link -->
-            ${correction ? `
-              <div class="bg-teal-50/80 border border-teal-200 rounded-xl p-3 space-y-2">
-                <div class="flex items-center gap-2 text-teal-900 text-xs font-bold">
-                  <i data-lucide="check-circle" class="w-4 h-4 text-teal-600"></i>
-                  Corrigé Officiel Validé
-                </div>
-                <p class="text-[11px] text-teal-800 font-medium leading-snug">${correction.title}</p>
-                <button onclick="app.openDocument('${correction.id}')" class="w-full bg-teal-600 hover:bg-teal-700 text-white font-semibold text-xs py-1.5 px-3 rounded-lg transition flex items-center justify-center gap-1">
-                  <i data-lucide="eye" class="w-3.5 h-3.5"></i>
-                  Consulter le Corrigé Type
-                </button>
+        <!-- Document Text Viewer Area -->
+        <div class="p-6 sm:p-8 overflow-auto bg-slate-50/40 min-h-[420px]">
+          <div style="font-size: ${this.currentDocZoom}%; line-height: 1.65;" class="max-w-3xl mx-auto bg-white p-6 sm:p-8 rounded-xl shadow-2xs border border-slate-200/80 transition-all duration-150">
+            ${res.format === 'code' ? `
+              <div class="font-mono text-xs text-slate-100 bg-slate-900 p-4 rounded-xl overflow-x-auto leading-relaxed">
+                ${this.escapeHtml(res.content)}
               </div>
             ` : `
-              <div class="text-xs text-slate-500 italic p-2 bg-slate-50 rounded-lg">
-                Aucun corrigé direct officiel n'est requis ou disponible pour ce format.
+              <div class="prose prose-slate max-w-none text-slate-800 text-xs sm:text-sm whitespace-pre-wrap leading-relaxed font-sans">
+                ${this.escapeHtml(res.content)}
               </div>
             `}
-
-            <!-- Other exercises or documents of the same course -->
-            ${related.length > 0 ? `
-              <div class="space-y-2 pt-2">
-                <div class="text-[11px] font-bold text-slate-500 uppercase tracking-wider">Autres annales du cours :</div>
-                ${related.map(rel => `
-                  <div onclick="app.openDocument('${rel.id}')" class="p-2.5 rounded-xl border border-slate-200 hover:border-blue-400 cursor-pointer transition text-xs space-y-1 bg-slate-50/50">
-                    <div class="flex items-center justify-between">
-                      ${this.getTypeBadge(rel.type)}
-                      <span class="text-[10px] text-slate-500">${rel.academicYear}</span>
-                    </div>
-                    <p class="font-semibold text-slate-800 line-clamp-1">${rel.title}</p>
-                  </div>
-                `).join('')}
-              </div>
-            ` : ''}
-
-            <!-- Video recommendation if available (Page 16) -->
-            ${courseVideo ? `
-              <div class="pt-2 border-t border-slate-100">
-                <div class="text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-2">Vidéo de synthèse validée :</div>
-                <div class="bg-rose-50/60 border border-rose-200 rounded-xl p-3 space-y-2">
-                  <div class="flex items-center gap-2 text-rose-800 text-xs font-bold">
-                    <i data-lucide="youtube" class="w-4 h-4 text-rose-600"></i>
-                    ${courseVideo.title}
-                  </div>
-                  <p class="text-[11px] text-slate-600">${courseVideo.channel} (${courseVideo.duration})</p>
-                  <a href="${courseVideo.url}" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-1 text-xs font-semibold text-rose-700 hover:text-rose-900">
-                    <span>Ouvrir sur YouTube</span>
-                    <i data-lucide="external-link" class="w-3 h-3"></i>
-                  </a>
-                </div>
-              </div>
-            ` : ''}
-
           </div>
+        </div>
 
+      </div>
+
+      <!-- Associated Resources & Context Cards -->
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        
+        <!-- Context Card -->
+        <div class="bg-white rounded-2xl border border-slate-200/90 p-4 space-y-2 shadow-2xs text-xs">
+          <h2 class="font-bold text-slate-900 text-xs flex items-center gap-1.5 border-b border-slate-100 pb-1.5">
+            <i data-lucide="info" class="w-3.5 h-3.5 text-blue-600"></i>
+            Contexte Académique
+          </h2>
+          <div class="space-y-1 text-slate-600">
+            <div><span class="font-semibold text-slate-800">Matière :</span> ${course ? `${course.code} — ${course.name}` : 'Matière'}</div>
+            <div><span class="font-semibold text-slate-800">Promotion :</span> ${promo ? `${promo.name} (${promo.faculty})` : 'Licence'}</div>
+            <div><span class="font-semibold text-slate-800">Référent :</span> ${res.professor || 'Département'}</div>
+            <div><span class="font-semibold text-slate-800">Période :</span> ${res.session || 'Session Principale'} (${res.semester || 'S1'})</div>
+          </div>
+        </div>
+
+        <!-- Correction / Related Card -->
+        <div class="bg-white rounded-2xl border border-slate-200/90 p-4 space-y-2 shadow-2xs text-xs">
+          <h2 class="font-bold text-slate-900 text-xs flex items-center gap-1.5 border-b border-slate-100 pb-1.5">
+            <i data-lucide="link-2" class="w-3.5 h-3.5 text-teal-600"></i>
+            Ressources Associées
+          </h2>
+          
+          ${correction ? `
+            <div class="bg-teal-50 border border-teal-200 rounded-xl p-3 space-y-1.5">
+              <div class="flex items-center gap-1.5 text-teal-900 font-bold text-xs">
+                <i data-lucide="check-circle" class="w-4 h-4 text-teal-600"></i>
+                Corrigé Officiel Validé
+              </div>
+              <p class="text-[11px] text-teal-800 line-clamp-1">${correction.title}</p>
+              <button onclick="app.openDocument('${correction.id}')" class="w-full bg-teal-600 hover:bg-teal-700 text-white font-semibold text-xs py-1.5 rounded-lg transition">
+                Consulter le Corrigé
+              </button>
+            </div>
+          ` : `
+            <div class="text-slate-500 italic p-2 bg-slate-50 rounded-lg">
+              Aucun corrigé direct requis ou disponible pour cette ressource.
+            </div>
+          `}
         </div>
 
       </div>
@@ -712,135 +610,150 @@ class AcademicHubApp {
   }
 
   // ==========================================
-  // VIEW 4: AI TUTOR & LEARNING AGENT
+  // VIEW 3: AI TUTOR / DISCUSSION (Ultra-Clean Mobile Layout)
   // ==========================================
   renderTutorView() {
     return `
-    <div class="max-w-5xl mx-auto px-4 py-4 sm:px-6 space-y-4">
+    <div class="max-w-xl mx-auto px-4 py-3 sm:px-6 sm:py-4 w-full flex-1 flex flex-col justify-between min-h-0">
       
-      <!-- Tutor Top Mode Bar (Page 18) -->
-      <div class="bg-white rounded-2xl border border-slate-200 p-4 shadow-xs space-y-3">
-        <div class="flex flex-wrap items-center justify-between gap-3">
-          <div class="flex items-center gap-3">
-            <div class="w-10 h-10 rounded-xl bg-blue-600 text-white flex items-center justify-center font-bold">
-              <i data-lucide="bot" class="w-5 h-5"></i>
+      <!-- Chat Discussion Messages Window (Image style) -->
+      <div id="tutor-chat-box" class="flex-1 overflow-y-auto space-y-4 py-2 pr-1 no-scrollbar flex flex-col">
+        ${this.tutorMessages.map(msg => this.renderTutorChatMessage(msg)).join('')}
+        
+        <!-- Loading Thinking State Bubble -->
+        ${this.isTutorLoading ? `
+          <div class="flex flex-col items-start gap-1.5 animate-in fade-in duration-150">
+            <div class="flex items-center text-blue-500 pl-1">
+              <svg class="w-4 h-4 text-blue-500 animate-pulse" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M12 2L14.4 9.6L22 12L14.4 14.4L12 22L9.6 14.4L2 12L9.6 9.6L12 2Z"/>
+              </svg>
             </div>
-            <div>
-              <div class="flex items-center gap-2">
-                <h1 class="font-extrabold text-slate-900 text-base">Tuteur Pédagogique Intelligent</h1>
-                <span class="text-[10px] uppercase font-bold tracking-wider px-2 py-0.5 rounded-full bg-blue-50 text-blue-700 border border-blue-200/60">IA Faculté</span>
+            <div class="p-3.5 rounded-2xl rounded-tl-xs bg-slate-50 text-slate-700 border border-slate-200/70 text-xs sm:text-sm flex items-center gap-2.5 shadow-2xs">
+              <div class="flex gap-1 items-center">
+                <span class="w-1.5 h-1.5 rounded-full bg-blue-500 animate-bounce" style="animation-delay: 0ms"></span>
+                <span class="w-1.5 h-1.5 rounded-full bg-blue-500 animate-bounce" style="animation-delay: 150ms"></span>
+                <span class="w-1.5 h-1.5 rounded-full bg-blue-500 animate-bounce" style="animation-delay: 300ms"></span>
               </div>
-              <p class="text-xs text-slate-500">RAG académique & adaptation en temps réel</p>
+              <span class="text-xs text-slate-500">Recherche dans le corpus et réflexion...</span>
             </div>
           </div>
-
-          <!-- 4 Operating Modes (Page 18) -->
-          <div class="flex items-center bg-slate-100 p-1 rounded-xl border border-slate-200 text-xs font-semibold">
-            <button 
-              onclick="app.setTutorMode('chat')" 
-              class="px-3 py-1.5 rounded-lg transition ${this.tutorMode === 'chat' ? 'bg-white text-blue-600 shadow-xs' : 'text-slate-600 hover:text-slate-900'}"
-            >
-              Chat Libre
-            </button>
-            <button 
-              onclick="app.setTutorMode('apprendre')" 
-              class="px-3 py-1.5 rounded-lg transition ${this.tutorMode === 'apprendre' ? 'bg-white text-blue-600 shadow-xs' : 'text-slate-600 hover:text-slate-900'}"
-            >
-              Apprendre (1-10)
-            </button>
-            <button 
-              onclick="app.setTutorMode('revision')" 
-              class="px-3 py-1.5 rounded-lg transition ${this.tutorMode === 'revision' ? 'bg-white text-blue-600 shadow-xs' : 'text-slate-600 hover:text-slate-900'}"
-            >
-              Révision Annales
-            </button>
-            <button 
-              onclick="app.setTutorMode('exercer')" 
-              class="px-3 py-1.5 rounded-lg transition ${this.tutorMode === 'exercer' ? 'bg-white text-blue-600 shadow-xs' : 'text-slate-600 hover:text-slate-900'}"
-            >
-              S'exercer (Indices)
-            </button>
-          </div>
-        </div>
-
-        <!-- Mode Explanation Banner -->
-        <div class="text-xs bg-slate-50 border border-slate-200/80 rounded-xl p-3 flex items-start gap-2.5">
-          <i data-lucide="info" class="w-4 h-4 text-blue-600 shrink-0 mt-0.5"></i>
-          <div class="text-slate-600 leading-relaxed">
-            ${this.getTutorModeDescription()}
-          </div>
-        </div>
-
-        <!-- Learning State Tree & Mastery Indicators (Pages 19-23) -->
-        <div class="pt-2 border-t border-slate-100 flex flex-wrap items-center justify-between gap-3 text-xs">
-          <div class="flex items-center gap-2">
-            <span class="text-slate-500 font-medium">Niveau auto-déclaré :</span>
-            <div class="flex items-center gap-1">
-              ${[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map(lvl => `
-                <button 
-                  onclick="app.setDeclaredMasteryLevel(${lvl})" 
-                  class="w-6 h-6 rounded-md font-bold text-[11px] transition ${this.studentProfile.declaredLevel === lvl ? 'bg-blue-600 text-white' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'}"
-                >
-                  ${lvl}
-                </button>
-              `).join('')}
-              <span class="text-[10px] text-slate-400 ml-1">/10</span>
-            </div>
-          </div>
-
-          <!-- Active branch breadcrumbs -->
-          ${this.studentProfile.activeBranch ? `
-            <div class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-amber-50 text-amber-800 border border-amber-200 text-[11px] font-semibold">
-              <i data-lucide="git-branch" class="w-3.5 h-3.5 text-amber-600"></i>
-              <span>Branche active : ${this.studentProfile.activeBranch.title}</span>
-              <button onclick="app.closeActiveBranch()" class="ml-1 text-amber-600 hover:text-amber-800 underline text-[10px]">
-                (Clôturer)
-              </button>
-            </div>
-          ` : `
-            <div class="text-[11px] text-slate-500">
-              <span class="font-medium text-slate-700">Objectif :</span> ${this.studentProfile.activeGoal}
-            </div>
-          `}
-        </div>
-
+        ` : ''}
       </div>
 
-      <!-- Chat Discussion Messages Window -->
-      <div class="bg-white rounded-2xl border border-slate-200 p-4 sm:p-6 shadow-xs flex flex-col h-[520px]">
-        <div id="tutor-chat-box" class="flex-1 overflow-y-auto space-y-4 pr-1">
-          ${this.tutorMessages.map(msg => this.renderTutorChatMessage(msg)).join('')}
-        </div>
-
-        <!-- Suggestion Chips -->
-        <div class="py-2 flex items-center gap-1.5 overflow-x-auto text-xs whitespace-nowrap border-t border-slate-100 mt-2">
-          <span class="text-slate-400 text-[11px] mr-1">Suggestions :</span>
-          <button onclick="app.sendQuickPrompt('Sur une échelle de 1 à 10, teste mon niveau sur l\'intégration par parties')" class="bg-slate-100 hover:bg-slate-200 text-slate-700 px-2.5 py-1 rounded-full transition">
-            🎯 Tester mon niveau (1 à 10)
+      <!-- Coexisting Learning Mode Chips Bar & Quick Action Menu Sheet -->
+      <div class="space-y-2 mt-2">
+        <!-- Mode Chips Bar -->
+        <div class="flex items-center gap-1.5 overflow-x-auto no-scrollbar py-1 text-xs">
+          <button onclick="app.setTutorMode('chat')" class="px-3 py-1 rounded-full transition font-medium shrink-0 flex items-center gap-1.5 border ${this.tutorMode === 'chat' ? 'bg-blue-600 text-white border-blue-600 shadow-2xs' : 'bg-white text-slate-600 border-slate-200 hover:bg-slate-50'}">
+            <i data-lucide="message-square" class="w-3 h-3"></i> Chat libre
           </button>
-          <button onclick="app.sendQuickPrompt('Donne-moi un exercice guidé de niveau intermédiaire avec indices')" class="bg-slate-100 hover:bg-slate-200 text-slate-700 px-2.5 py-1 rounded-full transition">
-            📝 Exercice avec indices
+          <button onclick="app.setTutorMode('apprendre')" class="px-3 py-1 rounded-full transition font-medium shrink-0 flex items-center gap-1.5 border ${this.tutorMode === 'apprendre' ? 'bg-emerald-600 text-white border-emerald-600 shadow-2xs' : 'bg-white text-slate-600 border-slate-200 hover:bg-slate-50'}">
+            <i data-lucide="target" class="w-3 h-3"></i> Apprendre (1-10)
           </button>
-          <button onclick="app.sendQuickPrompt('Je bloque sur le calcul des primitives de fonctions usuelles')" class="bg-slate-100 hover:bg-slate-200 text-slate-700 px-2.5 py-1 rounded-full transition">
-            🔍 Je bloque sur un prérequis
+          <button onclick="app.setTutorMode('revision')" class="px-3 py-1 rounded-full transition font-medium shrink-0 flex items-center gap-1.5 border ${this.tutorMode === 'revision' ? 'bg-purple-600 text-white border-purple-600 shadow-2xs' : 'bg-white text-slate-600 border-slate-200 hover:bg-slate-50'}">
+            <i data-lucide="book-marked" class="w-3 h-3"></i> Révision faculté
           </button>
-          <button onclick="app.sendQuickPrompt('Quels sont les pièges fréquents à l\'examen d\'Analyse II ?')" class="bg-slate-100 hover:bg-slate-200 text-slate-700 px-2.5 py-1 rounded-full transition">
-            ⚠️ Pièges d'examen
+          <button onclick="app.setTutorMode('exercer')" class="px-3 py-1 rounded-full transition font-medium shrink-0 flex items-center gap-1.5 border ${this.tutorMode === 'exercer' ? 'bg-amber-600 text-white border-amber-600 shadow-2xs' : 'bg-white text-slate-600 border-slate-200 hover:bg-slate-50'}">
+            <i data-lucide="pen-tool" class="w-3 h-3"></i> S'exercer
           </button>
         </div>
 
-        <!-- Chat Input Form -->
-        <form onsubmit="app.handleTutorSubmit(event)" class="mt-2 flex items-center gap-2">
+        <!-- Quick Action Menu Sheet (Modal when clicking + button) -->
+        ${this.showPlusMenu ? `
+          <div class="p-3 bg-white rounded-2xl border border-slate-200/90 shadow-lg animate-in slide-in-from-bottom-2 duration-150 space-y-2">
+            <div class="flex items-center justify-between border-b border-slate-100 pb-2">
+              <span class="text-xs font-bold text-slate-800 flex items-center gap-1.5">
+                <i data-lucide="plus-circle" class="w-4 h-4 text-blue-600"></i> Actions rapides & Import Multimodal
+              </span>
+              <button onclick="app.togglePlusMenu(false)" class="text-slate-400 hover:text-slate-600 text-xs p-1">✕</button>
+            </div>
+            <div class="grid grid-cols-2 gap-2 text-xs">
+              <button onclick="app.openCameraScanner()" class="p-2.5 text-left rounded-xl bg-slate-50 hover:bg-slate-100 transition border border-slate-200/60 flex items-center gap-2.5">
+                <div class="w-7 h-7 rounded-lg bg-blue-100 text-blue-600 flex items-center justify-center shrink-0">
+                  <i data-lucide="camera" class="w-3.5 h-3.5"></i>
+                </div>
+                <div>
+                  <div class="font-semibold text-slate-800">Appareil photo / Scan</div>
+                  <div class="text-[10px] text-slate-500">Scanner un document</div>
+                </div>
+              </button>
+
+              <button onclick="app.startVoiceInput(); app.togglePlusMenu(false);" class="p-2.5 text-left rounded-xl bg-slate-50 hover:bg-slate-100 transition border border-slate-200/60 flex items-center gap-2.5">
+                <div class="w-7 h-7 rounded-lg bg-emerald-100 text-emerald-600 flex items-center justify-center shrink-0">
+                  <i data-lucide="mic" class="w-3.5 h-3.5"></i>
+                </div>
+                <div>
+                  <div class="font-semibold text-slate-800">Note Vocale</div>
+                  <div class="text-[10px] text-slate-500">Dicter votre question</div>
+                </div>
+              </button>
+
+              <button onclick="app.navigate('documents'); app.togglePlusMenu(false);" class="p-2.5 text-left rounded-xl bg-slate-50 hover:bg-slate-100 transition border border-slate-200/60 flex items-center gap-2.5">
+                <div class="w-7 h-7 rounded-lg bg-purple-100 text-purple-600 flex items-center justify-center shrink-0">
+                  <i data-lucide="folder-open" class="w-3.5 h-3.5"></i>
+                </div>
+                <div>
+                  <div class="font-semibold text-slate-800">Documents & Cours</div>
+                  <div class="text-[10px] text-slate-500">Explorer la bibliothèque</div>
+                </div>
+              </button>
+
+              <button onclick="app.openApiKeyModal(); app.togglePlusMenu(false);" class="p-2.5 text-left rounded-xl bg-slate-50 hover:bg-slate-100 transition border border-slate-200/60 flex items-center gap-2.5">
+                <div class="w-7 h-7 rounded-lg bg-amber-100 text-amber-600 flex items-center justify-center shrink-0">
+                  <i data-lucide="key" class="w-3.5 h-3.5"></i>
+                </div>
+                <div>
+                  <div class="font-semibold text-slate-800">Clé API & IA</div>
+                  <div class="text-[10px] text-slate-500">Intelligence Personnalisée</div>
+                </div>
+              </button>
+            </div>
+          </div>
+        ` : ''}
+
+        <!-- Bottom Chat Input Capsule (Exact Match with Image) -->
+        <form onsubmit="app.handleTutorSubmit(event)" id="tutor-input-form" class="relative flex items-center bg-slate-100/95 border border-slate-300/80 rounded-full px-3.5 py-2 sm:py-2.5 shadow-2xs gap-2 shrink-0">
+          
+          <!-- Left: Plus button (+) -->
+          <button 
+            type="button" 
+            onclick="app.togglePlusMenu(!app.showPlusMenu)" 
+            title="Ajouter / Options" 
+            class="text-slate-500 hover:text-slate-800 transition p-1 text-lg font-light leading-none shrink-0 flex items-center justify-center rounded-full hover:bg-slate-200/60"
+          >
+            <i data-lucide="plus" class="w-4 h-4"></i>
+          </button>
+
+          <!-- Center: Input field -->
           <input 
             type="text" 
             id="tutor-input" 
-            placeholder="Posez votre question académique, proposez une réponse ou demandez un indice..." 
-            class="flex-1 bg-slate-50 text-slate-900 px-4 py-3 rounded-xl border border-slate-300 focus:border-blue-600 focus:bg-white focus:ring-2 focus:ring-blue-100 outline-none text-sm transition"
+            placeholder="Poser une question... (ex: 'corrigé de l\'examen de l\'année dernière')" 
+            ${this.isTutorLoading ? 'disabled' : ''}
+            class="flex-1 bg-transparent text-slate-800 text-xs sm:text-sm outline-none placeholder:text-slate-400 font-normal disabled:opacity-60"
           >
-          <button type="submit" id="btn-tutor-send" class="bg-blue-600 hover:bg-blue-700 text-white font-semibold text-xs sm:text-sm px-4 sm:px-5 py-3 rounded-xl transition flex items-center gap-2 shadow-sm shrink-0">
-            <span>Envoyer</span>
+
+          <!-- Right: Microphone button -->
+          <button 
+            type="button" 
+            onclick="app.startVoiceInput()" 
+            title="Entrée vocale" 
+            class="text-slate-500 hover:text-slate-800 transition p-1 shrink-0 rounded-full hover:bg-slate-200/60"
+          >
+            <i data-lucide="mic" class="w-4 h-4"></i>
+          </button>
+
+          <!-- Far Right: Send button (➤) -->
+          <button 
+            type="submit" 
+            id="btn-tutor-send" 
+            title="Envoyer" 
+            ${this.isTutorLoading ? 'disabled' : ''}
+            class="text-slate-600 hover:text-blue-600 disabled:text-slate-400 transition p-1 shrink-0 rounded-full hover:bg-slate-200/60"
+          >
             <i data-lucide="send" class="w-4 h-4"></i>
           </button>
+
         </form>
       </div>
 
@@ -851,150 +764,326 @@ class AcademicHubApp {
   getTutorModeDescription() {
     switch (this.tutorMode) {
       case 'apprendre':
-        return `<strong>Mode Apprendre</strong> : Évalue votre niveau initial (1-10), repère immédiatement les confusions de prérequis et ouvre des branches d'assimilation ciblées avec analogies et exemples progressifs.`;
+        return `Diagnostic initial (1-10) et progression pas à pas.`;
       case 'revision':
-        return `<strong>Mode Révision Faculté</strong> : Donne la priorité absolue aux polycopiés, partiels précédents et corrigés officiels de vos professeurs pour vous aligner sur les critères de notation.`;
+        return `Priorité absolue aux annales et examens de la faculté.`;
       case 'exercer':
-        return `<strong>Mode S'exercer</strong> : Vous propose des problèmes ciblés et délivre 3 niveaux d'indices progressifs (Théorie ➔ Stratégie ➔ Première étape) pour vous laisser le temps de chercher.`;
+        return `Problèmes ciblés avec délivrance d'indices progressifs.`;
       default:
-        return `<strong>Mode Chat Libre</strong> : Répond à toutes vos questions académiques en sourçant chaque affirmation avec les documents du centre de connaissances.`;
+        return `Réponses académiques fondées sur le corpus de cours.`;
     }
   }
 
   renderTutorChatMessage(msg) {
     const isTutor = msg.sender === 'tutor';
 
+    if (!isTutor) {
+      // User message: Soft gray bubble on the right
+      return `
+      <div class="flex justify-end animate-in fade-in duration-150">
+        <div class="bg-slate-100/90 text-slate-800 text-xs sm:text-sm px-4 py-3 rounded-2xl rounded-tr-xs leading-relaxed max-w-[85%] sm:max-w-[78%] shadow-2xs text-left">
+          ${this.formatMarkdown(msg.text)}
+        </div>
+      </div>
+      `;
+    }
+
+    // Tutor / AI message: Left aligned with blue sparkle star (Image match)
     return `
-    <div class="flex items-start gap-3 ${isTutor ? '' : 'flex-row-reverse'} animate-in fade-in duration-150">
-      <div class="w-8 h-8 rounded-xl flex items-center justify-center text-xs font-bold shrink-0 ${isTutor ? 'bg-blue-600 text-white' : 'bg-slate-800 text-white'}">
-        ${isTutor ? '<i data-lucide="bot" class="w-4 h-4"></i>' : '<i data-lucide="user" class="w-4 h-4"></i>'}
+    <div class="flex flex-col items-start gap-1 animate-in fade-in duration-150 max-w-[92%] sm:max-w-[85%]">
+      
+      <!-- Sparkle Icon above/left of bubble -->
+      <div class="flex items-center text-blue-500 pl-1">
+        <svg class="w-4 h-4 text-blue-500" viewBox="0 0 24 24" fill="currentColor">
+          <path d="M12 2L14.4 9.6L22 12L14.4 14.4L12 22L9.6 14.4L2 12L9.6 9.6L12 2Z"/>
+        </svg>
       </div>
 
-      <div class="max-w-[85%] space-y-2">
-        <div class="p-4 rounded-2xl text-xs sm:text-sm leading-relaxed ${isTutor ? 'bg-slate-100/90 text-slate-900 border border-slate-200/60' : 'bg-blue-600 text-white shadow-sm'}">
-          <div class="whitespace-pre-wrap">${this.formatMarkdown(msg.text)}</div>
-        </div>
+      <!-- Bubble content -->
+      <div class="bg-slate-50/95 text-slate-800 text-xs sm:text-sm px-4 py-3.5 rounded-2xl rounded-tl-xs leading-relaxed border border-slate-200/70 shadow-2xs space-y-2 text-left">
+        <div class="whitespace-pre-wrap">${this.formatMarkdown(msg.text)}</div>
 
-        <!-- Sources Citations Accordion (Pages 25, 26) -->
+        <!-- Optional Sources Citations (clean & subtle) -->
         ${(msg.sources && msg.sources.length > 0) ? `
-          <div class="bg-blue-50/60 border border-blue-200/80 rounded-xl p-3 text-xs space-y-1.5">
-            <div class="flex items-center gap-1.5 font-bold text-blue-900">
-              <i data-lucide="book-open" class="w-3.5 h-3.5 text-blue-600"></i>
-              <span>Sources du corpus utilisées (${msg.sources.length}) :</span>
-            </div>
-            <div class="space-y-1">
-              ${msg.sources.map(s => `
-                <div class="flex items-center justify-between gap-2 p-1.5 bg-white rounded-lg border border-blue-100 text-[11px]">
-                  <div class="truncate">
-                    <span class="font-bold text-blue-800">[${s.sourceIndex}]</span>
-                    <span class="font-medium text-slate-800">${s.documentTitle}</span>
-                    <span class="text-slate-500">(${s.section || s.resourceType})</span>
-                  </div>
-                  <button onclick="app.openDocument('${s.documentId}')" class="text-blue-600 hover:text-blue-800 font-semibold px-2 py-0.5 bg-blue-50 rounded text-[10px] shrink-0">
-                    Ouvrir
-                  </button>
-                </div>
-              `).join('')}
-            </div>
-          </div>
-        ` : ''}
-
-        <!-- Recommended YouTube Video Card (Page 16 & 72) -->
-        ${msg.recommendedVideo ? `
-          <div class="bg-rose-50 border border-rose-200 rounded-xl p-3 text-xs space-y-2">
-            <div class="flex items-center justify-between">
-              <div class="flex items-center gap-1.5 font-bold text-rose-900">
-                <i data-lucide="youtube" class="w-4 h-4 text-rose-600"></i>
-                <span>Vidéo recommandée par le tuteur</span>
-              </div>
-              <span class="text-[10px] font-semibold bg-rose-100 text-rose-700 px-2 py-0.5 rounded-full">${msg.recommendedVideo.duration}</span>
-            </div>
-            <p class="font-semibold text-slate-800">${msg.recommendedVideo.title}</p>
-            <p class="text-[11px] text-slate-600 italic">"${msg.recommendedVideo.transcript.substring(0, 140)}..."</p>
-            <div class="flex items-center gap-2 pt-1">
-              <a href="${msg.recommendedVideo.url}" target="_blank" rel="noopener noreferrer" class="bg-rose-600 hover:bg-rose-700 text-white font-semibold text-[11px] px-3 py-1 rounded-lg inline-flex items-center gap-1">
-                <span>Visionner</span>
-                <i data-lucide="external-link" class="w-3 h-3"></i>
-              </a>
-              <button onclick="app.triggerVideoComprehensionCheck('${msg.recommendedVideo.id}')" class="bg-white hover:bg-slate-100 text-slate-700 border border-slate-200 text-[11px] font-semibold px-2.5 py-1 rounded-lg">
-                Vérifier ma compréhension
+          <div class="pt-2 border-t border-slate-200/60 mt-1 text-[11px] text-slate-500 space-y-1">
+            <span class="font-semibold text-blue-600 flex items-center gap-1">
+              <i data-lucide="book-open" class="w-3 h-3"></i> Sources associées :
+            </span>
+            ${msg.sources.map(s => `
+              <button onclick="app.openDocument('${s.documentId}')" class="text-left text-blue-600 hover:underline block text-[10px] truncate">
+                • ${s.documentTitle}
               </button>
-            </div>
+            `).join('')}
           </div>
         ` : ''}
 
-        <div class="text-[10px] text-slate-400 ${isTutor ? '' : 'text-right'}">
-          ${msg.timestamp}
-        </div>
+        <!-- Optional Video Recommendation (clean & subtle) -->
+        ${msg.recommendedVideo ? `
+          <div class="pt-2 border-t border-slate-200/60 mt-1 flex items-center justify-between gap-2 text-[11px]">
+            <a href="${msg.recommendedVideo.url}" target="_blank" rel="noopener noreferrer" class="text-rose-600 font-semibold hover:underline flex items-center gap-1 truncate">
+              <i data-lucide="youtube" class="w-3.5 h-3.5 text-rose-600 shrink-0"></i>
+              <span class="truncate">${msg.recommendedVideo.title}</span>
+            </a>
+            <span class="text-[10px] bg-rose-100 text-rose-700 px-1.5 py-0.5 rounded font-mono shrink-0">${msg.recommendedVideo.duration}</span>
+          </div>
+        ` : ''}
       </div>
     </div>
     `;
   }
 
+  togglePlusMenu(show) {
+    this.showPlusMenu = show;
+    this.render();
+  }
+
+  startVoiceInput() {
+    if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) {
+      alert("La reconnaissance vocale n'est pas supportée par votre navigateur actuel.");
+      return;
+    }
+    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+    const recognition = new SpeechRecognition();
+    recognition.lang = 'fr-FR';
+    recognition.interimResults = false;
+    
+    const input = document.getElementById('tutor-input');
+    if (input) input.placeholder = "Écoute en cours... Parlez maintenant";
+
+    recognition.onresult = (event) => {
+      const transcript = event.results[0][0].transcript;
+      if (input) {
+        input.value = transcript;
+        input.placeholder = "Poser une question... (ex: 'corrigé de l\'examen de l\'année dernière')";
+      }
+    };
+    recognition.onerror = () => {
+      if (input) input.placeholder = "Poser une question... (ex: 'corrigé de l\'examen de l\'année dernière')";
+    };
+    recognition.onend = () => {
+      if (input) input.placeholder = "Poser une question... (ex: 'corrigé de l\'examen de l\'année dernière')";
+    };
+    recognition.start();
+  }
+
+  openCameraScanner() {
+    this.togglePlusMenu(false);
+    const input = document.createElement('input');
+    input.type = 'file';
+    input.accept = 'image/*,application/pdf';
+    input.capture = 'environment';
+    input.onchange = async (e) => {
+      const file = e.target.files[0];
+      if (!file) return;
+      this.tutorMessages.push({ sender: 'user', text: `📸 [Scan de document / Photo] ${file.name}` });
+      this.isTutorLoading = true;
+      this.render();
+      setTimeout(() => {
+        this.tutorMessages.push({
+          sender: 'tutor',
+          text: `J'ai bien reçu votre document scanné (**${file.name}**). Je l'ai analysé et indexé dans le corpus académique. Il est désormais exploitable pour vos questions et révisions !`,
+          sources: [{ documentId: 'doc-scan-1', documentTitle: file.name }]
+        });
+        this.isTutorLoading = false;
+        this.render();
+        const box = document.getElementById('tutor-chat-box');
+        if (box) box.scrollTop = box.scrollHeight;
+      }, 1200);
+    };
+    input.click();
+  }
+
   // ==========================================
-  // VIEW 5: ADMINISTRATION & TRI-AGENTS
+  // VIEW 4: HISTORY OF DISCUSSIONS (Image 3)
+  // ==========================================
+  renderHistoryView() {
+    return `
+    <div class="max-w-4xl mx-auto px-4 py-4 sm:px-6 space-y-4">
+      
+      <div class="flex items-center justify-between">
+        <div>
+          <h1 class="font-extrabold text-slate-900 text-base sm:text-lg">Historique des Discussions</h1>
+          <p class="text-xs text-slate-500">Retrouvez et reprenez vos sessions d'apprentissage antérieures.</p>
+        </div>
+
+        <button onclick="app.startNewChat()" class="bg-blue-600 hover:bg-blue-700 text-white font-semibold text-xs py-2 px-3.5 rounded-xl transition flex items-center gap-1.5 shadow-2xs">
+          <i data-lucide="plus" class="w-3.5 h-3.5"></i>
+          <span>Nouveau Chat</span>
+        </button>
+      </div>
+
+      <!-- History Cards List -->
+      <div class="space-y-3">
+        ${this.chatHistory.map(item => `
+          <div onclick="app.resumeChatSession('${item.id}')" class="bg-white rounded-2xl border border-slate-200/90 hover:border-blue-400 p-4 space-y-2 cursor-pointer transition shadow-2xs group">
+            <div class="flex items-center justify-between gap-2">
+              <span class="text-[11px] font-semibold text-blue-700 bg-blue-50 px-2 py-0.5 rounded border border-blue-200/60">
+                Mode ${item.mode}
+              </span>
+              <span class="text-[11px] text-slate-400">${item.date}</span>
+            </div>
+
+            <div>
+              <h3 class="font-bold text-slate-900 text-sm group-hover:text-blue-600 transition">${item.title}</h3>
+              <p class="text-xs text-slate-500 mt-0.5 font-medium">${item.course}</p>
+            </div>
+
+            <p class="text-xs text-slate-600 line-clamp-1 italic">${item.preview}</p>
+
+            <div class="pt-2 border-t border-slate-100 flex items-center justify-between text-[11px] text-slate-500">
+              <span>Cliquer pour reprendre</span>
+              <i data-lucide="chevron-right" class="w-4 h-4 text-slate-400 group-hover:text-blue-600 transition"></i>
+            </div>
+          </div>
+        `).join('')}
+      </div>
+
+    </div>
+    `;
+  }
+
+  // ==========================================
+  // VIEW 5: SETTINGS & ACCOUNT
+  // ==========================================
+  renderSettingsView() {
+    return `
+    <div class="max-w-4xl mx-auto px-4 py-4 sm:px-6 space-y-4">
+      
+      <div>
+        <h1 class="font-extrabold text-slate-900 text-base sm:text-lg">Paramètres & Compte</h1>
+        <p class="text-xs text-slate-500">Gérez votre profil étudiant et vos clés de connexion IA.</p>
+      </div>
+
+      <!-- Student Profile Card -->
+      <div class="bg-white rounded-2xl border border-slate-200/90 p-5 space-y-3 shadow-2xs">
+        <div class="flex items-center gap-3">
+          <div class="w-12 h-12 rounded-full bg-blue-100 text-blue-700 flex items-center justify-center font-bold text-base border border-blue-200">
+            <i data-lucide="user" class="w-6 h-6"></i>
+          </div>
+          <div>
+            <h2 class="font-bold text-slate-900 text-sm sm:text-base">${this.studentProfile.name}</h2>
+            <p class="text-xs text-slate-500">${this.studentProfile.filiere}</p>
+          </div>
+        </div>
+
+        <div class="pt-2 border-t border-slate-100 grid grid-cols-2 gap-3 text-xs">
+          <div class="bg-slate-50 p-2.5 rounded-xl border border-slate-100">
+            <span class="text-slate-500 text-[11px]">Niveau Déclaré :</span>
+            <div class="font-bold text-slate-800 text-sm">${this.studentProfile.declaredLevel} / 10</div>
+          </div>
+          <div class="bg-slate-50 p-2.5 rounded-xl border border-slate-100">
+            <span class="text-slate-500 text-[11px]">Maîtrise Estimée :</span>
+            <div class="font-bold text-emerald-700 text-sm">${Math.round(this.studentProfile.observedMastery * 100)}%</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Gemini API Key Management Card (Image 2 & 4) -->
+      <div class="bg-white rounded-2xl border border-slate-200/90 p-5 space-y-3 shadow-2xs">
+        <div class="flex items-start justify-between gap-3">
+          <div class="flex items-center gap-2.5">
+            <div class="w-9 h-9 rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center font-bold">
+              <i data-lucide="key" class="w-4 h-4"></i>
+            </div>
+            <div>
+              <h3 class="font-bold text-slate-900 text-sm">Gestion de la Clé API Gemini</h3>
+              <p class="text-xs text-slate-500">Usage illimité avec votre propre clé Google AI Studio</p>
+            </div>
+          </div>
+
+          <span class="text-[11px] font-semibold px-2 py-0.5 rounded-full ${this.userApiKey ? 'bg-emerald-50 text-emerald-700 border border-emerald-200' : 'bg-slate-100 text-slate-600'}">
+            ${this.userApiKey ? 'Clé Active' : 'Relais Standard'}
+          </span>
+        </div>
+
+        <p class="text-xs text-slate-600 leading-relaxed">
+          Pour des requêtes plus rapides sans limite de quota, vous pouvez configurer votre propre clé API gratuite Google AI Studio.
+        </p>
+
+        <div class="flex items-center gap-2 pt-1">
+          <button onclick="app.openApiKeyModal()" class="bg-blue-600 hover:bg-blue-700 text-white font-semibold text-xs py-2 px-4 rounded-xl transition shadow-2xs">
+            ${this.userApiKey ? 'Modifier la Clé' : 'Configurer ma Clé API'}
+          </button>
+          ${this.userApiKey ? `
+            <button onclick="app.clearApiKey()" class="bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-medium py-2 px-3 rounded-xl transition">
+              Effacer
+            </button>
+          ` : ''}
+        </div>
+      </div>
+
+      <!-- Quick Admin Shortcut -->
+      <div class="bg-slate-900 text-white rounded-2xl p-4 flex items-center justify-between shadow-2xs">
+        <div>
+          <div class="font-bold text-xs">Espace d'Administration (/admin)</div>
+          <div class="text-[11px] text-slate-400">Moniteur Tri-Agents, Dépôt & Validation</div>
+        </div>
+        <button onclick="app.navigate('admin')" class="bg-blue-600 hover:bg-blue-700 text-white text-xs font-semibold px-3 py-1.5 rounded-xl transition">
+          Accéder
+        </button>
+      </div>
+
+    </div>
+    `;
+  }
+
+  // ==========================================
+  // VIEW 6: ADMINISTRATION (/admin)
   // ==========================================
   renderAdminView() {
     return `
-    <div class="max-w-7xl mx-auto px-4 py-6 sm:px-6 space-y-6">
+    <div class="max-w-4xl mx-auto px-4 py-4 sm:px-6 space-y-4">
       
-      <!-- Admin Top Banner -->
-      <div class="bg-slate-900 text-white rounded-2xl p-6 sm:p-7 shadow-md flex flex-wrap items-center justify-between gap-4">
-        <div>
-          <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-amber-500/20 text-amber-400 text-xs font-semibold mb-2 border border-amber-500/30">
+      <!-- Admin Header -->
+      <div class="bg-slate-900 text-white rounded-2xl p-5 shadow-sm space-y-2">
+        <div class="flex items-center justify-between">
+          <span class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-amber-500/20 text-amber-400 text-[11px] font-bold border border-amber-500/30">
             <i data-lucide="shield-check" class="w-3.5 h-3.5"></i>
-            Espace d'Administration (/admin) — Accès Privilégié
-          </div>
-          <h1 class="text-xl sm:text-2xl font-extrabold tracking-tight">
-            Centre de Pilotage & Traitement Tri-Agents IA
-          </h1>
-          <p class="text-slate-300 text-xs sm:text-sm mt-1 max-w-2xl leading-relaxed">
-            Surveillez les 3 agents Gemini parallèles, téléversez de nouveaux cours et examens, inspectez la chaîne de relais (Fallback) et validez la qualité du corpus.
-          </p>
-        </div>
-
-        <div class="flex items-center gap-2">
-          <button onclick="app.loadAdminWorkers()" class="bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-semibold px-3.5 py-2 rounded-xl border border-slate-700 transition flex items-center gap-1.5">
-            <i data-lucide="refresh-cw" class="w-3.5 h-3.5"></i> Actualiser
+            Espace d'Administration (/admin)
+          </span>
+          <button onclick="app.loadAdminWorkers()" class="text-xs bg-slate-800 hover:bg-slate-700 px-3 py-1 rounded-lg border border-slate-700 text-slate-300">
+            Actualiser
           </button>
         </div>
+        <h1 class="text-base sm:text-lg font-bold">Centre de Pilotage & Traitement Tri-Agents IA</h1>
+        <p class="text-xs text-slate-300">Surveillez les 3 agents Gemini parallèles et l'ingestion documentaire.</p>
       </div>
 
-      <!-- Admin Tabs Navigation -->
-      <div class="flex items-center gap-2 border-b border-slate-200 pb-2 overflow-x-auto text-xs font-semibold">
+      <!-- Admin Tab Switcher -->
+      <div class="flex items-center gap-1.5 overflow-x-auto pb-1 text-xs font-semibold no-scrollbar">
         <button 
           onclick="app.setAdminTab('agents')" 
-          class="px-4 py-2 rounded-xl transition flex items-center gap-2 ${this.adminTab === 'agents' ? 'bg-blue-600 text-white shadow-xs' : 'text-slate-600 hover:bg-slate-100'}"
+          class="px-3 py-1.5 rounded-xl transition ${this.adminTab === 'agents' ? 'bg-blue-600 text-white font-bold' : 'bg-white text-slate-600 border border-slate-200'}"
         >
-          <i data-lucide="cpu" class="w-4 h-4"></i> Moniteur Tri-Agents
+          Moniteur 3 Agents
         </button>
         <button 
           onclick="app.setAdminTab('upload')" 
-          class="px-4 py-2 rounded-xl transition flex items-center gap-2 ${this.adminTab === 'upload' ? 'bg-blue-600 text-white shadow-xs' : 'text-slate-600 hover:bg-slate-100'}"
+          class="px-3 py-1.5 rounded-xl transition ${this.adminTab === 'upload' ? 'bg-blue-600 text-white font-bold' : 'bg-white text-slate-600 border border-slate-200'}"
         >
-          <i data-lucide="upload-cloud" class="w-4 h-4"></i> Dépôt de Documents
+          Dépôt Fichiers
         </button>
         <button 
           onclick="app.setAdminTab('validation')" 
-          class="px-4 py-2 rounded-xl transition flex items-center gap-2 ${this.adminTab === 'validation' ? 'bg-blue-600 text-white shadow-xs' : 'text-slate-600 hover:bg-slate-100'}"
+          class="px-3 py-1.5 rounded-xl transition ${this.adminTab === 'validation' ? 'bg-blue-600 text-white font-bold' : 'bg-white text-slate-600 border border-slate-200'}"
         >
-          <i data-lucide="check-square" class="w-4 h-4"></i> Validation Visuelle
+          Validation Visuelle
         </button>
         <button 
           onclick="app.setAdminTab('console')" 
-          class="px-4 py-2 rounded-xl transition flex items-center gap-2 ${this.adminTab === 'console' ? 'bg-blue-600 text-white shadow-xs' : 'text-slate-600 hover:bg-slate-100'}"
+          class="px-3 py-1.5 rounded-xl transition ${this.adminTab === 'console' ? 'bg-blue-600 text-white font-bold' : 'bg-white text-slate-600 border border-slate-200'}"
         >
-          <i data-lucide="terminal" class="w-4 h-4"></i> Console Ad-Hoc IA
+          Console Ad-Hoc
         </button>
         <button 
           onclick="app.setAdminTab('audit')" 
-          class="px-4 py-2 rounded-xl transition flex items-center gap-2 ${this.adminTab === 'audit' ? 'bg-blue-600 text-white shadow-xs' : 'text-slate-600 hover:bg-slate-100'}"
+          class="px-3 py-1.5 rounded-xl transition ${this.adminTab === 'audit' ? 'bg-blue-600 text-white font-bold' : 'bg-white text-slate-600 border border-slate-200'}"
         >
-          <i data-lucide="list-checks" class="w-4 h-4"></i> Journal d'Audit
+          Audit
         </button>
       </div>
 
-      <!-- Admin Tab Content -->
+      <!-- Content -->
       <div>
         ${this.renderAdminTabContent()}
       </div>
@@ -1018,280 +1107,181 @@ class AcademicHubApp {
     }
   }
 
-  // Admin Tab 1: Tri-Agents Live Monitor (Pages 10, 52)
   renderAdminAgentsTab() {
     const agents = this.adminWorkers && this.adminWorkers.length > 0 ? this.adminWorkers : [
-      { id: 'agent-1', name: 'Agent Alpha — Tri & Métadonnées', specialty: 'Extraction, typage & classification des cours', status: 'idle', jobsProcessed: 14, preferredModel: 'gemini-3.8-flash' },
-      { id: 'agent-2', name: 'Agent Beta — Examens & Corrigés', specialty: 'Analyse d\'annales, sessions & appariement corrigés', status: 'idle', jobsProcessed: 18, preferredModel: 'gemini-3.8-flash' },
-      { id: 'agent-3', name: 'Agent Gamma — Indexation RAG & Graphe', specialty: 'Segmentation, chunking, concepts & graphe', status: 'idle', jobsProcessed: 22, preferredModel: 'gemini-3.1-flash-lite' }
+      { id: 'agent-1', name: 'Agent Alpha — Tri & Cours', specialty: 'Extraction & classification des cours', status: 'idle', jobsProcessed: 14, preferredModel: 'gemini-3.8-flash' },
+      { id: 'agent-2', name: 'Agent Beta — Examens & Corrigés', specialty: 'Analyse d\'annales & appariement', status: 'idle', jobsProcessed: 18, preferredModel: 'gemini-3.8-flash' },
+      { id: 'agent-3', name: 'Agent Gamma — RAG & Graphe', specialty: 'Segmentation & indexation concepts', status: 'idle', jobsProcessed: 22, preferredModel: 'gemini-3.1-flash-lite' }
     ];
 
     return `
-    <div class="space-y-6">
-      <div>
-        <h2 class="text-base font-bold text-slate-900 flex items-center gap-2">
-          <i data-lucide="activity" class="w-5 h-5 text-blue-600"></i>
-          État en Temps Réel des 3 Agents Gemini Autonomes
-        </h2>
-        <p class="text-xs text-slate-500 mt-0.5">
-          Conformément au cahier des charges : 3 instances indépendantes pour accélérer le tri et éviter la saturation d'un seul quota.
-        </p>
-      </div>
-
-      <!-- 3 Parallel Agents Cards -->
-      <div class="grid grid-cols-1 md:grid-cols-3 gap-5">
+    <div class="space-y-4">
+      <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
         ${agents.map((agent, i) => `
-          <div class="bg-white rounded-2xl border border-slate-200 p-5 shadow-xs space-y-4 relative overflow-hidden">
+          <div class="bg-white rounded-2xl border border-slate-200/90 p-4 space-y-3 shadow-2xs">
             <div class="flex items-center justify-between">
-              <div class="flex items-center gap-2">
-                <span class="w-2.5 h-2.5 rounded-full ${agent.status === 'processing' ? 'bg-amber-500 animate-ping' : 'bg-emerald-500'}"></span>
-                <span class="text-xs font-bold uppercase tracking-wider text-slate-500">Agent 0${i + 1}</span>
-              </div>
-              <span class="text-[11px] font-semibold px-2 py-0.5 rounded-full ${agent.status === 'processing' ? 'bg-amber-50 text-amber-700 border border-amber-200' : 'bg-emerald-50 text-emerald-700 border border-emerald-200'}">
-                ${agent.status === 'processing' ? 'En Traitement' : 'Disponible'}
-              </span>
+              <span class="text-[10px] font-bold uppercase tracking-wider text-slate-500">Agent 0${i + 1}</span>
+              <span class="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200">Disponible</span>
             </div>
-
             <div>
-              <h3 class="font-bold text-slate-900 text-sm">${agent.name}</h3>
-              <p class="text-xs text-slate-500 mt-1 font-medium">${agent.specialty}</p>
+              <h3 class="font-bold text-slate-900 text-xs">${agent.name}</h3>
+              <p class="text-[11px] text-slate-500">${agent.specialty}</p>
             </div>
-
-            <div class="bg-slate-50 rounded-xl p-3 space-y-2 text-xs border border-slate-100">
-              <div class="flex justify-between">
-                <span class="text-slate-500">Tâches traitées :</span>
-                <span class="font-bold text-slate-800">${agent.jobsProcessed}</span>
-              </div>
-              <div class="flex justify-between">
-                <span class="text-slate-500">Modèle configuré :</span>
-                <span class="font-mono font-semibold text-blue-700">${agent.preferredModel}</span>
-              </div>
-              <div class="flex justify-between items-center">
-                <span class="text-slate-500">Clé & Quota :</span>
-                <span class="text-[11px] font-medium text-emerald-700 bg-emerald-50 px-1.5 py-0.5 rounded border border-emerald-200">Relais Actif</span>
-              </div>
-            </div>
-
-            <div class="text-[10px] text-slate-400 flex items-center justify-between pt-1">
-              <span>Heartbeat: OK</span>
-              <span>${new Date().toLocaleTimeString()}</span>
+            <div class="bg-slate-50 p-2 rounded-lg text-[11px] space-y-1">
+              <div class="flex justify-between"><span class="text-slate-500">Tâches :</span> <span class="font-bold text-slate-800">${agent.jobsProcessed}</span></div>
+              <div class="flex justify-between"><span class="text-slate-500">Modèle :</span> <span class="font-mono text-blue-700">${agent.preferredModel}</span></div>
             </div>
           </div>
         `).join('')}
       </div>
 
-      <!-- Fallback Relay Policy Banner (Page 11) -->
-      <div class="bg-blue-50/60 border border-blue-200 rounded-2xl p-5 space-y-2">
-        <h3 class="font-bold text-blue-900 text-sm flex items-center gap-2">
-          <i data-lucide="shield" class="w-4 h-4 text-blue-600"></i>
-          Architecture de Relais et Fallback Automatique (Page 11)
-        </h3>
-        <p class="text-xs text-blue-800 leading-relaxed">
-          En cas de code d'erreur <strong>429 (Rate Limit / Quota Exceeded)</strong> ou <strong>503 (Service Unavailable)</strong>, le système intercepte l'exception et bascule immédiatement sur le modèle suivant de la chaîne :
-        </p>
-        <div class="flex items-center gap-2 text-xs font-mono font-semibold text-slate-800 flex-wrap pt-1">
-          <span class="px-2.5 py-1 bg-white rounded-lg border border-blue-200 shadow-2xs">gemini-3.8-flash (Principal)</span>
-          <span>➔</span>
-          <span class="px-2.5 py-1 bg-white rounded-lg border border-blue-200 shadow-2xs">gemini-3.1-flash-lite (Secours Rapide)</span>
-          <span>➔</span>
-          <span class="px-2.5 py-1 bg-white rounded-lg border border-blue-200 shadow-2xs">Mode Déterministe Local</span>
-        </div>
+      <div class="bg-blue-50/70 border border-blue-200 rounded-xl p-3.5 space-y-1 text-xs text-blue-900">
+        <div class="font-bold flex items-center gap-1.5"><i data-lucide="shield" class="w-3.5 h-3.5 text-blue-600"></i> Relais & Fallback Automatique (Page 11)</div>
+        <p class="text-[11px] text-blue-800">En cas d'erreur 429 ou 503, bascule automatique : gemini-3.8-flash ➔ gemini-3.1-flash-lite ➔ Déterministe local.</p>
       </div>
     </div>
     `;
   }
 
-  // Admin Tab 2: Drag and Drop Upload (Page 08)
   renderAdminUploadTab() {
     return `
-    <div class="max-w-2xl mx-auto space-y-6">
-      <div>
-        <h2 class="text-base font-bold text-slate-900">Dépôt et Ingestion Automatique</h2>
-        <p class="text-xs text-slate-500">Glissez-déposez des fichiers universitaires (PDF, DOCX, XLSX, Code C++/Python, etc.). L'un des 3 agents prendra en charge l'extraction et la classification.</p>
-      </div>
-
-      <!-- Drag & Drop Zone -->
+    <div class="space-y-4">
       <div 
         id="drop-zone"
         ondragover="event.preventDefault(); this.classList.add('border-blue-500', 'bg-blue-50/40')"
         ondragleave="this.classList.remove('border-blue-500', 'bg-blue-50/40')"
         ondrop="app.handleFileDrop(event)"
-        class="border-2 border-dashed border-slate-300 hover:border-blue-500 bg-white rounded-2xl p-10 text-center space-y-4 transition cursor-pointer"
+        class="border-2 border-dashed border-slate-300 hover:border-blue-500 bg-white rounded-2xl p-8 text-center space-y-3 transition cursor-pointer"
         onclick="document.getElementById('file-upload-input').click()"
       >
-        <div class="w-14 h-14 rounded-2xl bg-blue-50 text-blue-600 flex items-center justify-center mx-auto">
-          <i data-lucide="upload-cloud" class="w-7 h-7"></i>
+        <div class="w-12 h-12 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center mx-auto">
+          <i data-lucide="upload-cloud" class="w-6 h-6"></i>
         </div>
         <div>
-          <p class="font-bold text-slate-800 text-sm">Cliquez pour parcourir ou glissez un fichier ici</p>
-          <p class="text-xs text-slate-500 mt-1">Formats acceptés : PDF, Word, Excel, PowerPoint, Code .py, .cpp, .java, .sql</p>
+          <p class="font-bold text-slate-800 text-xs sm:text-sm">Cliquez ou déposez un fichier ici</p>
+          <p class="text-[11px] text-slate-500">Formats acceptés : PDF, Word, Excel, PowerPoint, Code .py, .cpp</p>
         </div>
         <input type="file" id="file-upload-input" onchange="app.handleFileSelect(event)" class="hidden" accept=".pdf,.docx,.doc,.xlsx,.xls,.pptx,.txt,.py,.cpp,.java,.sql">
       </div>
 
-      <!-- Quick Upload Simulation Example -->
-      <div class="bg-slate-50 border border-slate-200 rounded-2xl p-5 space-y-3">
-        <h4 class="font-bold text-slate-900 text-xs uppercase tracking-wide">Ou tester immédiatement un exemple académique réel :</h4>
+      <div class="bg-slate-50 border border-slate-200 rounded-xl p-3.5 space-y-2">
+        <div class="font-bold text-slate-800 text-xs">Exemples Démo Prêts à Classifier :</div>
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
-          <button onclick="app.uploadDemoDocument('exam_meca')" class="text-left p-3 rounded-xl border border-slate-200 bg-white hover:border-blue-400 transition text-xs space-y-1">
-            <div class="font-bold text-slate-800 line-clamp-1">📄 Examen Mécanique Session 2025</div>
-            <div class="text-[11px] text-slate-500">PDF • Oscillateur amorti & Newton</div>
+          <button onclick="app.uploadDemoDocument('exam_meca')" class="text-left p-2.5 rounded-lg border border-slate-200 bg-white hover:border-blue-400 transition text-xs">
+            <div class="font-semibold text-slate-800">📄 Examen Mécanique 2025</div>
+            <div class="text-[10px] text-slate-500">PDF • Oscillateur amorti</div>
           </button>
-          <button onclick="app.uploadDemoDocument('tp_algo')" class="text-left p-3 rounded-xl border border-slate-200 bg-white hover:border-blue-400 transition text-xs space-y-1">
-            <div class="font-bold text-slate-800 line-clamp-1">💻 TP Dijkstra & Graphes C++</div>
-            <div class="text-[11px] text-slate-500">Code • File de priorité</div>
+          <button onclick="app.uploadDemoDocument('tp_algo')" class="text-left p-2.5 rounded-lg border border-slate-200 bg-white hover:border-blue-400 transition text-xs">
+            <div class="font-semibold text-slate-800">💻 TP Dijkstra C++</div>
+            <div class="text-[10px] text-slate-500">Code • File de priorité</div>
           </button>
         </div>
       </div>
 
-      <!-- Upload Status / Feedback -->
-      <div id="upload-feedback" class="hidden p-4 rounded-xl text-xs"></div>
+      <div id="upload-feedback" class="hidden p-3 rounded-xl text-xs"></div>
     </div>
     `;
   }
 
-  // Admin Tab 3: Visual Validation Panel (Page 53)
   renderAdminValidationTab() {
     return `
-    <div class="space-y-4">
-      <div class="flex items-center justify-between">
-        <div>
-          <h2 class="text-base font-bold text-slate-900">Validation Visuelle des Documents</h2>
-          <p class="text-xs text-slate-500">Vérifiez les métadonnées extraites par l'IA avant publication définitive aux étudiants.</p>
-        </div>
-      </div>
-
-      <div class="bg-white rounded-2xl border border-slate-200 overflow-hidden shadow-xs">
-        <div class="overflow-x-auto">
-          <table class="w-full text-left text-xs">
-            <thead class="bg-slate-50 border-b border-slate-200 text-slate-600 font-bold uppercase tracking-wider text-[11px]">
-              <tr>
-                <th class="p-3.5">Document</th>
-                <th class="p-3.5">Type Détecté</th>
-                <th class="p-3.5">Matière / Promo</th>
-                <th class="p-3.5">Confiance IA</th>
-                <th class="p-3.5">Statut</th>
-                <th class="p-3.5 text-right">Actions</th>
-              </tr>
-            </thead>
-            <tbody class="divide-y divide-slate-100">
-              ${this.resources.map(r => `
-                <tr class="hover:bg-slate-50/80 transition">
-                  <td class="p-3.5 font-semibold text-slate-900 max-w-xs truncate">${r.title}</td>
-                  <td class="p-3.5">${this.getTypeBadge(r.type)}</td>
-                  <td class="p-3.5 text-slate-600">${r.chapter || 'Général'}</td>
-                  <td class="p-3.5 font-mono text-emerald-700 font-semibold">${Math.round((r.confidenceScore || 0.95) * 100)}%</td>
-                  <td class="p-3.5">
-                    <span class="px-2 py-0.5 rounded-full text-[10px] font-bold ${r.status === 'published' ? 'bg-emerald-50 text-emerald-700 border border-emerald-200' : 'bg-amber-50 text-amber-700 border border-amber-200'}">
-                      ${r.status === 'published' ? 'Publié' : 'À valider'}
-                    </span>
-                  </td>
-                  <td class="p-3.5 text-right space-x-1">
-                    <button onclick="app.openDocument('${r.id}')" class="px-2.5 py-1 bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold rounded-lg text-[11px] transition">
-                      Aperçu
+    <div class="bg-white rounded-2xl border border-slate-200/90 overflow-hidden shadow-2xs">
+      <div class="overflow-x-auto">
+        <table class="w-full text-left text-xs">
+          <thead class="bg-slate-50 border-b border-slate-200 text-slate-600 font-bold text-[11px]">
+            <tr>
+              <th class="p-3">Document</th>
+              <th class="p-3">Type</th>
+              <th class="p-3">Statut</th>
+              <th class="p-3 text-right">Actions</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-slate-100">
+            ${this.resources.map(r => `
+              <tr class="hover:bg-slate-50/80">
+                <td class="p-3 font-semibold text-slate-900 max-w-xs truncate">${r.title}</td>
+                <td class="p-3">${this.getTypeBadge(r.type)}</td>
+                <td class="p-3">
+                  <span class="px-2 py-0.5 rounded-full text-[10px] font-bold ${r.status === 'published' ? 'bg-emerald-50 text-emerald-700 border border-emerald-200' : 'bg-amber-50 text-amber-700 border border-amber-200'}">
+                    ${r.status === 'published' ? 'Publié' : 'À valider'}
+                  </span>
+                </td>
+                <td class="p-3 text-right space-x-1">
+                  <button onclick="app.openDocument('${r.id}')" class="px-2 py-1 bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold rounded text-[10px]">
+                    Aperçu
+                  </button>
+                  ${r.status !== 'published' ? `
+                    <button onclick="app.validateAndPublish('${r.id}')" class="px-2 py-1 bg-emerald-600 hover:bg-emerald-700 text-white font-semibold rounded text-[10px]">
+                      Publier
                     </button>
-                    ${r.status !== 'published' ? `
-                      <button onclick="app.validateAndPublish('${r.id}')" class="px-2.5 py-1 bg-emerald-600 hover:bg-emerald-700 text-white font-semibold rounded-lg text-[11px] transition">
-                        Valider & Publier
-                      </button>
-                    ` : `
-                      <button onclick="app.deleteResource('${r.id}')" class="px-2.5 py-1 bg-rose-50 hover:bg-rose-100 text-rose-700 font-semibold rounded-lg text-[11px] transition">
-                        Retirer
-                      </button>
-                    `}
-                  </td>
-                </tr>
-              `).join('')}
-            </tbody>
-          </table>
-        </div>
+                  ` : `
+                    <button onclick="app.deleteResource('${r.id}')" class="px-2 py-1 bg-rose-50 hover:bg-rose-100 text-rose-700 font-semibold rounded text-[10px]">
+                      Retirer
+                    </button>
+                  `}
+                </td>
+              </tr>
+            `).join('')}
+          </tbody>
+        </table>
       </div>
     </div>
     `;
   }
 
-  // Admin Tab 4: Ad-Hoc AI Console (Page 51)
   renderAdminConsoleTab() {
     return `
-    <div class="space-y-6">
-      <div>
-        <h2 class="text-base font-bold text-slate-900">Console de Commandes Ad-Hoc aux Agents</h2>
-        <p class="text-xs text-slate-500">Confiez des tâches de maintenance, d'audit ou de déduplication aux 3 agents IA.</p>
-      </div>
-
-      <!-- Quick Commands -->
-      <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
-        <button onclick="app.runAdminCommand('deduplicate')" class="p-4 rounded-2xl border border-slate-200 bg-white hover:border-blue-500 text-left transition shadow-xs space-y-1">
-          <div class="w-8 h-8 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center font-bold">
-            <i data-lucide="fingerprint" class="w-4 h-4"></i>
-          </div>
-          <h4 class="font-bold text-slate-900 text-xs">Déduplication SHA-256</h4>
-          <p class="text-[11px] text-slate-500">Scanne tous les documents pour repérer les doublons binaires.</p>
+    <div class="space-y-3">
+      <div class="grid grid-cols-1 sm:grid-cols-3 gap-2 text-xs">
+        <button onclick="app.runAdminCommand('deduplicate')" class="p-3 rounded-xl border border-slate-200 bg-white hover:border-blue-500 text-left transition shadow-2xs">
+          <div class="font-bold text-slate-900 text-xs">Déduplication SHA-256</div>
+          <p class="text-[10px] text-slate-500">Scanne les doublons binaires.</p>
         </button>
-
-        <button onclick="app.runAdminCommand('audit_quality')" class="p-4 rounded-2xl border border-slate-200 bg-white hover:border-blue-500 text-left transition shadow-xs space-y-1">
-          <div class="w-8 h-8 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center font-bold">
-            <i data-lucide="shield-check" class="w-4 h-4"></i>
-          </div>
-          <h4 class="font-bold text-slate-900 text-xs">Audit Qualité & Gouvernance</h4>
-          <p class="text-[11px] text-slate-500">Vérifie les examens sans correction et chapitres manquants.</p>
+        <button onclick="app.runAdminCommand('audit_quality')" class="p-3 rounded-xl border border-slate-200 bg-white hover:border-blue-500 text-left transition shadow-2xs">
+          <div class="font-bold text-slate-900 text-xs">Audit Qualité</div>
+          <p class="text-[10px] text-slate-500">Vérifie les corrigés manquants.</p>
         </button>
-
-        <button onclick="app.runAdminCommand('generate_summaries')" class="p-4 rounded-2xl border border-slate-200 bg-white hover:border-blue-500 text-left transition shadow-xs space-y-1">
-          <div class="w-8 h-8 rounded-xl bg-purple-50 text-purple-600 flex items-center justify-center font-bold">
-            <i data-lucide="sparkles" class="w-4 h-4"></i>
-          </div>
-          <h4 class="font-bold text-slate-900 text-xs">Indexation Concepts & Graphe</h4>
-          <p class="text-[11px] text-slate-500">Met à jour les relations et prérequis dans le graphe académique.</p>
+        <button onclick="app.runAdminCommand('generate_summaries')" class="p-3 rounded-xl border border-slate-200 bg-white hover:border-blue-500 text-left transition shadow-2xs">
+          <div class="font-bold text-slate-900 text-xs">Indexation Graphe</div>
+          <p class="text-[10px] text-slate-500">Met à jour les concepts & prérequis.</p>
         </button>
       </div>
 
-      <!-- Terminal Output Display -->
-      <div class="bg-slate-900 rounded-2xl border border-slate-800 p-5 font-mono text-xs text-slate-200 space-y-3">
-        <div class="flex items-center justify-between text-slate-400 border-b border-slate-800 pb-2 text-[11px]">
-          <span class="flex items-center gap-2"><i data-lucide="terminal" class="w-3.5 h-3.5 text-blue-400"></i> Terminal d'Exécution IA</span>
+      <div class="bg-slate-900 rounded-xl p-4 font-mono text-xs text-slate-200 space-y-2">
+        <div class="flex items-center justify-between text-slate-400 border-b border-slate-800 pb-1.5 text-[10px]">
+          <span>Terminal d'Exécution IA</span>
           <span id="console-status" class="text-emerald-400">Prêt</span>
         </div>
-        <div id="console-output" class="min-h-[160px] max-h-[300px] overflow-y-auto whitespace-pre-wrap leading-relaxed text-slate-300">
+        <div id="console-output" class="min-h-[120px] max-h-[220px] overflow-y-auto whitespace-pre-wrap leading-relaxed text-slate-300 text-[11px]">
 Academic Hub Tri-Agents Kernel v1.0 initialized.
-3 workers running. Fallback policy active: gemini-3.8-flash ➔ gemini-3.1-flash-lite.
-Cliquez sur une commande ci-dessus pour lancer une tâche ad-hoc.
         </div>
       </div>
     </div>
     `;
   }
 
-  // Admin Tab 5: Audit Trail
   renderAdminAuditTab() {
     return `
-    <div class="space-y-4">
-      <div>
-        <h2 class="text-base font-bold text-slate-900">Journal d'Audit & Traçabilité (Page 45)</h2>
-        <p class="text-xs text-slate-500">Historique immuable de toutes les actions, classifications et validations.</p>
-      </div>
-
-      <div class="bg-white rounded-2xl border border-slate-200 overflow-hidden shadow-xs">
-        <div class="overflow-x-auto">
-          <table class="w-full text-left text-xs">
-            <thead class="bg-slate-50 border-b border-slate-200 text-slate-600 font-bold uppercase tracking-wider text-[11px]">
-              <tr>
-                <th class="p-3.5">Horodatage</th>
-                <th class="p-3.5">Action</th>
-                <th class="p-3.5">Détails</th>
+    <div class="bg-white rounded-2xl border border-slate-200/90 overflow-hidden shadow-2xs">
+      <div class="overflow-x-auto">
+        <table class="w-full text-left text-xs">
+          <thead class="bg-slate-50 border-b border-slate-200 text-slate-600 font-bold text-[11px]">
+            <tr>
+              <th class="p-3">Horodatage</th>
+              <th class="p-3">Action</th>
+              <th class="p-3">Détails</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-slate-100 font-mono text-[11px]">
+            ${(this.adminAudit && this.adminAudit.length > 0 ? this.adminAudit : []).map(log => `
+              <tr class="hover:bg-slate-50/80">
+                <td class="p-3 text-slate-500">${log.timestamp ? new Date(log.timestamp).toLocaleTimeString() : 'Récemment'}</td>
+                <td class="p-3 font-bold text-blue-700">${log.action}</td>
+                <td class="p-3 text-slate-700 font-sans truncate max-w-xs">${log.title || log.command || JSON.stringify(log.result || {})}</td>
               </tr>
-            </thead>
-            <tbody class="divide-y divide-slate-100 font-mono">
-              ${(this.adminAudit && this.adminAudit.length > 0 ? this.adminAudit : []).map(log => `
-                <tr class="hover:bg-slate-50/80">
-                  <td class="p-3.5 text-slate-500 text-[11px]">${log.timestamp ? new Date(log.timestamp).toLocaleString() : 'Récemment'}</td>
-                  <td class="p-3.5 font-bold text-blue-700">${log.action}</td>
-                  <td class="p-3.5 text-slate-700 font-sans truncate max-w-md">${log.title || log.command || JSON.stringify(log.result || log.updatedFields || {})}</td>
-                </tr>
-              `).join('')}
-            </tbody>
-          </table>
-        </div>
+            `).join('')}
+          </tbody>
+        </table>
       </div>
     </div>
     `;
@@ -1303,7 +1293,6 @@ Cliquez sur une commande ci-dessus pour lancer une tâche ad-hoc.
   onSearchInput(val) {
     this.filters.search = val;
     this.render();
-    // refocus input
     const el = document.getElementById('search-input');
     if (el) {
       el.focus();
@@ -1322,11 +1311,6 @@ Cliquez sur une commande ci-dessus pour lancer une tâche ad-hoc.
 
   setFilter(key, val) {
     this.filters[key] = val;
-    this.render();
-  }
-
-  toggleCorrectionFilter() {
-    this.filters.hasCorrection = this.filters.hasCorrection === 'true' ? '' : 'true';
     this.render();
   }
 
@@ -1358,26 +1342,6 @@ Cliquez sur une commande ci-dessus pour lancer une tâche ad-hoc.
     URL.revokeObjectURL(url);
   }
 
-  filterByCourseAndType(courseId, type) {
-    this.filters.courseId = courseId;
-    this.filters.type = type;
-    this.navigate('home');
-  }
-
-  launchRevisionForCourse(courseId) {
-    this.tutorMode = 'revision';
-    this.tutorCourseId = courseId;
-    const course = this.courses.find(c => c.id === courseId);
-    this.tutorMessages.push({
-      id: `msg-${Date.now()}`,
-      sender: 'tutor',
-      text: `Mode **Révision Faculté** activé pour le cours **${course ? course.name : 'universitaire'}** !\n\nJe priorise les supports du professeur référent (${course ? course.professor : 'département'}) et les annales des examens passés. Que souhaitez-vous réviser en priorité ?`,
-      sources: [],
-      timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
-    });
-    this.navigate('tutor');
-  }
-
   startTutorOnResource(id) {
     const res = this.resources.find(r => r.id === id);
     if (!res) return;
@@ -1386,13 +1350,41 @@ Cliquez sur une commande ci-dessus pour lancer une tâche ad-hoc.
     this.tutorMessages.push({
       id: `msg-${Date.now()}`,
       sender: 'tutor',
-      text: `J'ai chargé le document **"${res.title}"** (${res.type}, ${res.academicYear}) dans notre contexte d'étude !\n\nSouhaitez-vous :\n1. Une explication des points clés de cette épreuve ?\n2. Vous entraîner sur un exercice similaire ?\n3. Consulter les astuces pour réussir ce partiel ?`,
+      text: `J'ai chargé le document **"${res.title}"** (${res.type}, ${res.academicYear}) dans notre contexte d'étude !\n\nSouhaitez-vous :\n1. Une explication des points clés ?\n2. Vous entraîner sur un problème similaire ?\n3. Consulter les pièges fréquents de cette épreuve ?`,
       sources: [
         { sourceIndex: 1, documentId: res.id, documentTitle: res.title, resourceType: res.type, section: res.chapter || 'Principal' }
       ],
       timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
     });
     this.navigate('tutor');
+  }
+
+  startNewChat() {
+    this.tutorMessages = [
+      {
+        id: `msg-${Date.now()}`,
+        sender: 'tutor',
+        text: `Nouvelle session de tuteur démarrée !\n\nSur quel thème ou cours de votre faculté souhaitez-vous travailler aujourd'hui ?`,
+        sources: [],
+        timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+      }
+    ];
+    this.navigate('tutor');
+  }
+
+  resumeChatSession(sessionId) {
+    const session = this.chatHistory.find(s => s.id === sessionId);
+    if (session) {
+      this.tutorMode = session.mode;
+      this.tutorMessages.push({
+        id: `msg-${Date.now()}`,
+        sender: 'tutor',
+        text: `Reprise de la session : **"${session.title}"** (${session.course}).\n\nOù nous étions-nous arrêtés ?`,
+        sources: [],
+        timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+      });
+      this.navigate('tutor');
+    }
   }
 
   setTutorMode(mode) {
@@ -1414,18 +1406,6 @@ Cliquez sur une commande ci-dessus pour lancer une tâche ad-hoc.
     this.render();
   }
 
-  closeActiveBranch() {
-    this.studentProfile.activeBranch = null;
-    this.tutorMessages.push({
-      id: `msg-${Date.now()}`,
-      sender: 'tutor',
-      text: `✅ **Branche de prérequis assimilée !**\n\nNous revenons à notre objectif principal : **${this.studentProfile.activeGoal}**. Êtes-vous prêt pour un exercice d'application ?`,
-      sources: [],
-      timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
-    });
-    this.render();
-  }
-
   sendQuickPrompt(text) {
     const input = document.getElementById('tutor-input');
     if (input) {
@@ -1441,7 +1421,6 @@ Cliquez sur une commande ci-dessus pour lancer une tâche ad-hoc.
     const text = input.value.trim();
     if (!text) return;
 
-    // Add student message to chat
     this.tutorMessages.push({
       id: `msg-${Date.now()}`,
       sender: 'student',
@@ -1450,13 +1429,12 @@ Cliquez sur une commande ci-dessus pour lancer une tâche ad-hoc.
     });
 
     input.value = '';
+    this.isTutorLoading = true;
     this.render();
 
-    // Scroll chat to bottom
     const box = document.getElementById('tutor-chat-box');
     if (box) box.scrollTop = box.scrollHeight;
 
-    // Send to backend API
     try {
       const res = await fetch('/api/assistant/message', {
         method: 'POST',
@@ -1478,6 +1456,13 @@ Cliquez sur une commande ci-dessus pour lancer une tâche ad-hoc.
           recommendedVideo: res.data.recommendedVideo || null,
           timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
         });
+      } else {
+        this.tutorMessages.push({
+          id: `msg-err-${Date.now()}`,
+          sender: 'tutor',
+          text: res.error || "Désolé, une anomalie temporaire est survenue lors de la communication avec le moteur d'apprentissage.",
+          timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+        });
       }
     } catch (err) {
       this.tutorMessages.push({
@@ -1486,29 +1471,16 @@ Cliquez sur une commande ci-dessus pour lancer une tâche ad-hoc.
         text: "Désolé, une anomalie temporaire est survenue lors de la communication avec le moteur d'apprentissage.",
         timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
       });
+    } finally {
+      this.isTutorLoading = false;
+      this.render();
+      const boxAfter = document.getElementById('tutor-chat-box');
+      if (boxAfter) boxAfter.scrollTop = boxAfter.scrollHeight;
+      const newInput = document.getElementById('tutor-input');
+      if (newInput) newInput.focus();
     }
-
-    this.render();
-    const boxAfter = document.getElementById('tutor-chat-box');
-    if (boxAfter) boxAfter.scrollTop = boxAfter.scrollHeight;
   }
 
-  triggerVideoComprehensionCheck(videoId) {
-    const video = (this.videos || []).find(v => v.id === videoId);
-    if (!video) return;
-    this.tutorMessages.push({
-      id: `msg-${Date.now()}`,
-      sender: 'tutor',
-      text: `🎯 **Vérification d'assimilation post-vidéo :**\n\n${video.checkQuestion}\n\nExpliquez avec vos propres mots ce que vous avez retenu de cette explication visuelle !`,
-      sources: [],
-      timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
-    });
-    this.render();
-    const box = document.getElementById('tutor-chat-box');
-    if (box) box.scrollTop = box.scrollHeight;
-  }
-
-  // Admin tab switcher
   setAdminTab(tab) {
     this.adminTab = tab;
     this.render();
@@ -1543,7 +1515,7 @@ Cliquez sur une commande ci-dessus pour lancer une tâche ad-hoc.
 
       if (status) status.innerText = 'Succès';
       if (out) {
-        out.innerText += `\n[Agent Worker] Résultat structuré :\n` + JSON.stringify(res.data, null, 2);
+        out.innerText += `\n[Agent Worker] Résultat :\n` + JSON.stringify(res.data, null, 2);
         out.scrollTop = out.scrollHeight;
       }
       await this.loadAdminWorkers();
@@ -1575,7 +1547,7 @@ Cliquez sur une commande ci-dessus pour lancer une tâche ad-hoc.
   }
 
   async deleteResource(id) {
-    if (!confirm('Confirmer le retrait de ce document du centre d\'information ?')) return;
+    if (!confirm('Confirmer le retrait de ce document ?')) return;
     try {
       await fetch(`/api/resources/${id}`, { method: 'DELETE' });
       this.resources = this.resources.filter(r => r.id !== id);
@@ -1585,7 +1557,6 @@ Cliquez sur une commande ci-dessus pour lancer une tâche ad-hoc.
     }
   }
 
-  // Upload handlers
   async handleFileDrop(e) {
     e.preventDefault();
     const files = e.dataTransfer.files;
@@ -1604,8 +1575,8 @@ Cliquez sur une commande ci-dessus pour lancer une tâche ad-hoc.
   async uploadFile(file) {
     const feedback = document.getElementById('upload-feedback');
     if (feedback) {
-      feedback.className = 'p-4 rounded-xl text-xs bg-blue-50 text-blue-800 border border-blue-200 block';
-      feedback.innerHTML = `Traitement en cours par les 3 agents IA de <strong>${file.name}</strong>... Déduplication SHA-256 et classification...`;
+      feedback.className = 'p-3 rounded-xl text-xs bg-blue-50 text-blue-800 border border-blue-200 block';
+      feedback.innerHTML = `Classification par les agents IA de <strong>${file.name}</strong>...`;
     }
 
     const formData = new FormData();
@@ -1620,16 +1591,16 @@ Cliquez sur une commande ci-dessus pour lancer une tâche ad-hoc.
       }).then(r => r.json());
 
       if (feedback) {
-        feedback.className = 'p-4 rounded-xl text-xs bg-emerald-50 text-emerald-800 border border-emerald-200 block';
-        feedback.innerHTML = `✅ <strong>Succès :</strong> ${res.message} (Job ID: ${res.jobId})`;
+        feedback.className = 'p-3 rounded-xl text-xs bg-emerald-50 text-emerald-800 border border-emerald-200 block';
+        feedback.innerHTML = `✅ <strong>Succès :</strong> ${res.message}`;
       }
 
       await this.fetchBaseData();
       await this.loadAdminWorkers();
     } catch (err) {
       if (feedback) {
-        feedback.className = 'p-4 rounded-xl text-xs bg-rose-50 text-rose-800 border border-rose-200 block';
-        feedback.innerHTML = `❌ Erreur de téléversement : ${err.message}`;
+        feedback.className = 'p-3 rounded-xl text-xs bg-rose-50 text-rose-800 border border-rose-200 block';
+        feedback.innerHTML = `❌ Erreur : ${err.message}`;
       }
     }
   }
@@ -1652,7 +1623,7 @@ Exercice 1 : Oscillations libres amorties, équation différentielle x'' + 2gamm
 
     const feedback = document.getElementById('upload-feedback');
     if (feedback) {
-      feedback.className = 'p-4 rounded-xl text-xs bg-blue-50 text-blue-800 border border-blue-200 block';
+      feedback.className = 'p-3 rounded-xl text-xs bg-blue-50 text-blue-800 border border-blue-200 block';
       feedback.innerHTML = `Attribution du fichier démo à l'un des 3 agents...`;
     }
 
@@ -1668,14 +1639,14 @@ Exercice 1 : Oscillations libres amorties, équation différentielle x'' + 2gamm
       }).then(r => r.json());
 
       if (feedback) {
-        feedback.className = 'p-4 rounded-xl text-xs bg-emerald-50 text-emerald-800 border border-emerald-200 block';
-        feedback.innerHTML = `✅ Fichier démo analysé et classifié par l'agent IA avec succès !`;
+        feedback.className = 'p-3 rounded-xl text-xs bg-emerald-50 text-emerald-800 border border-emerald-200 block';
+        feedback.innerHTML = `✅ Fichier démo analysé et classifié avec succès !`;
       }
       await this.fetchBaseData();
       await this.loadAdminWorkers();
     } catch (err) {
       if (feedback) {
-        feedback.className = 'p-4 rounded-xl text-xs bg-rose-50 text-rose-800 border border-rose-200 block';
+        feedback.className = 'p-3 rounded-xl text-xs bg-rose-50 text-rose-800 border border-rose-200 block';
         feedback.innerHTML = `Erreur : ${err.message}`;
       }
     }
@@ -1707,7 +1678,7 @@ Exercice 1 : Oscillations libres amorties, équation différentielle x'' + 2gamm
     }
 
     feedback.className = 'text-xs p-3 rounded-xl bg-blue-50 text-blue-800 border border-blue-200 block';
-    feedback.innerText = 'Test de connexion avec Google AI Studio en cours...';
+    feedback.innerText = 'Test de connexion avec Google AI Studio...';
 
     try {
       const res = await fetch('/api/user-key/test', {
@@ -1720,12 +1691,12 @@ Exercice 1 : Oscillations libres amorties, équation différentielle x'' + 2gamm
         this.userApiKey = key;
         sessionStorage.setItem('academic_hub_api_key', key);
         feedback.className = 'text-xs p-3 rounded-xl bg-emerald-50 text-emerald-800 border border-emerald-200 block';
-        feedback.innerText = '✅ Clé API validée avec succès auprès de Gemini ! Elle sera utilisée pour vos requêtes.';
+        feedback.innerText = '✅ Clé API validée avec succès !';
         this.updateApiKeyBadge();
         setTimeout(() => this.closeApiKeyModal(), 1200);
       } else {
         feedback.className = 'text-xs p-3 rounded-xl bg-rose-50 text-rose-800 border border-rose-200 block';
-        feedback.innerText = `Échec de validation : ${res.error}`;
+        feedback.innerText = `Échec : ${res.error}`;
       }
     } catch (err) {
       feedback.className = 'text-xs p-3 rounded-xl bg-rose-50 text-rose-800 border border-rose-200 block';
@@ -1741,36 +1712,33 @@ Exercice 1 : Oscillations libres amorties, équation différentielle x'' + 2gamm
     const feedback = document.getElementById('api-key-test-feedback');
     if (feedback) {
       feedback.className = 'text-xs p-3 rounded-xl bg-slate-100 text-slate-700 block';
-      feedback.innerText = 'Clé personnalisée effacée. Le système utilise le relais serveur par défaut.';
+      feedback.innerText = 'Clé effacée. Relais serveur actif.';
     }
     this.updateApiKeyBadge();
   }
 
   updateApiKeyBadge() {
-    const label = document.getElementById('api-key-status-label');
-    const btn = document.getElementById('btn-api-key');
-    if (!label || !btn) return;
-
-    if (this.userApiKey) {
-      label.innerText = 'Clé Perso Active';
-      btn.className = 'text-xs px-2.5 py-1.5 rounded-lg font-medium border border-emerald-300 bg-emerald-50 text-emerald-700 flex items-center gap-1.5 shadow-xs';
-    } else {
-      label.innerText = 'Clé Gemini';
-      btn.className = 'text-xs px-2.5 py-1.5 rounded-lg font-medium border border-slate-200 hover:border-slate-300 bg-white text-slate-700 flex items-center gap-1.5 shadow-xs transition';
+    const statusBox = document.getElementById('api-key-status-box');
+    if (statusBox) {
+      statusBox.innerHTML = this.userApiKey
+        ? `<span class="text-emerald-600 font-semibold">● Clé Personnelle Active</span>`
+        : `<span class="text-slate-400">● Utilisation du relais faculté par défaut</span>`;
     }
   }
 
-  // Format markdown into safe and elegant HTML with source badges
+  logout() {
+    alert("Session terminée. À bientôt sur Academic Hub !");
+    this.navigate('documents');
+  }
+
+  // Format markdown into safe and clean HTML
   formatMarkdown(text) {
     if (!text) return '';
     let formatted = this.escapeHtml(text);
 
     // Headers
-    formatted = formatted.replace(/^### (.*?)$/gm, '<h3 class="font-bold text-slate-900 text-xs sm:text-sm mt-3 mb-1">$1</h3>');
-    formatted = formatted.replace(/^## (.*?)$/gm, '<h2 class="font-extrabold text-slate-900 text-sm sm:text-base mt-3.5 mb-1.5">$1</h2>');
-
-    // Horizontal Rule
-    formatted = formatted.replace(/^---$/gm, '<hr class="my-3 border-slate-200" />');
+    formatted = formatted.replace(/^### (.*?)$/gm, '<h3 class="font-bold text-slate-900 text-xs sm:text-sm mt-2.5 mb-1">$1</h3>');
+    formatted = formatted.replace(/^## (.*?)$/gm, '<h2 class="font-extrabold text-slate-900 text-sm sm:text-base mt-3 mb-1">$1</h2>');
 
     // Bold & Italics
     formatted = formatted.replace(/\*\*(.*?)\*\*/g, '<strong class="font-semibold text-slate-900">$1</strong>');
@@ -1779,14 +1747,11 @@ Exercice 1 : Oscillations libres amorties, équation différentielle x'' + 2gamm
     // Inline Code
     formatted = formatted.replace(/`([^`\n]+)`/g, '<code class="bg-slate-200/80 text-slate-800 px-1.5 py-0.5 rounded font-mono text-[11px]">$1</code>');
 
-    // Bullet points (both •, -, and *)
-    formatted = formatted.replace(/^[•*-] (.*?)$/gm, '<div class="flex items-start gap-2 my-1"><span class="text-blue-500 font-bold shrink-0 leading-tight">•</span><span class="flex-1">$1</span></div>');
+    // Bullet points
+    formatted = formatted.replace(/^[•*-] (.*?)$/gm, '<div class="flex items-start gap-1.5 my-1"><span class="text-blue-500 font-bold shrink-0">•</span><span class="flex-1">$1</span></div>');
 
     // Numbered points
-    formatted = formatted.replace(/^(\d+)\. (.*?)$/gm, '<div class="flex items-start gap-2 my-1"><span class="font-bold text-blue-700 shrink-0 text-xs">$1.</span><span class="flex-1">$2</span></div>');
-
-    // Source references like [SOURCE 1] or [SOURCE 2]
-    formatted = formatted.replace(/\[SOURCE (\d+)\]/gi, '<span class="inline-flex items-center gap-0.5 px-1.5 py-0.2 rounded-md bg-blue-100/80 text-blue-800 text-[10px] font-bold mx-0.5 border border-blue-200/60 shadow-2xs">Source $1</span>');
+    formatted = formatted.replace(/^(\d+)\. (.*?)$/gm, '<div class="flex items-start gap-1.5 my-1"><span class="font-bold text-blue-700 shrink-0 text-xs">$1.</span><span class="flex-1">$2</span></div>');
 
     return formatted;
   }

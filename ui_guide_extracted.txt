@@ -1,0 +1,306 @@
+Academic Hub — Guide Spécifique UI/UX, Disposition et Boutons
+Date :
+ 04 septembre 2026
+Objectif :
+ Spécification claire et épurée de l'interface utilisateur (UI) et de l'expérience utilisateur (UX) pour Academic Hub. Ce document définit la disposition exacte de chaque écran, la position et le rôle de chaque bouton, ainsi que la charte graphique inspirée de l'interface minimaliste de Gemini.
+1. Charte Graphique & Directives Visuelles (Style Gemini)
+L'interface d'Academic Hub est conçue pour être ultra-simple, intuitive, centrée sur l'objectif d'apprentissage de l'étudiant, et totalement exempte de jargon technique.
+Palette des 4 Couleurs Officielles
+Blanc Pur / Fond Clair (#FFFFFF & #F8FAFC) :
+ Fond principal de l'application pour une lisibilité maximale et zéro distraction.
+Noir Charbon (#1F1F1F) :
+ Titres, textes principaux et éléments de haute lisibilité.
+Gris Neutre / Bordure (#5F6368 & #E3E3E3) :
+ Textes secondaires, sous-titres, icônes discrètes et séparateurs subtils.
+Bleu Gemini (#1A73E8) :
+ Couleur d'action unique réservée pour les boutons principaux, l'élément actif et la mise en valeur des choix de l'étudiant.
+Règles de Langage et Vocabulaire Étudiant
+Pas de jargon technique :
+ Remplacer les termes complexes ("RAG", "Chunking", "Vector Search", "LLM", "Prompt") par des expressions simples ("Rechercher dans mes cours", "Explication simple", "Résumé", "Poser une question").
+Phrases courtes et claires :
+ Boutons formulés sous forme d'actions directes ("Ouvrir", "Télécharger", "Exposer mon blocage", "S'entraîner").
+Consistance sur mobile et ordinateur :
+ Navigation fluide adaptée prioritairement aux écrans de smartphones tout en s'étendant proprement sur grands écrans.
+2. Disposition Générale & Navigation Principale
+L'application utilise une structure à 3 zones principales :
+Barre Supérieure (Header) :
+ Logo Academic Hub à gauche, sélecteur de promotion au centre, bouton Profil/Clé IA à droite.
+Zone de Contenu Central :
+ Contenu dynamique épuré avec de larges espaces blancs et des cartes aux coins arrondis.
+Barre de Navigation Inférieure (Mobile) / Barre Latérale (PC) :
+ 4 onglets uniques :
+Rechercher :
+ Accueil et moteur de recherche principal.
+Mes Cours :
+ Explorateur de matières et documents.
+Assistant IA :
+ Espace d'échange et d'aide pédagogique.
+Mon Profil :
+ Suivi de progression et paramètres.
+3. Spécification Détaillée Page par Page (Dispositions & Boutons)
+Page 1 : Accueil & Recherche Principale
+Objectif :
+ Permettre à l'étudiant de trouver un document ou de poser une question en moins de 3 secondes dès l'ouverture.
+Disposition :
+Haut :
+ Logo + Sélecteur de promotion (ex: "Licence 2 Polytech").
+Centre :
+ Grande barre de recherche centrale inspirée de Gemini avec champ texte et bouton de validation.
+Sous la barre de recherche :
+ 4 puces de raccourcis rapides ("Examens récents", "Exercices corrigés", "Supports de cours", "Poser une question").
+Bas :
+ Section "Derniers documents consultés" sous forme de cartes simples.
+Boutons et Actions :
+Bouton / Élément
+Position
+Style Visuel
+Action au Clic
+Sélecteur de Promotion
+Header Haut Gauche
+Gris Neutre, Menu Déroulant
+Ouvre la liste pour changer de promotion/année.
+Bouton Loupe / Valider
+Extrémité Droite de la Barre de Recherche
+Bleu Gemini (#1A73E8)
+Lance la recherche ou soumet la question à l'IA.
+Puce "Examens récents"
+Sous la Barre de Recherche
+Bordure Gris Neutre, Fond Blanc
+Filtre immédiatement la liste sur les épreuves d'examens.
+Puce "Exercices corrigés"
+Sous la Barre de Recherche
+Bordure Gris Neutre, Fond Blanc
+Affiche uniquement les exercices disposant d'un corrigé.
+Puce "Supports de cours"
+Sous la Barre de Recherche
+Bordure Gris Neutre, Fond Blanc
+Affiche les résumés et fiches de cours du professeur.
+Carte Document ("Ouvrir")
+Section Récente
+Carte Blanche, Texte Noir
+Ouvre directement le lecteur de document (Page 4).
+Page 2 : Banque de Cours & Explorateur par Matière
+Objectif :
+ Parcourir les ressources de la faculté de façon structurée sans passer par le moteur de recherche.
+Disposition :
+Haut :
+ Titre "Mes Matières" + Barre de filtrage par semestre.
+Grille centrale :
+ Cartes des cours (ex: "Mathématiques", "Mécanique", "Électricité") avec indicateurs visuels du nombre de documents et d'examens corrigés.
+Boutons et Actions :
+Bouton / Élément
+Position
+Style Visuel
+Action au Clic
+Filtre "Semestre 1 / Semestre 2"
+Sous le Titre
+Boutons Pilules (Actif en Bleu, Inactif en Gris)
+Filtre la liste des matières affichées.
+Carte de Matière (ex: "Mécanique")
+Grille Principale
+Carte Blanche avec Bordure Grise
+Ouvre la page détaillée de la matière (Page 3).
+Page 3 : Page Détaillée d'une Matière
+Objectif :
+ Regrouper par chapitre tous les cours, TP, interrogations et examens d'un cours précis.
+Disposition :
+Haut :
+ Nom de la matière + Nom du professeur référent + Bouton "Lancer une révision de ce cours".
+Onglets Horizontaux :
+ "Tous", "Examens & Interros", "Exercices", "Fiches de Cours".
+Liste :
+ Liste verticale des documents ordonnés par chapitre avec macaron "Corrigé disponible".
+Boutons et Actions :
+Bouton / Élément
+Position
+Style Visuel
+Action au Clic
+"Réviser cette matière avec l'IA"
+En haut à droite sous le titre
+Bleu Gemini, Texte Blanc
+Ouvre l'Assistant IA directement en Mode Révision sur cette matière.
+Onglets de Filtres ("Examens", "Exercices")
+Barre sous le Header Matière
+Texte Noir avec Trait Bleu sous l'onglet actif
+Affiche la catégorie de document sélectionnée.
+Bouton "Voir le Corrigé"
+Sur chaque ligne de document compatible
+Lien Texte Bleu avec icône check
+Ouvre le document directement sur la page du corrigé.
+Page 4 : Lecteur de Document & Corrigés
+Objectif :
+ Offrir une lecture confortable d'un document PDF ou fiche de cours avec aide IA intégrée.
+Disposition :
+Haut :
+ Bouton Retour ("←"), Titre du document, Bouton "Télécharger" et "Favoris".
+Centre :
+ Visualiseur de document avec navigation par page et zoom.
+Bas / Panneau Latéral :
+ Barre d'actions IA ("Expliquer cette page", "Résumé du chapitre", "Poser une question sur ce document").
+Boutons et Actions :
+Bouton / Élément
+Position
+Style Visuel
+Action au Clic
+Bouton Retour ("←")
+Haut Gauche
+Icône Flèche Grise
+Retourne à la page précédente.
+Bouton Télécharger
+Haut Droite
+Icône Téléchargement Grise
+Télécharge le fichier sur le téléphone ou l'ordinateur.
+Bouton "Expliquer cette page"
+Panneau Inférieur IA
+Fond Gris Clair, Texte Noir, Bordure Bleue
+L'IA analyse la page affichée et donne une explication simple.
+Bouton "Voir la correction"
+Panneau Inférieur IA (si disponible)
+Bleu Gemini, Texte Blanc
+Bascule directement vers la version corrigée associée.
+Page 5 : Assistant IA — Espace Chat & Tutorat (Style Gemini)
+Objectif :
+ Poser n'importe quelle question académique et choisir le mode de travail.
+Disposition :
+Haut :
+ Sélecteur de Mode en 4 pilules : [ Chat ] [ Apprendre ] [ Révision ] [ S'exercer ].
+Centre :
+ Fil de discussion épuré style Gemini avec bulles neutres et citations claires des cours ("Source : Cours de Mécanique, Page 12").
+Bas :
+ Zone de saisie flottante avec bouton d'envoi et icône de jointure de document.
+Boutons et Actions :
+Bouton / Élément
+Position
+Style Visuel
+Action au Clic
+Pilules de Modes (Chat/Apprendre/etc.)
+Haut Fixe
+Pilule Bleue pour le mode actif, Grise pour inactifs
+Change la stratégie pédagogique de l'IA (voir pages 6, 7 et 8).
+Bouton Envoyer (Flèche)
+Barre de Saisie Bas Droite
+Bleu Gemini (#1A73E8)
+Transmet le message à l'assistant.
+Bouton "Source (Page X)"
+Sous la réponse de l'IA
+Puce Grise discrète
+Ouvre le document officiel exactement à la page citée.
+Page 6 : Assistant IA — Mode "Apprendre"
+Objectif :
+ Construire une compréhension pas à pas d'un sujet difficile.
+Disposition Spécifique :
+ L'assistant commence par demander le niveau ressenti (1 à 10) puis pose 1 ou 2 questions de vérification rapides avant d'expliquer.
+Boutons et Actions Spécifiques :
+Échelle de Niveau (Boutons 1 à 10) :
+ Alignement horizontal de 10 boutons numérotés pour une auto-évaluation rapide.
+Bouton "Explication plus simple" :
+ Propose une explication avec une analogie du quotidien.
+Bouton "Exemple concret" :
+ Affiche un exemple chiffré étape par étape.
+Page 7 : Assistant IA — Mode "Révision"
+Objectif :
+ Se préparer efficacement à un examen à partir des ressources exactes des professeurs.
+Disposition Spécifique :
+ Priorité absolue aux anciens examens, interrogations et cours officiels de la faculté.
+Boutons et Actions Spécifiques :
+Bouton "Générer un sujet type d'examen" :
+ Propose 3 questions représentatives du style des examens passés.
+Bouton "Points clés à retenir" :
+ Affiche une fiche synthétique des formules et définitions indispensables.
+Page 8 : Assistant IA — Mode "S'exercer"
+Objectif :
+ S'entraîner sur des exercices pratiques avec correction guidée sans dévoiler la solution trop vite.
+Disposition Spécifique :
+ Zone d'exercice en haut, zone de réponse de l'étudiant au centre, boutons d'aide en bas.
+Boutons et Actions Spécifiques :
+Bouton "Demander un indice" :
+ Donne une indication progressive sans donner la réponse finale.
+Bouton "Vérifier ma réponse" :
+ Analysera la réponse de l'étudiant et expliquera où se trouve l'erreur éventuelle.
+Bouton "Voir la solution complète" :
+ Affiche la correction étape par étape avec les explications théoriques.
+Page 9 : Recommandations Vidéos Pédagogiques
+Objectif :
+ Proposer des explications vidéo YouTube sélectionnées et validées lorsque la lecture ne suffit pas.
+Disposition :
+ Carte vidéo avec miniature, titre, durée, et sous-titre expliquant pourquoi cette vidéo est recommandée pour ce chapitre.
+Boutons et Actions :
+Bouton "Regarder la vidéo" :
+ Ouvre le lecteur vidéo épuré sans publicité.
+Bouton "J'ai compris, passer à la suite" :
+ Propose un micro-test de 1 question pour valider la compréhension.
+Page 10 : Mon Profil & Ma Progression
+Objectif :
+ Visualiser clairement les chapitres maîtrisés et ceux à revoir.
+Disposition :
+Haut :
+ Nom de l'étudiant, Promotion, et bouton "Ma Clé IA".
+Graphique simple :
+ Liste des matières avec barre de niveau de maîtrise (ex: "Mécanique : 75% maîtrisé").
+Section :
+ "Sujets à revoir en priorité" avec cartes d'accès rapide.
+Boutons et Actions :
+Bouton "Lancer une session de rattrapage" :
+ Démarre automatiquement des exercices sur les points faibles détectés.
+Bouton "Gérer ma clé API Gemini" :
+ Ouvre l'écran de configuration de la clé perso.
+Page 11 : Configuration de la Clé API Gemini
+Objectif :
+ Permettre à l'étudiant d'entrer sa propre clé d'IA gratuite pour un usage illimité et sécurisé.
+Disposition :
+Explication simple en 3 étapes sans mots techniques.
+Champ texte sécurisé pour coller la clé.
+Bouton de test.
+Boutons et Actions :
+Bouton "Obtenir ma clé gratuite (Google AI Studio)" :
+ Ouvre le lien officiel Google.
+Bouton "Tester et enregistrer ma clé" :
+ Valide le fonctionnement de la clé et l'enregistre de manière chiffrée.
+Page 12 : Espace Administration & Dépôt (Simplifié)
+Objectif :
+ Permettre aux délégués ou administrateurs de verser facilement de nouveaux documents.
+Disposition :
+ Zone de glisser-déposer de fichiers PDF, images ou cours, suivie d'un formulaire pré-rempli par l'IA (Matière, Année, Type).
+Boutons et Actions :
+Bouton "Déposer des fichiers" :
+ Ouvre le sélecteur de fichier.
+Bouton "Valider et publier" :
+ Confirme les informations auto-détectées et rend le document immédiatement disponible aux étudiants.
+4. Tableau Récapitulatif des Boutons & Actions Clés
+Nom du Bouton
+Couleur & Style
+Où le trouver ?
+Rôle pour l'étudiant
+Rechercher
+Bleu Gemini (#1A73E8)
+Page d'accueil
+Trouve instantanément un cours ou répond à une question.
+Réviser ce cours
+Bleu Gemini (#1A73E8)
+Page Matière
+Lance l'IA en mode prépa examen sur la matière choisie.
+Expliquer cette page
+Fond Blanc, Bordure Bleue
+Lecteur PDF (Page 4)
+Demande une explication simple de la page sous les yeux.
+Demander un indice
+Gris Neutre (#5F6368)
+Mode S'exercer (Page 8)
+Aide à avancer dans un exercice sans donner la solution.
+Voir le corrigé
+Texte Bleu avec icône
+Pages Matières / Documents
+Ouvre la correction officielle associée.
+Obtenir ma clé gratuite
+Bleu Gemini (#1A73E8)
+Page Clé API (Page 11)
+Guide l'étudiant pour obtenir sa propre clé d'IA.
+5. Synthèse des Recommandations UX pour le Développeur
+Design ultra-épuré :
+ Toujours utiliser du blanc, du noir charbon et du bleu Gemini. Pas de dégradés agressifs ni d'animations inutiles.
+Focus sur l'essentiel :
+ L'étudiant vient pour trouver un document ou comprendre un point précis. Chaque clic superflu doit être supprimé.
+Micro-copie adaptée :
+ Utiliser "Mon cours", "Mon examen", "Explication", "Indice", "S'entraîner" plutôt que des termes universitaires trop pompeux ou des acronymes informatiques.
+Mobile First :
+ Tous les boutons doivent mesurer au moins 48px de hauteur pour être facilement cliquables au pouce sur smartphone.

@@ -4,9 +4,9 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>Academic Hub — Centre d'Information Académique</title>
-  <meta name="description" content="Centre d'Information Académique intelligent : banque de ressources, recherche hybride, lecteurs multi-formats, tuteur IA adaptatif et administration tri-agents.">
+  <meta name="description" content="Centre d'Information Académique intelligent : bibliothèque de cours, annales corrigées, recherche instantanée et tuteur IA adaptatif.">
   <meta property="og:title" content="Academic Hub — Centre d'Information Académique">
-  <meta property="og:description" content="Banque de ressources académiques centralisée, recherche hybride, tuteur IA et lecteurs intégrés.">
+  <meta property="og:description" content="Bibliothèque de cours, annales corrigées, recherche instantanée et tuteur IA adaptatif.">
 
   <!-- Tailwind CSS CDN -->
   <script src="https://cdn.tailwindcss.com"></script>
@@ -16,14 +16,14 @@
         extend: {
           colors: {
             brand: {
-              50: '#eff6ff',
-              100: '#dbeafe',
-              200: '#bfdbfe',
+              50: '#f0f7ff',
+              100: '#e0effe',
+              200: '#bae0fd',
               500: '#3b82f6',
               600: '#2563eb',
               700: '#1d4ed8',
               800: '#1e40af',
-              900: '#1e3a8a',
+              900: '#0f172a'
             }
           }
         }
@@ -37,11 +37,11 @@
   <style>
     /* Clean custom scrollbar */
     ::-webkit-scrollbar {
-      width: 6px;
-      height: 6px;
+      width: 5px;
+      height: 5px;
     }
     ::-webkit-scrollbar-track {
-      background: #f1f5f9;
+      background: transparent;
     }
     ::-webkit-scrollbar-thumb {
       background: #cbd5e1;
@@ -50,138 +50,356 @@
     ::-webkit-scrollbar-thumb:hover {
       background: #94a3b8;
     }
+
+    /* Smooth drawer animation */
+    #sidebar-drawer {
+      transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    #sidebar-overlay {
+      transition: opacity 0.25s ease-in-out;
+    }
   </style>
 </head>
-<body class="h-full flex flex-col text-slate-900 bg-slate-50 antialiased font-sans">
+<body class="h-full flex flex-col text-slate-900 bg-[#F8FAFC] antialiased font-sans select-none sm:select-auto">
 
-  <!-- Top Global Header -->
-  <header id="main-header" class="sticky top-0 z-40 bg-white/95 backdrop-blur border-b border-slate-200 px-4 py-3 sm:px-6">
-    <div class="max-w-7xl mx-auto flex items-center justify-between gap-4">
-      <!-- Logo & Title -->
-      <div class="flex items-center gap-3 cursor-pointer" onclick="app.navigate('home')">
-        <div class="w-10 h-10 rounded-xl bg-blue-600 text-white flex items-center justify-center shadow-md shadow-blue-500/20 font-bold text-lg">
-          <i data-lucide="graduation-cap" class="w-5 h-5"></i>
-        </div>
-        <div>
-          <div class="flex items-center gap-2">
-            <span class="font-extrabold text-lg sm:text-xl tracking-tight text-slate-900">Academic<span class="text-blue-600">Hub</span></span>
-            <span class="text-[10px] uppercase font-bold tracking-wider px-2 py-0.5 rounded-full bg-blue-50 text-blue-700 border border-blue-200/60">Faculté</span>
+  <!-- Left Modern Drawer Navigation (Matching Image 3) -->
+  <div id="sidebar-overlay" onclick="app.toggleDrawer(false)" class="fixed inset-0 z-50 bg-slate-950/60 backdrop-blur-xs opacity-0 pointer-events-none transition-opacity duration-200"></div>
+  
+  <aside id="sidebar-drawer" class="fixed top-0 bottom-0 left-0 z-50 w-72 max-w-[85vw] bg-slate-900 text-slate-100 flex flex-col justify-between shadow-2xl -translate-x-full">
+    
+    <!-- Drawer Top -->
+    <div class="p-5 space-y-5">
+      <!-- Logo Header -->
+      <div class="flex items-center justify-between">
+        <div class="flex items-center gap-3">
+          <div class="w-9 h-9 rounded-xl bg-blue-600 text-white font-extrabold flex items-center justify-center shadow-lg shadow-blue-500/30 text-sm tracking-wider">
+            AH
           </div>
-          <p class="text-xs text-slate-500 hidden sm:block">Centre d'Information Académique & Tuteur IA</p>
+          <div>
+            <div class="font-extrabold text-sm tracking-tight text-white">ACADEMIC HUB</div>
+            <div class="text-[10px] text-slate-400 font-medium">Faculté des Sciences</div>
+          </div>
         </div>
+        <button onclick="app.toggleDrawer(false)" class="p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800 transition">
+          <i data-lucide="x" class="w-5 h-5"></i>
+        </button>
       </div>
 
-      <!-- Navigation Links Desktop -->
-      <nav class="hidden md:flex items-center gap-1 bg-slate-100/80 p-1 rounded-xl border border-slate-200/80 text-sm font-medium">
-        <button id="nav-home" onclick="app.navigate('home')" class="px-3.5 py-1.5 rounded-lg transition-all text-slate-600 hover:text-slate-900">
-          <span class="flex items-center gap-2"><i data-lucide="library" class="w-4 h-4"></i>Ressources</span>
+      <!-- User Profile Badge -->
+      <div onclick="app.navigate('settings'); app.toggleDrawer(false);" class="flex items-center gap-3 p-2.5 rounded-xl bg-slate-800/80 hover:bg-slate-800 border border-slate-700/60 cursor-pointer transition">
+        <div class="w-9 h-9 rounded-full bg-blue-500/20 text-blue-400 flex items-center justify-center font-bold text-xs border border-blue-400/30">
+          <i data-lucide="user" class="w-4 h-4"></i>
+        </div>
+        <div class="flex-1 min-w-0">
+          <div class="text-xs font-bold text-white truncate">Alex S.</div>
+          <div class="text-[11px] text-slate-400 truncate">Étudiant L2 Physique</div>
+        </div>
+        <i data-lucide="chevron-right" class="w-4 h-4 text-slate-500"></i>
+      </div>
+
+      <!-- Action: New Chat (Image 3) -->
+      <button onclick="app.startNewChat(); app.toggleDrawer(false);" class="w-full bg-slate-800 hover:bg-blue-600 text-blue-400 hover:text-white font-semibold text-xs py-3 px-4 rounded-xl border border-slate-700 hover:border-blue-500 flex items-center gap-2.5 transition shadow-sm">
+        <i data-lucide="sparkles" class="w-4 h-4 text-blue-400 group-hover:text-white"></i>
+        <span>Nouveau Chat (Tuteur IA)</span>
+      </button>
+
+      <!-- Navigation Menu Items (Image 3) -->
+      <nav class="space-y-1 text-xs font-medium">
+        <button onclick="app.navigate('history'); app.toggleDrawer(false);" id="drawer-nav-history" class="w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-slate-300 hover:text-white hover:bg-slate-800/90 transition text-left">
+          <i data-lucide="history" class="w-4 h-4 text-slate-400"></i>
+          <span>Historique des discussions</span>
         </button>
-        <button id="nav-courses" onclick="app.navigate('courses')" class="px-3.5 py-1.5 rounded-lg transition-all text-slate-600 hover:text-slate-900">
-          <span class="flex items-center gap-2"><i data-lucide="folder-tree" class="w-4 h-4"></i>Matières</span>
+        <button onclick="app.navigate('documents'); app.toggleDrawer(false);" id="drawer-nav-documents" class="w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-slate-300 hover:text-white hover:bg-slate-800/90 transition text-left">
+          <i data-lucide="folder-tree" class="w-4 h-4 text-slate-400"></i>
+          <span>Documents & Cours</span>
         </button>
-        <button id="nav-tutor" onclick="app.navigate('tutor')" class="px-3.5 py-1.5 rounded-lg transition-all text-slate-600 hover:text-slate-900">
-          <span class="flex items-center gap-2"><i data-lucide="bot" class="w-4 h-4 text-blue-600"></i>Tuteur IA</span>
+        <button onclick="app.navigate('tutor'); app.toggleDrawer(false);" id="drawer-nav-tutor" class="w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-slate-300 hover:text-white hover:bg-slate-800/90 transition text-left">
+          <i data-lucide="bot" class="w-4 h-4 text-blue-400"></i>
+          <span>Tuteur IA (4 Modes)</span>
         </button>
-        <button id="nav-admin" onclick="app.navigate('admin')" class="px-3.5 py-1.5 rounded-lg transition-all text-slate-600 hover:text-slate-900">
-          <span class="flex items-center gap-2"><i data-lucide="shield-check" class="w-4 h-4 text-amber-600"></i>Administration</span>
+        <button onclick="app.navigate('settings'); app.toggleDrawer(false);" id="drawer-nav-settings" class="w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-slate-300 hover:text-white hover:bg-slate-800/90 transition text-left">
+          <i data-lucide="settings" class="w-4 h-4 text-slate-400"></i>
+          <span>Paramètres & Compte</span>
+        </button>
+        <button onclick="app.openApiKeyModal(); app.toggleDrawer(false);" class="w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-slate-300 hover:text-white hover:bg-slate-800/90 transition text-left">
+          <i data-lucide="key" class="w-4 h-4 text-amber-400"></i>
+          <span>Gestion de la Clé API</span>
+        </button>
+        <button onclick="app.navigate('admin'); app.toggleDrawer(false);" id="drawer-nav-admin" class="w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl text-slate-300 hover:text-white hover:bg-slate-800/90 transition text-left">
+          <span class="flex items-center gap-3">
+            <i data-lucide="shield-check" class="w-4 h-4 text-emerald-400"></i>
+            <span>Espace Administration</span>
+          </span>
+          <span class="text-[10px] font-bold uppercase tracking-wider px-1.5 py-0.5 rounded bg-slate-800 text-slate-400">/admin</span>
         </button>
       </nav>
-
-      <!-- Action buttons -->
-      <div class="flex items-center gap-2">
-        <button onclick="app.openApiKeyModal()" id="btn-api-key" class="text-xs px-2.5 py-1.5 rounded-lg font-medium border border-slate-200 hover:border-slate-300 bg-white text-slate-700 flex items-center gap-1.5 shadow-sm transition">
-          <i data-lucide="key" class="w-3.5 h-3.5 text-blue-600"></i>
-          <span class="hidden sm:inline" id="api-key-status-label">Clé Gemini</span>
-        </button>
-        <button onclick="app.toggleMobileMenu()" class="md:hidden p-2 rounded-lg text-slate-600 hover:bg-slate-100 border border-slate-200">
-          <i data-lucide="menu" class="w-5 h-5"></i>
-        </button>
-      </div>
     </div>
 
-    <!-- Mobile Dropdown Menu -->
-    <div id="mobile-menu" class="hidden md:hidden pt-3 pb-2 border-t border-slate-100 mt-2 flex flex-col gap-1">
-      <button onclick="app.navigate('home'); app.toggleMobileMenu();" class="flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium text-slate-700 hover:bg-slate-50 text-left">
-        <i data-lucide="library" class="w-4 h-4 text-blue-600"></i> Banque de Ressources
+    <!-- Drawer Footer -->
+    <div class="p-5 border-t border-slate-800 text-xs">
+      <button onclick="app.logout(); app.toggleDrawer(false);" class="w-full flex items-center gap-2 text-slate-400 hover:text-rose-400 transition py-1">
+        <i data-lucide="log-out" class="w-4 h-4"></i>
+        <span>Déconnexion</span>
       </button>
-      <button onclick="app.navigate('courses'); app.toggleMobileMenu();" class="flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium text-slate-700 hover:bg-slate-50 text-left">
-        <i data-lucide="folder-tree" class="w-4 h-4 text-slate-600"></i> Parcourir par Matières
+    </div>
+  </aside>
+
+  <!-- Top Global Header (Image) -->
+  <header id="main-header" class="sticky top-0 z-30 bg-white/95 backdrop-blur-md border-b border-slate-200/70 px-4 py-2.5 sm:px-6">
+    <div class="max-w-xl mx-auto flex items-center justify-between gap-3">
+      
+      <!-- Left: Hamburger Button (☰) -->
+      <button onclick="app.toggleDrawer(true)" class="p-1.5 -ml-1 text-slate-800 hover:text-slate-900 transition rounded-lg hover:bg-slate-100" aria-label="Menu">
+        <i data-lucide="menu" class="w-5 h-5"></i>
       </button>
-      <button onclick="app.navigate('tutor'); app.toggleMobileMenu();" class="flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium text-slate-700 hover:bg-slate-50 text-left">
-        <i data-lucide="bot" class="w-4 h-4 text-indigo-600"></i> Tuteur Pédagogique (4 Modes)
-      </button>
-      <button onclick="app.navigate('admin'); app.toggleMobileMenu();" class="flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium text-slate-700 hover:bg-slate-50 text-left">
-        <i data-lucide="shield-check" class="w-4 h-4 text-amber-600"></i> Espace Administration (/admin)
+
+      <!-- Center: Dynamic Page Title Banner Capsule (As in image) -->
+      <div id="header-page-title-box" class="bg-slate-100/90 text-slate-800 font-semibold text-xs sm:text-sm py-1.5 px-4 rounded-xl border border-slate-200/60 shadow-2xs text-center truncate max-w-[260px] sm:max-w-xs">
+        <span id="header-page-title">Academic Hub - Discussion</span>
+      </div>
+
+      <!-- Right: User Avatar / Settings Shortcut (Silhouette as in image) -->
+      <button onclick="app.navigate('settings')" class="p-1.5 -mr-1 text-slate-800 hover:text-slate-900 transition rounded-lg hover:bg-slate-100" aria-label="Mon Compte">
+        <i data-lucide="user" class="w-5 h-5"></i>
       </button>
     </div>
   </header>
 
   <!-- Main Dynamic Viewport -->
-  <main id="app-viewport" class="flex-1 overflow-y-auto">
+  <main id="app-viewport" class="flex-1 flex flex-col overflow-y-auto">
     <!-- Views injected dynamically via JS -->
   </main>
 
-  <!-- Mobile Bottom Tab Bar -->
-  <nav id="mobile-tab-bar" class="md:hidden sticky bottom-0 z-30 bg-white border-t border-slate-200 px-2 py-1.5 flex justify-around items-center shadow-lg">
-    <button onclick="app.navigate('home')" id="tab-home" class="flex flex-col items-center gap-1 text-[11px] font-medium py-1 px-3 rounded-lg text-blue-600">
-      <i data-lucide="library" class="w-5 h-5"></i>
-      <span>Explorer</span>
-    </button>
-    <button onclick="app.navigate('courses')" id="tab-courses" class="flex flex-col items-center gap-1 text-[11px] font-medium py-1 px-3 rounded-lg text-slate-500">
-      <i data-lucide="folder-tree" class="w-5 h-5"></i>
-      <span>Matières</span>
-    </button>
-    <button onclick="app.navigate('tutor')" id="tab-tutor" class="flex flex-col items-center gap-1 text-[11px] font-medium py-1 px-3 rounded-lg text-slate-500">
-      <i data-lucide="bot" class="w-5 h-5"></i>
-      <span>Tuteur IA</span>
-    </button>
-    <button onclick="app.navigate('admin')" id="tab-admin" class="flex flex-col items-center gap-1 text-[11px] font-medium py-1 px-3 rounded-lg text-slate-500">
-      <i data-lucide="shield-check" class="w-5 h-5"></i>
-      <span>Admin</span>
-    </button>
-  </nav>
-
-  <!-- User Gemini API Key Modal (Page 36) -->
-  <div id="modal-api-key" class="fixed inset-0 z-50 bg-slate-900/50 backdrop-blur-sm hidden flex items-center justify-center p-4">
-    <div class="bg-white rounded-2xl max-w-md w-full shadow-2xl border border-slate-200 overflow-hidden animate-in fade-in zoom-in duration-200">
+  <!-- User Gemini API Key Modal (Matching Image 2 & 4) -->
+  <div id="modal-api-key" class="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-xs hidden flex items-center justify-center p-4">
+    <div class="bg-white rounded-2xl max-w-md w-full shadow-2xl border border-slate-200 overflow-hidden animate-in fade-in duration-200">
       <div class="p-6 border-b border-slate-100 flex items-start justify-between">
         <div class="flex items-center gap-3">
-          <div class="w-10 h-10 rounded-xl bg-blue-100 text-blue-600 flex items-center justify-center">
-            <i data-lucide="key-round" class="w-5 h-5"></i>
+          <div class="w-10 h-10 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center font-bold">
+            <i data-lucide="key" class="w-5 h-5"></i>
           </div>
           <div>
-            <h3 class="font-bold text-slate-900 text-base">Clé API Gemini Utilisateur</h3>
-            <p class="text-xs text-slate-500">Prévu par la spécification (Page 36)</p>
+            <h3 class="font-bold text-slate-900 text-sm sm:text-base">Gestion de la Clé API</h3>
+            <p class="text-xs text-slate-500">Pour un usage illimité avec Gemini</p>
           </div>
         </div>
         <button onclick="app.closeApiKeyModal()" class="text-slate-400 hover:text-slate-600 p-1">
           <i data-lucide="x" class="w-5 h-5"></i>
         </button>
       </div>
+
       <div class="p-6 space-y-4">
         <p class="text-xs text-slate-600 leading-relaxed">
-          Pour alléger la charge du serveur et bénéficier de quotas étendus sans interruption, vous pouvez renseigner votre propre clé Google AI Studio. Elle reste protégée et n'est jamais divulguée.
+          Configurez votre clé personnelle Google AI Studio. Elle reste enregistrée localement dans votre session sécurisée.
         </p>
 
-        <a href="https://aistudio.google.com/app/apikey" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-2 text-xs font-semibold text-blue-600 hover:text-blue-800 bg-blue-50 px-3 py-2 rounded-lg border border-blue-200/60 w-full justify-center">
+        <div class="bg-slate-50 p-3.5 rounded-xl border border-slate-200 space-y-2 text-xs text-slate-600">
+          <div class="font-semibold text-slate-800">Guide rapide :</div>
+          <ol class="list-decimal list-inside space-y-1 text-slate-600">
+            <li>Ouvrez Google AI Studio.</li>
+            <li>Cliquez sur "Get API key".</li>
+            <li>Copiez votre clé et collez-la ci-dessous.</li>
+          </ol>
+        </div>
+
+        <a href="https://aistudio.google.com/app/apikey" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-2 text-xs font-semibold text-blue-600 hover:text-blue-800 bg-blue-50 px-3 py-2 rounded-xl border border-blue-200/60 w-full justify-center">
           <i data-lucide="external-link" class="w-3.5 h-3.5"></i>
           Obtenir ma clé gratuite sur Google AI Studio
         </a>
 
         <div>
-          <label class="block text-xs font-semibold text-slate-700 mb-1.5">Votre clé API :</label>
-          <input type="password" id="input-custom-api-key" placeholder="AIzaSy..." class="w-full text-sm px-3.5 py-2.5 rounded-xl border border-slate-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none transition font-mono">
+          <label class="block text-xs font-semibold text-slate-700 mb-1.5">Clé API Gemini :</label>
+          <input type="password" id="input-custom-api-key" placeholder="AIzaSy..." class="w-full text-sm px-3.5 py-2.5 rounded-xl border border-slate-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-100 outline-none transition font-mono">
         </div>
 
         <div id="api-key-test-feedback" class="text-xs hidden p-3 rounded-xl"></div>
 
         <div class="flex gap-2 pt-2">
-          <button onclick="app.testAndSaveApiKey()" id="btn-save-key" class="flex-1 bg-blue-600 hover:bg-blue-700 text-white font-semibold text-xs py-2.5 px-4 rounded-xl shadow transition flex items-center justify-center gap-2">
+          <button onclick="app.testAndSaveApiKey()" id="btn-save-key" class="flex-1 bg-blue-600 hover:bg-blue-700 text-white font-semibold text-xs py-2.5 px-4 rounded-xl shadow-sm transition flex items-center justify-center gap-2">
             <i data-lucide="check" class="w-4 h-4"></i>
             Tester et Enregistrer
           </button>
           <button onclick="app.clearApiKey()" class="bg-slate-100 hover:bg-slate-200 text-slate-700 font-medium text-xs py-2.5 px-3 rounded-xl transition">
             Effacer
+          </button>
+        </div>
+
+        <div id="api-key-status-box" class="pt-2 text-[11px] text-center text-slate-500">
+          <!-- Live status -->
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Global Fast Document Upload Modal (Admin / Quick Add) -->
+  <div id="modal-upload-doc" class="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-xs hidden flex items-center justify-center p-4">
+    <div class="bg-white rounded-2xl max-w-lg w-full shadow-2xl border border-slate-200 overflow-hidden animate-in fade-in duration-200">
+      <div class="p-5 border-b border-slate-100 flex items-center justify-between">
+        <div class="flex items-center gap-2.5">
+          <div class="w-8 h-8 rounded-lg bg-blue-50 text-blue-600 flex items-center justify-center font-bold">
+            <i data-lucide="upload-cloud" class="w-4 h-4"></i>
+          </div>
+          <h3 class="font-bold text-slate-900 text-sm">Ajouter un Document (Admin)</h3>
+        </div>
+        <button onclick="app.closeUploadModal()" class="text-slate-400 hover:text-slate-600 p-1">
+          <i data-lucide="x" class="w-5 h-5"></i>
+        </button>
+      </div>
+
+      <form onsubmit="app.handleQuickUpload(event)" class="p-5 space-y-4 text-xs">
+        <div>
+          <label class="block font-semibold text-slate-700 mb-1">Fichier (PDF, Word, Image, Code) :</label>
+          <input type="file" id="upload-file-input" required class="w-full text-xs text-slate-600 file:mr-3 file:py-2 file:px-3.5 file:rounded-xl file:border-0 file:text-xs file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100 border border-slate-200 rounded-xl p-2 bg-slate-50">
+        </div>
+
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="block font-semibold text-slate-700 mb-1">Matière / Cours :</label>
+            <select id="upload-course-select" class="w-full p-2.5 rounded-xl border border-slate-200 bg-white font-medium">
+              <!-- populated in app.js -->
+            </select>
+          </div>
+          <div>
+            <label class="block font-semibold text-slate-700 mb-1">Type de Document :</label>
+            <select id="upload-type-select" class="w-full p-2.5 rounded-xl border border-slate-200 bg-white font-medium">
+              <option value="Supports de Cours">Cours Magistral</option>
+              <option value="Exercices">TD / Exercices</option>
+              <option value="Corrigé">Corrigé Officiel</option>
+              <option value="Examen">Examen / Partiel</option>
+              <option value="Interrogation">Interrogation</option>
+              <option value="TP">Travaux Pratiques</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="flex items-center gap-2 pt-2">
+          <button type="submit" id="btn-submit-upload" class="flex-1 bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2.5 px-4 rounded-xl transition flex items-center justify-center gap-2 shadow-sm">
+            <i data-lucide="upload" class="w-4 h-4"></i>
+            <span>Classifier & Publier</span>
+          </button>
+          <button type="button" onclick="app.closeUploadModal()" class="bg-slate-100 hover:bg-slate-200 text-slate-700 font-medium py-2.5 px-4 rounded-xl transition">
+            Annuler
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Library Document Picker Modal (Triggered from + Menu) -->
+  <div id="modal-library-picker" class="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-xs hidden flex items-center justify-center p-3 sm:p-4">
+    <div class="bg-white rounded-2xl max-w-xl w-full max-h-[88vh] shadow-2xl border border-slate-200 flex flex-col overflow-hidden animate-in fade-in duration-200">
+      
+      <!-- Modal Header -->
+      <div class="p-4 sm:p-5 border-b border-slate-100 flex items-center justify-between gap-3">
+        <div class="flex items-center gap-2.5">
+          <div class="w-9 h-9 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center font-bold">
+            <i data-lucide="folder-tree" class="w-4 h-4"></i>
+          </div>
+          <div>
+            <h3 class="font-bold text-slate-900 text-sm">Bibliothèque & Cours</h3>
+            <p class="text-[11px] text-slate-500">Sélectionnez un document à inclure dans la discussion</p>
+          </div>
+        </div>
+        <button onclick="app.closeLibraryModal()" class="text-slate-400 hover:text-slate-600 p-1.5 rounded-lg hover:bg-slate-100 transition">
+          <i data-lucide="x" class="w-5 h-5"></i>
+        </button>
+      </div>
+
+      <!-- Quick Search & Promotion Filter -->
+      <div class="p-3 bg-slate-50/80 border-b border-slate-200/80 space-y-2">
+        <div class="relative flex items-center">
+          <i data-lucide="search" class="w-4 h-4 text-slate-400 absolute left-3 pointer-events-none"></i>
+          <input 
+            type="text" 
+            id="library-picker-search"
+            placeholder="Filtrer par titre, matière, chapitre..." 
+            oninput="app.onLibraryPickerSearch(this.value)"
+            class="w-full bg-white text-slate-900 pl-9 pr-3 py-2 rounded-xl border border-slate-200 focus:border-blue-600 focus:ring-1 focus:ring-blue-100 outline-none text-xs transition"
+          >
+        </div>
+
+        <div class="flex items-center gap-1.5 overflow-x-auto text-[11px] no-scrollbar">
+          <button onclick="app.setLibraryFilter('all')" id="lib-filter-all" class="px-2.5 py-1 rounded-lg font-semibold bg-blue-600 text-white whitespace-nowrap">
+            Tous les types
+          </button>
+          <button onclick="app.setLibraryFilter('Supports de Cours')" id="lib-filter-cours" class="px-2.5 py-1 rounded-lg font-medium bg-white text-slate-600 border border-slate-200 whitespace-nowrap">
+            Cours
+          </button>
+          <button onclick="app.setLibraryFilter('Exercices')" id="lib-filter-exercices" class="px-2.5 py-1 rounded-lg font-medium bg-white text-slate-600 border border-slate-200 whitespace-nowrap">
+            TD & Exercices
+          </button>
+          <button onclick="app.setLibraryFilter('Examen')" id="lib-filter-examen" class="px-2.5 py-1 rounded-lg font-medium bg-white text-slate-600 border border-slate-200 whitespace-nowrap">
+            Examens & Annales
+          </button>
+          <button onclick="app.setLibraryFilter('Corrigé')" id="lib-filter-corrige" class="px-2.5 py-1 rounded-lg font-medium bg-white text-slate-600 border border-slate-200 whitespace-nowrap">
+            Corrigés
+          </button>
+        </div>
+      </div>
+
+      <!-- Documents Tree & List View -->
+      <div id="library-picker-list" class="flex-1 overflow-y-auto p-3 sm:p-4 space-y-2.5 min-h-[260px]">
+        <!-- Populated in app.js -->
+      </div>
+
+      <!-- Footer Actions -->
+      <div class="p-3.5 bg-slate-50 border-t border-slate-100 flex items-center justify-between text-xs">
+        <button onclick="app.navigate('documents'); app.closeLibraryModal();" class="text-blue-600 hover:underline font-semibold flex items-center gap-1">
+          <i data-lucide="external-link" class="w-3.5 h-3.5"></i>
+          Ouvrir l'explorateur complet
+        </button>
+        <button onclick="app.closeLibraryModal()" class="bg-slate-200 hover:bg-slate-300 text-slate-700 font-semibold px-3 py-1.5 rounded-xl transition">
+          Fermer
+        </button>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Camera / Scan Document Modal (Triggered from + Menu) -->
+  <div id="modal-camera-scan" class="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-xs hidden flex items-center justify-center p-3 sm:p-4">
+    <div class="bg-white rounded-2xl max-w-md w-full shadow-2xl border border-slate-200 overflow-hidden animate-in fade-in duration-200 flex flex-col">
+      <div class="p-4 sm:p-5 border-b border-slate-100 flex items-center justify-between">
+        <div class="flex items-center gap-2.5">
+          <div class="w-9 h-9 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center font-bold">
+            <i data-lucide="camera" class="w-4 h-4"></i>
+          </div>
+          <div>
+            <h3 class="font-bold text-slate-900 text-sm">Scanner / Photo d'Énoncé</h3>
+            <p class="text-[11px] text-slate-500">Capturez un tableau, exercice ou extrait de cours</p>
+          </div>
+        </div>
+        <button onclick="app.closeCameraModal()" class="text-slate-400 hover:text-slate-600 p-1.5 rounded-lg hover:bg-slate-100">
+          <i data-lucide="x" class="w-5 h-5"></i>
+        </button>
+      </div>
+
+      <div class="p-5 space-y-4 text-xs">
+        <div id="camera-scan-preview-box" class="border-2 border-dashed border-slate-300 rounded-2xl p-6 text-center space-y-3 bg-slate-50/50 hover:bg-slate-50 transition cursor-pointer" onclick="document.getElementById('camera-scan-file-input').click()">
+          <div id="camera-preview-icon" class="w-12 h-12 rounded-2xl bg-blue-100 text-blue-600 flex items-center justify-center mx-auto shadow-2xs">
+            <i data-lucide="image-plus" class="w-6 h-6"></i>
+          </div>
+          <div id="camera-preview-text">
+            <div class="font-bold text-slate-800 text-xs sm:text-sm">Prendre une photo ou importer un scan</div>
+            <div class="text-[11px] text-slate-500 mt-0.5">Formats image supportés : JPG, PNG, WEBP</div>
+          </div>
+          <img id="camera-preview-img" class="hidden max-h-48 mx-auto rounded-xl border border-slate-200 shadow-sm object-contain" alt="Aperçu photo">
+        </div>
+
+        <input type="file" id="camera-scan-file-input" accept="image/*" capture="environment" onchange="app.handleCameraFileSelected(event)" class="hidden">
+
+        <div>
+          <label class="block font-semibold text-slate-700 mb-1">Votre question sur cette image (optionnel) :</label>
+          <input type="text" id="camera-scan-question" placeholder="Ex: 'Explique-moi l'étape 2' ou 'Résous cet exercice guidé'" class="w-full text-xs px-3.5 py-2.5 rounded-xl border border-slate-200 outline-none focus:border-blue-600 font-medium">
+        </div>
+
+        <div class="flex items-center gap-2 pt-1">
+          <button onclick="app.submitCameraScan()" id="btn-submit-camera" class="flex-1 bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2.5 px-4 rounded-xl transition flex items-center justify-center gap-2 shadow-2xs">
+            <i data-lucide="sparkles" class="w-4 h-4"></i>
+            <span>Envoyer au Tuteur IA</span>
+          </button>
+          <button onclick="app.closeCameraModal()" class="bg-slate-100 hover:bg-slate-200 text-slate-700 font-medium py-2.5 px-3.5 rounded-xl transition">
+            Annuler
           </button>
         </div>
       </div>

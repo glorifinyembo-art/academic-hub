@@ -1,7 +1,10 @@
 {
   "name": "Academic Hub",
   "description": "Centre d'information académique universitaire : banque de ressources centralisée, recherche documentaire avancée, lecteurs multi-formats et accompagnement pédagogique de faculté.",
-  "requestFramePermissions": [],
+  "requestFramePermissions": [
+    "camera",
+    "microphone"
+  ],
   "majorCapabilities": [
     "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
   ]
