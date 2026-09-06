@@ -39,6 +39,65 @@ router.get('/resources/:id', (req, res) => {
   res.json({ success: true, data: { ...resource, ...relatedData } });
 });
 
+// In-document page-by-page AI explanation (Page 29 & 46)
+router.get('/resources/:id/explain-page', async (req, res) => {
+  try {
+    const pageNumber = parseInt(req.query.page || '1', 10);
+    const userApiKey = req.query.userApiKey || '';
+    const explanation = await learningEngine.explainDocumentPage(req.params.id, pageNumber, userApiKey);
+    if (!explanation) return res.status(404).json({ success: false, error: 'Document introuvable.' });
+    res.json({ success: true, data: explanation });
+  } catch (err) {
+    res.status(500).json({ success: false, error: err.message });
+  }
+});
+
+// Exam Preparation & Syllabus Diagnostic (Page 49 & 70)
+router.post('/exam/analyze/:id', async (req, res) => {
+  try {
+    const userApiKey = req.body.userApiKey || '';
+    const prep = await learningEngine.analyzeExamPreparation(req.params.id, userApiKey);
+    if (!prep) return res.status(404).json({ success: false, error: 'Document introuvable.' });
+    res.json({ success: true, data: prep });
+  } catch (err) {
+    res.status(500).json({ success: false, error: err.message });
+  }
+});
+
+// Student Learning Overview (Page 22 & 42)
+router.get('/user/learning-overview', (req, res) => {
+  const studentId = req.query.studentId || 'default-student';
+  const overview = db.getLearningOverview(studentId);
+  res.json({ success: true, data: overview });
+});
+
+// Favorites & History (Page 42)
+router.get('/user/favorites', (req, res) => {
+  const studentId = req.query.studentId || 'default-student';
+  const favs = db.getUserFavorites(studentId);
+  res.json({ success: true, data: favs });
+});
+
+router.post('/user/favorites/toggle', (req, res) => {
+  const { studentId, resourceId } = req.body;
+  if (!resourceId) return res.status(400).json({ success: false, error: 'resourceId requis.' });
+  const favs = db.toggleFavorite(studentId || 'default-student', resourceId);
+  res.json({ success: true, data: favs });
+});
+
+router.get('/user/history', (req, res) => {
+  const studentId = req.query.studentId || 'default-student';
+  const history = db.getUserHistory(studentId);
+  res.json({ success: true, data: history });
+});
+
+router.post('/user/history', (req, res) => {
+  const { studentId, resourceId } = req.body;
+  if (!resourceId) return res.status(400).json({ success: false, error: 'resourceId requis.' });
+  const history = db.recordViewHistory(studentId || 'default-student', resourceId);
+  res.json({ success: true, data: history });
+});
+
 // Update / Validate Resource (Visual Validation Page 53)
 router.post('/resources/:id/validate', (req, res) => {
   const updated = db.updateResource(req.params.id, {

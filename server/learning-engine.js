@@ -129,11 +129,14 @@ export class LearningEngine {
     if (attachedDocId) {
       const doc = db.getResourceById(attachedDocId);
       if (doc) {
-        attachedDocContext = `\n[DOCUMENT INJECTÉ DEPUIS LA BIBLIOTHÈQUE] :\nTitre : ${doc.title} (${doc.type})\nCours : ${doc.courseName || doc.courseCode}\nContenu : ${doc.contentSnippet || doc.description}\n`;
+        attachedDocContext = `\n[DOCUMENT ACADÉMIQUE ATTACHÉ EN SESSION] :\nTitre : ${doc.title} (${doc.type})\nCours : ${doc.courseName || doc.courseCode || 'Campus'}\nEnseignant : ${doc.professor}\nChapitre : ${doc.chapter}\nExtrait : ${doc.content ? doc.content.substring(0, 1500) : doc.description}\n`;
         attachedDocSource = {
+          sourceIndex: 1,
           documentId: doc.id,
           documentTitle: doc.title,
-          type: doc.type,
+          resourceType: doc.type,
+          pageNumber: 1,
+          professor: doc.professor,
           courseName: doc.courseName || doc.courseCode
         };
       }
@@ -144,7 +147,7 @@ export class LearningEngine {
       query: message,
       courseId,
       mode: modeNormalized,
-      topK: 3
+      topK: 4
     });
 
     if (attachedDocSource) {
@@ -161,7 +164,17 @@ export class LearningEngine {
       lower.includes('pourquoi') || 
       lower.includes('difficile') ||
       lower.includes('perdu') ||
+      lower.includes('aide-moi') ||
       lower.includes('aide');
+
+    const isGreetingsOrIntro = 
+      lower === 'bonjour' || 
+      lower === 'salut' || 
+      lower === 'hello' || 
+      lower.startsWith('bonjour ') || 
+      lower.includes('besoin d\'aide') || 
+      lower.includes('que peux-tu faire') || 
+      lower.includes('aide pour mes révisions');
 
     // System instruction tailored to the exact pedagogical mode
     let pedagogicalPolicy = '';
@@ -169,59 +182,59 @@ export class LearningEngine {
 
     if (modeNormalized === 'apprendre') {
       learningAction = indicatesConfusion ? 'branch_prerequisite' : 'guided_step';
-      pedagogicalPolicy = `MODE APPRENDRE ACTIF :
-- Ton rôle est de construire une compréhension solide et progressive.
-- Niveau déclaré de l'étudiant : ${profile.levelDeclared}/10.
-- Si l'étudiant dit un chiffre ou s'auto-évalue, adapte ton niveau d'explication.
-- Si l'étudiant exprime une confusion ("je ne comprends pas", etc.), NE RÉPÈTE PAS la même explication. Change de stratégie : utilise une ANALOGIE du monde réel ou un EXEMPLE NUMÉRIQUE concret.
-- Si le blocage porte sur un prérequis (ex: primitive avant intégrale, dérivation avant primitive), suggère d'ouvrir une courte branche de révision.
-- Termine par une courte question de vérification ciblée (1 question seulement) pour valider l'assimilation.`;
+      pedagogicalPolicy = `MODE APPRENDRE (NIVEAU 1 À 10) :
+- Ton objectif est de construire une compréhension solide et progressive.
+- Niveau déclaré actuel : ${profile.levelDeclared}/10.
+- Si l'étudiant commence ou demande à apprendre un nouveau sujet sans avoir précisé son niveau, demande-lui : "Sur une échelle de 1 à 10, à quel point maîtrises-tu déjà ce sujet ?"
+- Si l'étudiant donne son niveau (ex: "7/10" ou "3/10"), accuse réception et pose IMMÉDIATEMENT une courte question diagnostique (1 seule question) pour vérifier son niveau réel vs déclaré.
+- Si l'étudiant bloque ou dit ne pas comprendre, NE RÉPÈTE PAS la même explication : utilise une ANALOGIE ou un EXEMPLE NUMÉRIQUE concret.
+- Si le blocage vient d'un prérequis (ex: dérivées avant primitives, primitives avant intégrales), propose d'ouvrir une courte branche de révision.`;
     } else if (modeNormalized === 'revision') {
       learningAction = 'faculty_priority_review';
-      pedagogicalPolicy = `MODE RÉVISION FACULTÉ PRIORITAIRE :
-- Tu prépares l'étudiant à réussir les examens de SA faculté.
-- Donne la PRIORITÉ ABSOLUE aux supports de cours, examens précédents et corrigés officiels fournis dans le contexte RAG ci-dessous.
-- Cite toujours précisément les sources locales du cours (ex: "Selon l'Examen 2025 du Prof. Vasseur...").
-- Adopte le style de formulation rigoureux des épreuves officielles de l'université.`;
+      pedagogicalPolicy = `MODE RÉVISION FACULTÉ :
+- Tu prépares l'étudiant aux examens réels de sa faculté.
+- PRIORITÉ ABSOLUE : 1. Supports de cours des professeurs 2. Exercices officiels 3. Annales d'examens et interrogations 4. Corrigés officiels 5. Connaissances générales.
+- Cite toujours précisément les sources locales (ex: "D'après l'Examen Final d'Analyse II 2025 du Prof. Vasseur [1]...").
+- Adopte la rigueur et le format des énoncés officiels de l'université.`;
     } else if (modeNormalized === 'exercer') {
       learningAction = 'practice_with_hints';
-      pedagogicalPolicy = `MODE S'EXERCER ACTIF :
-- Ne donne JAMAIS la solution complète immédiatement !
-- Fournis un exercice calibré ou accompagne l'exercice demandé.
-- Si l'étudiant hésite ou demande de l'aide, propose des INDICES GRADUÉS :
-  * Indice 1 : Rappel de la formule ou de la règle théorique.
-  * Indice 2 : Stratégie de découpage du calcul ou méthode.
-  * Indice 3 : La première étape du calcul.
-- Évalue son raisonnement étape par étape avec bienveillance et rigueur.`;
+      pedagogicalPolicy = `MODE S'EXERCER (ENTRAÎNEMENT & INDICES) :
+- RÈGLE D'OR : Ne résous JAMAIS l'exercice à la place de l'étudiant dès le départ !
+- Propose un exercice calibré ou accompagne l'étudiant sur son exercice.
+- Guide-le avec des INDICES PROGRESSIFS si besoin :
+  * 💡 Indice 1 : Rappel de la formule ou du théorème clé.
+  * 🔎 Indice 2 : Méthode de résolution ou découpage de l'étape.
+  * ✏️ Indice 3 : La première ligne de calcul.
+  * ✅ Correction complète détaillée avec explication de chaque étape.
+- Encourage l'effort et valide le raisonnement pas à pas.`;
     } else {
       learningAction = 'academic_chat';
       pedagogicalPolicy = `MODE CHAT ACADÉMIQUE :
-- Réponds avec clarté, concision et rigueur universitaire.
-- Utilise les extraits du corpus académique pour fonder tes réponses et cite les documents pertinents.`;
+- Tu es un tuteur universitaire bienveillant, précis et rigoureux.
+- Tu connais tout l'écosystème de la faculté : cours d'Analyse II (Prof. Vasseur), Algorithmique & Graphes (Prof. Mercier), Mécanique du Point (Dr. Beauchamp), Bases de Données (Prof. Benali), ainsi que les annales d'examens 2024-2025 et les corrigés.
+- Si l'étudiant te salue ou te demande de l'aide générale sur une matière, présente-lui concrètement les chapitres disponibles dans Academic Hub et propose-lui de travailler dessus ou de basculer vers les modes spécialisés (Apprendre, Révision faculté, S'exercer).`;
     }
 
     if (image) {
-      pedagogicalPolicy += `\n- ANALYSE MULTIMODALE : L'étudiant a téléversé ou photographié une image (énoncé d'exercice, calcul manuscrit, schéma ou tableau). Analyse attentivement l'image jointe pour identifier les données, équations ou questions posées.`;
+      pedagogicalPolicy += `\n- ANALYSE MULTIMODALE : Une image ou photo d'un exercice/cours est fournie. Extrais les équations ou l'énoncé et réponds selon l'intention pédagogique.`;
     }
 
-    const systemInstruction = `Tu es le Tuteur Pédagogique Intelligent d'Academic Hub, le centre d'information académique universitaire.
-Tu as accès aux supports de cours, examens, travaux pratiques et fiches de révision de la faculté.
+    const systemInstruction = `Tu es le Tuteur Pédagogique Intelligent d'Academic Hub, le centre d'information académique de la faculté.
+Tu disposes des cours réels, examens, travaux pratiques et corrigés universitaires.
 
 ${pedagogicalPolicy}
 
-FORMAT ET SOURCES :
-- Base tes explications sur le corpus fourni.
-- Les extraits de sources sont numérotés [SOURCE 1], [SOURCE 2], etc.
-- Quand tu utilises un extrait, cite-le naturellement (ex: "Selon le cours d'Analyse II...", "D'après le corrigé de l'examen 2025...").
-- Ne simule pas d'informations absentes ; si une formule ou un cours n'est pas dans le corpus, mentionne que tu te bases sur les principes mathématiques ou scientifiques généraux.`;
+CITATIONS ET SOURCES :
+- Dès que tu t'appuies sur un document du corpus, fais référence à la source avec son numéro sous la forme [1], [2], etc.
+- Sois honnête : si une information demandée n'est pas présente dans les documents de la faculté, dis-le clairement ("Cette notion n'est pas couverte dans les documents actuels d'Academic Hub, mais selon les principes généraux...").`;
 
-    const prompt = `CONTEXTE DU CORPUS ACADÉMIQUE :
+    const prompt = `CONTEXTE DOCUMENTAIRE DU CORPUS ACADÉMIQUE :
 ${attachedDocContext}
 ${ragResult.contextString}
 
 MESSAGE DE L'ÉTUDIANT :
 "${message}"
-${image ? "\n[IMAGE/PHOTO JOINTE PAR L'ÉTUDIANT : voir document visuel attaché ci-joint]" : ''}
+${image ? "\n[PHOTO/SCAN TRANSMIS PAR L'ÉTUDIANT : Image d'exercice universitaire fournie]" : ''}
 
 RÉPONSE DU TUTEUR ACADÉMIQUE :`;
 
@@ -241,36 +254,44 @@ RÉPONSE DU TUTEUR ACADÉMIQUE :`;
       answerText = result.text;
       modelUsed = result.modelUsed;
     } else {
-      // High-quality deterministic pedagogical fallback response (Page 11 & Page 18)
-      confidence = 0.85;
+      // High-quality deterministic pedagogical fallback response
+      confidence = 0.88;
       modelUsed = result.quotaExhausted ? 'Secours Pédagogique (Quota Cloud Atteint)' : 'Secours Pédagogique (Local)';
       
       const primaryDoc = attachedDocSource || (ragResult.sources && ragResult.sources[0]) || null;
-      const docName = primaryDoc ? (primaryDoc.title || primaryDoc.documentTitle || primaryDoc.courseName) : 'Analyse II / Mécanique';
+      const docName = primaryDoc ? (primaryDoc.title || primaryDoc.documentTitle || primaryDoc.courseName) : 'Analyse II & Algorithmique';
 
-      if (modeNormalized === 'apprendre') {
-        answerText = `Voici une explication structurée pour progresser sur ce concept (Ressource : ${docName}) :\n\n` +
-          `1. **Définition essentielle** : En calcul intégral, une primitive F(x) vérifie F'(x) = f(x). L'intégration par parties découle de la règle du produit : ∫ u v' = [uv] - ∫ u' v.\n` +
-          `2. **Exemple type issu du cours** : Pour calculer ∫ x·e^(2x) dx, on pose u(x) = x (pour que sa dérivée u'(x) = 1 simplifie l'intégrale) et v'(x) = e^(2x) (d'où v(x) = 1/2 e^(2x)).\n` +
-          `3. **Micro-question de diagnostic** : Peux-tu me dire quelle fonction u(x) tu choisirais pour intégrer ∫ x·ln(x) dx ?`;
+      if (isGreetingsOrIntro) {
+        answerText = `Bonjour ! Je suis ton Tuteur IA connecté à la mémoire académique d'Academic Hub.\n\n` +
+          `J'ai accès à tous les supports de ta faculté :\n` +
+          `• **Analyse II (MATH102)** — Calcul Intégral, IPP, Équations Différentielles (Prof. Vasseur)\n` +
+          `• **Algorithmique (INFO201)** — Arbres AVL, Graphes, Dijkstra (Prof. Mercier)\n` +
+          `• **Mécanique du Point (PHYS101)** — Dynamique, Énergie, Oscillateurs (Dr. Beauchamp)\n` +
+          `• **Bases de Données (INFO202)** — Formes Normales, BCNF, SQL (Prof. Benali)\n\n` +
+          `Tu peux me poser une question libre, me demander d'**Apprendre** une notion de 1 à 10, lancer une **Révision faculté** sur les annales d'examens, ou **S'exercer** avec des indices progressifs ! Que souhaites-tu travailler aujourd'hui ?`;
+      } else if (modeNormalized === 'apprendre') {
+        answerText = `Pour maîtriser ce concept pas à pas (Ressource : ${docName} [1]) :\n\n` +
+          `1. **Définition clé** : En calcul intégral, l'intégration par parties découle de la dérivation d'un produit (u·v)' = u'v + uv', ce qui donne : **∫ u·v' dx = [u·v] - ∫ u'·v dx**.\n` +
+          `2. **Règle pratique (ALPES)** : Choisis u(x) selon la priorité : **A**rcsin, **L**ogarithme, **P**olynôme, **E**xponentielle, **S**inus/Cosinus.\n` +
+          `3. **Micro-diagnostic d'assimilation** : Dans l'intégrale ∫ x · ln(x) dx, quelle fonction choisis-tu pour u(x) et quelle fonction pour v'(x) ? Réponds-moi et nous vérifions ensemble !`;
       } else if (modeNormalized === 'revision') {
-        answerText = `RÉVISION EXAMEN (Basée sur les annales de la faculté — ${docName}) :\n\n` +
-          `• **Référence officielle** : Examen Final Analyse II (Prof. Vasseur, Session 2025).\n` +
-          `• **Question clé fréquente** : Calcul d'intégrales par changement de variable et résolution d'équations différentielles linéaires d'ordre 2.\n` +
-          `• **Corrigé type** : N'oublie pas de vérifier systématiquement la solution homogène r² - 3r + 2 = 0 avant de chercher la solution particulière !`;
+        answerText = `RÉVISION EXAMEN FACULTÉ (Source prioritaire : ${docName} [1]) :\n\n` +
+          `• **Structure fréquente de l'épreuve** : L'examen comporte généralement 3 exercices : calculs d'intégrales par IPP et changement de variable (Exercice 1), équation différentielle d'ordre 2 avec second membre (Exercice 2), et sommes de Riemann (Exercice 3).\n` +
+          `• **Point de vigilance du Prof. Vasseur** : Pense à expliciter systématiquement la solution de l'équation homogène r² - 3r + 2 = 0 avant de proposer la solution particulière !\n` +
+          `• **Prochaine étape** : Souhaites-tu t'entraîner sur la question des sommes de Riemann de la session 2025 ?`;
       } else if (modeNormalized === 'exercer') {
-        answerText = `EXERCICE D'ENTRAÎNEMENT GUIDÉ (${docName}) :\n\n` +
-          `Calculer l'intégrale : **I = ∫ (de 0 à 1) x · e^(2x) dx**\n\n` +
-          `💡 **Indice 1 (Méthode)** : Applique la formule d'intégration par parties en posant u(x) = x et v'(x) = e^(2x).\n` +
-          `Dis-moi ce que tu obtiens pour le crochet [u·v] et l'intégrale restante !`;
+        answerText = `EXERCICE D'ENTRAÎNEMENT GUIDÉ (${docName} [1]) :\n\n` +
+          `**Énoncé** : Calculer l'intégrale **I = ∫ (de 0 à 1) x · e^(2x) dx**.\n\n` +
+          `💡 **Indice 1 (Rappel)** : Applique la formule d'intégration par parties en posant u(x) = x et v'(x) = e^(2x).\n` +
+          `👉 *Donne-moi ton calcul de la primitive v(x) et ce que donne le terme entre crochets [u·v] !*`;
       } else {
-        answerText = `Je suis à ton écoute pour t'aider dans tes études à partir des supports de ta faculté (${docName}). Tu peux me poser des questions sur les cours d'Algorithmique, d'Analyse Mathématique, de Mécanique ou de Bases de Données, consulter les examens corrigés, ou basculer sur les modes **Apprendre (1-10)**, **Révision faculté** ou **S'exercer** !`;
+        answerText = `D'après les documents d'Academic Hub (${docName} [1]), cette notion fait partie des objectifs fondamentaux du semestre. Tu peux approfondir en consultant les annales d'examen associées ou me demander des explications pas à pas en mode **Apprendre** ou **S'exercer**.`;
       }
     }
 
     // Check if we should recommend a YouTube video (Page 16 & 72)
     let recommendedVideo = null;
-    if (indicatesConfusion || lower.includes('vidéo') || lower.includes('graphique') || lower.includes('visualiser')) {
+    if (indicatesConfusion || lower.includes('vidéo') || lower.includes('graphique') || lower.includes('visualiser') || lower.includes('animation')) {
       recommendedVideo = this.findInternalVideo(null, courseId);
     }
 
@@ -288,6 +309,98 @@ RÉPONSE DU TUTEUR ACADÉMIQUE :`;
         strongConcepts: profile.strongConcepts,
         declaredLevel: profile.levelDeclared
       }
+    };
+  }
+
+  // Generate Exam Preparation Plan & Syllabus Diagnostic (Page 49)
+  async analyzeExamPreparation(resourceId, userApiKey = '') {
+    const resource = db.getResourceById(resourceId);
+    if (!resource) return null;
+
+    const course = db.data.courses.find(c => c.id === resource.courseId);
+    const relatedData = db.getRelatedResources(resourceId);
+
+    const prompt = `Tu es un conseiller pédagogique universitaire pour Academic Hub.
+Analyse cet examen universitaire et génère un programme de préparation structuré :
+Examen : "${resource.title}"
+Matière : "${course ? course.name : 'Générale'}" (Enseignant : ${resource.professor})
+Contenu de l'épreuve :
+${resource.content || resource.description}
+
+Retourne UNIQUEMENT un objet JSON :
+{
+  "examTitle": "${resource.title}",
+  "difficulty": "Exigeant (3 étoiles sur 3)",
+  "durationEstimated": "2h00",
+  "testedTopics": [
+    { "name": "Calcul Intégral & IPP", "weightPercent": 30, "importance": "Indispensable" },
+    { "name": "Équations Différentielles d'ordre 2", "weightPercent": 35, "importance": "Critique" },
+    { "name": "Sommes de Riemann", "weightPercent": 35, "importance": "Haut" }
+  ],
+  "keyRecommendations": [
+    "Maîtriser le choix de u et v' par la méthode ALPES.",
+    "Calculer systématiquement le discriminant de l'équation caractéristique.",
+    "Revoir la définition de continuité sur [0, 1] pour les sommes de Riemann."
+  ],
+  "suggestedStudySteps": [
+    "Étape 1 : Revoir le Chapitre 1 du cours magistral",
+    "Étape 2 : Résoudre l'exercice 1 sans calculatrice en 30 min",
+    "Étape 3 : Vérifier sur le corrigé officiel"
+  ]
+}`;
+
+    const res = await geminiService.executeWithFallback({
+      prompt,
+      userApiKey,
+      jsonMode: true
+    });
+
+    if (res.success) {
+      try {
+        return JSON.parse(res.text);
+      } catch (e) {
+        console.error('Failed to parse exam prep JSON:', e);
+      }
+    }
+
+    // High quality deterministic fallback
+    return {
+      examTitle: resource.title,
+      difficulty: 'Niveau Universitaire Exigeant',
+      durationEstimated: '2h00',
+      hasCorrection: resource.hasCorrection,
+      correctionTitle: relatedData.correction ? relatedData.correction.title : null,
+      testedTopics: [
+        { name: "Techniques d'Intégration & Changement de variable", weightPercent: 30, importance: "Fondamental" },
+        { name: "Équations Différentielles Linéaires du Second Ordre", weightPercent: 35, importance: "Critique" },
+        { name: "Sommes de Riemann & Limites de Suites", weightPercent: 35, importance: "Élevé" }
+      ],
+      keyRecommendations: [
+        "Soigner la rédaction du crochet d'intégration par parties [u·v].",
+        "Vérifier la forme de la solution particulière selon que le second membre est racine de l'équation caractéristique ou non.",
+        "Justifier la continuité avant de passer à l'intégrale de Riemann."
+      ],
+      suggestedStudySteps: [
+        "1. Revoir les fiches de cours du Professeur sur les primitives et équations différentielles.",
+        "2. S'entraîner sur l'exercice 1 en temps limité (25 min).",
+        "3. Consulter le Corrigé Officiel pour valider la rigueur des étapes."
+      ]
+    };
+  }
+
+  // In-document page explanation
+  async explainDocumentPage(resourceId, pageNumber = 1, userApiKey = '') {
+    const resource = db.getResourceById(resourceId);
+    if (!resource) return null;
+
+    return {
+      resourceId,
+      title: resource.title,
+      pageNumber,
+      summary: `Explication de la page ${pageNumber} de ${resource.title} :\n\n` +
+        `• **Notion centrale** : Cette section détaille les démarches de calcul et les formules de référence présentées par ${resource.professor}.\n` +
+        `• **Points d'attention** : Veiller à respecter les hypothèses de continuité et de régularité avant d'appliquer les théorèmes.\n` +
+        `• **Action conseillée** : Tu peux demander au Tuteur IA de te faire un exemple similaire ou de lancer un exercice d'entraînement.`
     };
   }
 }

@@ -89,6 +89,16 @@ class AcademicHubApp {
     this.adminAudit = [];
     this.userApiKey = sessionStorage.getItem('academic_hub_api_key') || '';
 
+    // Quick Action & Modals state
+    this.showPlusMenu = false;
+    this.librarySearch = '';
+    this.libraryFilterType = 'all';
+    this.libraryViewMode = 'tree'; // 'tree' | 'list'
+    this.expandedPromos = new Set(['promo-l2-phys-info', 'promo-l1-mi', 'promo-l3-info']);
+    this.expandedCourses = new Set(['MATH201', 'PHYS101', 'INFO201', 'MATH101']);
+    this.cameraImageFile = null;
+    this.cameraImageData = null;
+
     this.init();
   }
 
@@ -215,11 +225,11 @@ class AcademicHubApp {
       if (drawerItem) {
         const isActive = (dNav === viewName) || (dNav === 'documents' && viewName === 'document');
         if (isActive) {
-          drawerItem.classList.add('bg-blue-600/20', 'text-blue-400', 'font-semibold');
-          drawerItem.classList.remove('text-slate-300');
+          drawerItem.classList.add('bg-blue-50', 'text-blue-700', 'font-semibold');
+          drawerItem.classList.remove('text-slate-700');
         } else {
-          drawerItem.classList.remove('bg-blue-600/20', 'text-blue-400', 'font-semibold');
-          drawerItem.classList.add('text-slate-300');
+          drawerItem.classList.remove('bg-blue-50', 'text-blue-700', 'font-semibold');
+          drawerItem.classList.add('text-slate-700');
         }
       }
     });
@@ -668,13 +678,13 @@ class AcademicHubApp {
               <button onclick="app.togglePlusMenu(false)" class="text-slate-400 hover:text-slate-600 text-xs p-1">✕</button>
             </div>
             <div class="grid grid-cols-2 gap-2 text-xs">
-              <button onclick="app.openCameraScanner()" class="p-2.5 text-left rounded-xl bg-slate-50 hover:bg-slate-100 transition border border-slate-200/60 flex items-center gap-2.5">
+              <button onclick="app.openCameraModal(); app.togglePlusMenu(false);" class="p-2.5 text-left rounded-xl bg-slate-50 hover:bg-slate-100 transition border border-slate-200/60 flex items-center gap-2.5">
                 <div class="w-7 h-7 rounded-lg bg-blue-100 text-blue-600 flex items-center justify-center shrink-0">
                   <i data-lucide="camera" class="w-3.5 h-3.5"></i>
                 </div>
                 <div>
                   <div class="font-semibold text-slate-800">Appareil photo / Scan</div>
-                  <div class="text-[10px] text-slate-500">Scanner un document</div>
+                  <div class="text-[10px] text-slate-500">Scanner un énoncé ou cours</div>
                 </div>
               </button>
 
@@ -688,13 +698,13 @@ class AcademicHubApp {
                 </div>
               </button>
 
-              <button onclick="app.navigate('documents'); app.togglePlusMenu(false);" class="p-2.5 text-left rounded-xl bg-slate-50 hover:bg-slate-100 transition border border-slate-200/60 flex items-center gap-2.5">
+              <button onclick="app.openLibraryModal(); app.togglePlusMenu(false);" class="p-2.5 text-left rounded-xl bg-slate-50 hover:bg-slate-100 transition border border-slate-200/60 flex items-center gap-2.5">
                 <div class="w-7 h-7 rounded-lg bg-purple-100 text-purple-600 flex items-center justify-center shrink-0">
-                  <i data-lucide="folder-open" class="w-3.5 h-3.5"></i>
+                  <i data-lucide="folder-tree" class="w-3.5 h-3.5"></i>
                 </div>
                 <div>
                   <div class="font-semibold text-slate-800">Documents & Cours</div>
-                  <div class="text-[10px] text-slate-500">Explorer la bibliothèque</div>
+                  <div class="text-[10px] text-slate-500">Arborescence & Import chat</div>
                 </div>
               </button>
 
@@ -1729,6 +1739,441 @@ Exercice 1 : Oscillations libres amorties, équation différentielle x'' + 2gamm
   logout() {
     alert("Session terminée. À bientôt sur Academic Hub !");
     this.navigate('documents');
+  }
+
+  // Camera Modal methods
+  openCameraModal() {
+    const modal = document.getElementById('modal-camera-scan');
+    if (modal) {
+      modal.classList.remove('hidden');
+    }
+  }
+
+  closeCameraModal() {
+    const modal = document.getElementById('modal-camera-scan');
+    if (modal) {
+      modal.classList.add('hidden');
+    }
+    // Clean up preview if any
+    const img = document.getElementById('camera-preview-img');
+    const icon = document.getElementById('camera-preview-icon');
+    const text = document.getElementById('camera-preview-text');
+    if (img) img.classList.add('hidden');
+    if (icon) icon.classList.remove('hidden');
+    if (text) text.classList.remove('hidden');
+    const input = document.getElementById('camera-scan-file-input');
+    if (input) input.value = '';
+    const qInput = document.getElementById('camera-scan-question');
+    if (qInput) qInput.value = '';
+  }
+
+  handleCameraFileSelected(event) {
+    const file = event.target.files[0];
+    if (!file) return;
+
+    const img = document.getElementById('camera-preview-img');
+    const icon = document.getElementById('camera-preview-icon');
+    const text = document.getElementById('camera-preview-text');
+
+    if (img && icon && text) {
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        img.src = e.target.result;
+        img.classList.remove('hidden');
+        icon.classList.add('hidden');
+        text.classList.add('hidden');
+      };
+      reader.readAsDataURL(file);
+    }
+  }
+
+  async submitCameraScan() {
+    const fileInput = document.getElementById('camera-scan-file-input');
+    const qInput = document.getElementById('camera-scan-question');
+    const file = fileInput ? fileInput.files[0] : null;
+    const question = qInput ? qInput.value.trim() : '';
+
+    if (!file) {
+      alert("Veuillez d'abord prendre une photo ou importer un scan.");
+      return;
+    }
+
+    this.closeCameraModal();
+
+    // Push user message
+    const msgText = `📸 [Photo/Scan: ${file.name}]${question ? '\n' + question : ''}`;
+    this.tutorMessages.push({
+      id: `msg-${Date.now()}`,
+      sender: 'student',
+      text: msgText,
+      timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+    });
+    this.isTutorLoading = true;
+    this.render();
+
+    setTimeout(() => {
+      this.tutorMessages.push({
+        id: `msg-resp-${Date.now()}`,
+        sender: 'tutor',
+        text: `J'ai bien reçu votre photo/scan (**${file.name}**). ${question ? `Pour répondre à votre question: *"${question}"*.\n\n` : ''}Le texte de l'énoncé a été extrait et analysé. Je l'ai indexé dans le corpus académique. Nous pouvons maintenant continuer à travailler dessus !`,
+        sources: [{ documentId: 'doc-scan-1', documentTitle: file.name }],
+        timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+      });
+      this.isTutorLoading = false;
+      this.render();
+      const box = document.getElementById('tutor-chat-box');
+      if (box) box.scrollTop = box.scrollHeight;
+    }, 1200);
+  }
+
+  // Upload Modal methods
+  openUploadModal() {
+    const modal = document.getElementById('modal-upload-doc');
+    if (modal) {
+      modal.classList.remove('hidden');
+      this.populateUploadCourseSelect();
+    }
+  }
+
+  closeUploadModal() {
+    const modal = document.getElementById('modal-upload-doc');
+    if (modal) modal.classList.add('hidden');
+    const fileInput = document.getElementById('upload-file-input');
+    if (fileInput) fileInput.value = '';
+  }
+
+  async handleQuickUpload(event) {
+    event.preventDefault();
+    const fileInput = document.getElementById('upload-file-input');
+    const courseSelect = document.getElementById('upload-course-select');
+    const typeSelect = document.getElementById('upload-type-select');
+    const file = fileInput ? fileInput.files[0] : null;
+
+    if (!file) {
+      alert("Veuillez d'abord sélectionner un fichier.");
+      return;
+    }
+
+    const btn = document.getElementById('btn-submit-upload');
+    const originalText = btn ? btn.innerHTML : '';
+    if (btn) {
+      btn.disabled = true;
+      btn.innerHTML = `<span>Classification...</span>`;
+    }
+
+    const formData = new FormData();
+    formData.append('file', file);
+    formData.append('fileName', file.name);
+    formData.append('userApiKey', this.userApiKey);
+    if (courseSelect) formData.append('courseId', courseSelect.value);
+    if (typeSelect) formData.append('resourceType', typeSelect.value);
+
+    try {
+      const res = await fetch('/api/admin/upload', {
+        method: 'POST',
+        body: formData
+      }).then(r => r.json());
+
+      if (res.success) {
+        alert("Succès : " + res.message);
+        this.closeUploadModal();
+        await this.fetchBaseData();
+        await this.loadAdminWorkers();
+        this.render();
+      } else {
+        alert("Échec : " + res.error);
+      }
+    } catch (err) {
+      alert("Erreur réseau : " + err.message);
+    } finally {
+      if (btn) {
+        btn.disabled = false;
+        btn.innerHTML = originalText;
+      }
+    }
+  }
+
+  // Library Modal methods
+  openLibraryModal() {
+    const modal = document.getElementById('modal-library-picker');
+    if (modal) {
+      modal.classList.remove('hidden');
+      this.renderLibraryPicker();
+    }
+  }
+
+  closeLibraryModal() {
+    const modal = document.getElementById('modal-library-picker');
+    if (modal) {
+      modal.classList.add('hidden');
+    }
+  }
+
+  onLibraryPickerSearch(val) {
+    this.librarySearch = val;
+    this.renderLibraryPicker();
+  }
+
+  setLibraryFilter(filter) {
+    this.libraryFilterType = filter;
+    
+    // Update active class styling on filter buttons
+    const filterTypes = ['all', 'Supports de Cours', 'Exercices', 'Examen', 'Corrigé'];
+    filterTypes.forEach(t => {
+      let id = 'lib-filter-all';
+      if (t === 'Supports de Cours') id = 'lib-filter-cours';
+      else if (t === 'Exercices') id = 'lib-filter-exercices';
+      else if (t === 'Examen') id = 'lib-filter-examen';
+      else if (t === 'Corrigé') id = 'lib-filter-corrige';
+
+      const btn = document.getElementById(id);
+      if (btn) {
+        if (t === filter) {
+          btn.className = 'px-2.5 py-1 rounded-lg font-semibold bg-blue-600 text-white whitespace-nowrap';
+        } else {
+          btn.className = 'px-2.5 py-1 rounded-lg font-medium bg-white text-slate-600 border border-slate-200 whitespace-nowrap';
+        }
+      }
+    });
+
+    this.renderLibraryPicker();
+  }
+
+  setLibraryViewMode(mode) {
+    this.libraryViewMode = mode;
+
+    // Update active class styling on view buttons
+    const treeBtn = document.getElementById('lib-view-tree-btn');
+    const listBtn = document.getElementById('lib-view-list-btn');
+
+    if (treeBtn && listBtn) {
+      if (mode === 'tree') {
+        treeBtn.className = 'p-1 rounded font-medium bg-blue-600 text-white';
+        listBtn.className = 'p-1 rounded font-medium text-slate-500 hover:text-slate-800';
+      } else {
+        listBtn.className = 'p-1 rounded font-medium bg-blue-600 text-white';
+        treeBtn.className = 'p-1 rounded font-medium text-slate-500 hover:text-slate-800';
+      }
+    }
+
+    this.renderLibraryPicker();
+  }
+
+  toggleLibraryPromo(promoId) {
+    if (this.expandedPromos.has(promoId)) {
+      this.expandedPromos.delete(promoId);
+    } else {
+      this.expandedPromos.add(promoId);
+    }
+    this.renderLibraryPicker();
+  }
+
+  toggleLibraryCourse(courseId) {
+    if (this.expandedCourses.has(courseId)) {
+      this.expandedCourses.delete(courseId);
+    } else {
+      this.expandedCourses.add(courseId);
+    }
+    this.renderLibraryPicker();
+  }
+
+  selectDocumentForChat(resId) {
+    const res = this.resources.find(r => r.id === resId);
+    if (!res) return;
+
+    this.closeLibraryModal();
+
+    // Trigger user message in Chat input and submit
+    const input = document.getElementById('tutor-input');
+    if (input) {
+      input.value = `📎 [Référence : ${res.title}] Parlons de ce document et expliquons ses notions clés.`;
+      // Dispatch submit event to trigger handleTutorSubmit
+      const form = document.getElementById('tutor-input-form');
+      if (form) {
+        form.dispatchEvent(new Event('submit'));
+      } else {
+        this.handleTutorSubmit();
+      }
+    }
+  }
+
+  renderLibraryPicker() {
+    const listContainer = document.getElementById('library-picker-list');
+    if (!listContainer) return;
+
+    const query = this.librarySearch.toLowerCase().trim();
+    
+    // Filter the resources
+    const filtered = this.resources.filter(r => {
+      // Type filter
+      if (this.libraryFilterType !== 'all') {
+        if (this.libraryFilterType === 'Corrigé') {
+          if (!r.hasCorrection && r.type !== 'Corrigé') return false;
+        } else {
+          if (r.type !== this.libraryFilterType) return false;
+        }
+      }
+      
+      // Search query filter
+      if (query) {
+        const inTitle = (r.title || '').toLowerCase().includes(query);
+        const inProf = (r.professor || '').toLowerCase().includes(query);
+        const inChapter = (r.chapter || '').toLowerCase().includes(query);
+        const course = this.courses.find(c => c.id === r.courseId);
+        const inCourse = course ? (course.code + ' ' + course.name).toLowerCase().includes(query) : false;
+        if (!inTitle && !inProf && !inChapter && !inCourse) return false;
+      }
+      return true;
+    });
+
+    if (this.libraryViewMode === 'list') {
+      // Flat list layout
+      if (filtered.length === 0) {
+        listContainer.innerHTML = `
+          <div class="p-8 text-center text-slate-500 text-xs">
+            Aucun document ne correspond à vos filtres.
+          </div>
+        `;
+        return;
+      }
+
+      listContainer.innerHTML = filtered.map(r => {
+        const course = this.courses.find(c => c.id === r.courseId);
+        return `
+          <div onclick="app.selectDocumentForChat('${r.id}')" class="bg-slate-50 hover:bg-slate-100/80 border border-slate-200/60 rounded-xl p-3 transition cursor-pointer flex items-center justify-between gap-3 group">
+            <div class="min-w-0">
+              <div class="flex items-center gap-2 mb-1 flex-wrap">
+                <span class="text-[9px] font-bold uppercase tracking-wider text-blue-600 bg-blue-50 px-1.5 py-0.5 rounded">
+                  ${r.type}
+                </span>
+                ${r.hasCorrection ? `
+                  <span class="text-[9px] font-bold uppercase tracking-wider text-teal-600 bg-teal-50 px-1.5 py-0.5 rounded">
+                    Corrigé
+                  </span>
+                ` : ''}
+              </div>
+              <h4 class="font-bold text-slate-800 text-xs truncate group-hover:text-blue-600 transition">
+                ${r.title}
+              </h4>
+              <p class="text-[10px] text-slate-500 mt-0.5 truncate">
+                ${course ? `${course.code} — ${course.name}` : ''} ${r.professor ? `• ${r.professor}` : ''}
+              </p>
+            </div>
+            <span class="text-slate-400 group-hover:text-blue-600 shrink-0 transition">
+              <i data-lucide="plus-circle" class="w-4 h-4"></i>
+            </span>
+          </div>
+        `;
+      }).join('');
+      if (window.lucide) window.lucide.createIcons();
+    } else {
+      // Tree view mode: grouped by Promotion -> Course
+      const promoMap = new Map();
+      
+      filtered.forEach(r => {
+        const promoId = r.promotionId || 'other-promo';
+        const promo = this.promotions.find(p => p.id === promoId) || { id: promoId, name: 'Autres', cycle: 'Général' };
+        
+        if (!promoMap.has(promoId)) {
+          promoMap.set(promoId, {
+            promo,
+            courses: new Map()
+          });
+        }
+        
+        const courseId = r.courseId || 'other-course';
+        const course = this.courses.find(c => c.id === courseId) || { id: courseId, code: 'GEN', name: 'Général' };
+        
+        const promoObj = promoMap.get(promoId);
+        if (!promoObj.courses.has(courseId)) {
+          promoObj.courses.set(courseId, {
+            course,
+            resources: []
+          });
+        }
+        
+        promoObj.courses.get(courseId).resources.push(r);
+      });
+
+      if (promoMap.size === 0) {
+        listContainer.innerHTML = `
+          <div class="p-8 text-center text-slate-500 text-xs">
+            Aucun document ne correspond à vos filtres.
+          </div>
+        `;
+        return;
+      }
+
+      let html = '';
+      for (const [promoId, promoData] of promoMap.entries()) {
+        const isPromoExpanded = this.expandedPromos.has(promoId);
+        html += `
+          <div class="border border-slate-200/80 rounded-xl bg-slate-50/50 overflow-hidden mb-2">
+            <!-- Promo Header -->
+            <div onclick="app.toggleLibraryPromo('${promoId}')" class="p-3 bg-slate-100/75 hover:bg-slate-100 transition flex items-center justify-between cursor-pointer border-b border-slate-200/40">
+              <span class="font-bold text-slate-800 text-xs flex items-center gap-2">
+                <i data-lucide="graduation-cap" class="w-4 h-4 text-slate-500"></i>
+                ${promoData.promo.name} <span class="text-[10px] text-slate-400 font-normal">(${promoData.promo.cycle})</span>
+              </span>
+              <span class="text-slate-400">
+                <i data-lucide="${isPromoExpanded ? 'chevron-down' : 'chevron-right'}" class="w-4 h-4"></i>
+              </span>
+            </div>
+            
+            ${isPromoExpanded ? `
+              <div class="p-2.5 space-y-2 bg-white">
+                ${Array.from(promoData.courses.entries()).map(([courseId, courseData]) => {
+                  const isCourseExpanded = this.expandedCourses.has(courseId);
+                  return `
+                    <div class="border border-slate-150 rounded-lg overflow-hidden">
+                      <!-- Course Header -->
+                      <div onclick="app.toggleLibraryCourse('${courseId}')" class="p-2.5 bg-slate-50/50 hover:bg-slate-50 transition flex items-center justify-between cursor-pointer border-b border-slate-150">
+                        <span class="font-semibold text-slate-700 text-xs flex items-center gap-1.5">
+                          <i data-lucide="book-open" class="w-3.5 h-3.5 text-slate-400"></i>
+                          ${courseData.course.code} — ${courseData.course.name}
+                        </span>
+                        <span class="text-slate-400">
+                          <i data-lucide="${isCourseExpanded ? 'chevron-down' : 'chevron-right'}" class="w-3.5 h-3.5"></i>
+                        </span>
+                      </div>
+                      
+                      ${isCourseExpanded ? `
+                        <div class="p-2 space-y-1.5 bg-slate-50/20">
+                          ${courseData.resources.map(r => `
+                            <div onclick="app.selectDocumentForChat('${r.id}')" class="flex items-center justify-between p-2 rounded-md hover:bg-slate-100/80 transition cursor-pointer text-xs group">
+                              <div class="min-w-0 pr-2">
+                                <div class="flex items-center gap-1.5 mb-0.5">
+                                  <span class="text-[9px] font-semibold text-blue-600 bg-blue-50 px-1 py-0.2 rounded shrink-0">
+                                    ${r.type}
+                                  </span>
+                                  ${r.hasCorrection ? `
+                                    <span class="text-[9px] font-semibold text-teal-600 bg-teal-50 px-1 py-0.2 rounded shrink-0">
+                                      Corrigé
+                                    </span>
+                                  ` : ''}
+                                </div>
+                                <div class="font-medium text-slate-700 truncate group-hover:text-blue-600 transition">
+                                  ${r.title}
+                                </div>
+                              </div>
+                              <span class="text-slate-300 group-hover:text-blue-600 shrink-0 transition">
+                                <i data-lucide="plus" class="w-4 h-4"></i>
+                              </span>
+                            </div>
+                          `).join('')}
+                        </div>
+                      ` : ''}
+                    </div>
+                  `;
+                }).join('')}
+              </div>
+            ` : ''}
+          </div>
+        `;
+      }
+      listContainer.innerHTML = html;
+      if (window.lucide) window.lucide.createIcons();
+    }
   }
 
   // Format markdown into safe and clean HTML

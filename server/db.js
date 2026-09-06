@@ -655,6 +655,131 @@ class AcademicDatabase {
     return false;
   }
 
+  // Favorites & History Management
+  getFavorites(studentId = 'default-student') {
+    return this.data.favorites.filter(f => f.studentId === studentId);
+  }
+
+  toggleFavorite(studentId = 'default-student', { resourceId, type, title, courseName, category }) {
+    const idx = this.data.favorites.findIndex(f => f.studentId === studentId && f.resourceId === resourceId);
+    if (idx !== -1) {
+      this.data.favorites.splice(idx, 1);
+      this.saveToDisk();
+      return { isFavorite: false };
+    } else {
+      const fav = {
+        id: `fav-${Date.now()}`,
+        studentId,
+        resourceId,
+        type: type || 'Document',
+        title: title || 'Ressource',
+        courseName: courseName || '',
+        category: category || 'document',
+        createdAt: new Date().toISOString()
+      };
+      this.data.favorites.unshift(fav);
+      this.saveToDisk();
+      return { isFavorite: true, favorite: fav };
+    }
+  }
+
+  getHistory(studentId = 'default-student') {
+    return this.data.history.filter(h => h.studentId === studentId);
+  }
+
+  recordHistory(studentId = 'default-student', { resourceId, title, courseName, pageNumber = 1, totalPages = 1 }) {
+    const existingIdx = this.data.history.findIndex(h => h.studentId === studentId && h.resourceId === resourceId);
+    const entry = {
+      id: `hist-${Date.now()}`,
+      studentId,
+      resourceId,
+      title,
+      courseName,
+      pageNumber,
+      totalPages,
+      progressPercent: Math.min(100, Math.round((pageNumber / Math.max(1, totalPages)) * 100)),
+      lastViewedAt: new Date().toISOString()
+    };
+
+    if (existingIdx !== -1) {
+      this.data.history[existingIdx] = entry;
+    } else {
+      this.data.history.unshift(entry);
+    }
+    if (this.data.history.length > 50) this.data.history.pop();
+    this.saveToDisk();
+    return entry;
+  }
+
+  getLearningOverview(studentId = 'default-student') {
+    const profile = this.getStudentProfile(studentId);
+    const courses = this.data.courses;
+    const concepts = this.data.concepts;
+
+    // Build active courses progress
+    const activeCourses = courses.map(course => {
+      const courseConcepts = concepts.filter(c => c.courseId === course.id);
+      const scores = courseConcepts.map(c => profile.masteryScores[c.id] || 0.4);
+      const avgScore = scores.length > 0 ? scores.reduce((a, b) => a + b, 0) / scores.length : 0.5;
+      const progressPercent = Math.round(avgScore * 100);
+
+      let status = 'En cours';
+      if (progressPercent >= 80) status = 'Maîtrisé';
+      else if (progressPercent < 45) status = 'À renforcer';
+
+      return {
+        id: course.id,
+        code: course.code,
+        name: course.name,
+        professor: course.professor,
+        progressPercent,
+        status,
+        totalChapters: course.chapters.length,
+        conceptsCount: courseConcepts.length,
+        lastActive: new Date(Date.now() - Math.floor(Math.random() * 86400000 * 3)).toLocaleDateString('fr-FR')
+      };
+    });
+
+    // Build granular concept status
+    const conceptDetails = concepts.map(concept => {
+      const score = profile.masteryScores[concept.id] || 0.45;
+      const course = courses.find(c => c.id === concept.courseId);
+      let levelBadge = 'red'; // red, orange, green
+      let levelLabel = 'Point fragile';
+
+      if (score >= 0.75) {
+        levelBadge = 'green';
+        levelLabel = 'Solide';
+      } else if (score >= 0.55) {
+        levelBadge = 'orange';
+        levelLabel = 'En progression';
+      }
+
+      return {
+        id: concept.id,
+        name: concept.name,
+        courseName: course ? course.name : '',
+        courseCode: course ? course.code : '',
+        score: Math.round(score * 100),
+        levelBadge,
+        levelLabel,
+        prerequisites: concept.prerequisites
+      };
+    });
+
+    const weakPoints = conceptDetails.filter(c => c.levelBadge === 'red' || c.levelBadge === 'orange');
+
+    return {
+      studentId,
+      levelDeclared: profile.levelDeclared,
+      activeGoal: profile.learningStateTree ? profile.learningStateTree.activeGoal : 'Révision générale',
+      activeCourses,
+      weakPoints,
+      allConcepts: conceptDetails,
+      learningStateTree: profile.learningStateTree
+    };
+  }
+
   // Student Profile & Learning State
   getStudentProfile(studentId = 'default-student') {
     if (!this.data.studentProfiles[studentId]) {
