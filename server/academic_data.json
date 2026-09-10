@@ -1,228 +1,364 @@
 {
   "promotions": [
     {
-      "id": "l1-mi",
-      "name": "L1 Mathématiques & Informatique",
-      "cycle": "Licence 1",
-      "faculty": "Sciences Fondamentales"
+      "id": "domain-math",
+      "name": "Mathématiques Fondamentales & Appliquées",
+      "cycle": "Cycle Préparatoire / Tronc Commun",
+      "faculty": "Pôle Mathématiques"
     },
     {
-      "id": "l2-info",
-      "name": "L2 Informatique Générale",
-      "cycle": "Licence 2",
-      "faculty": "Sciences et Ingénierie"
+      "id": "domain-phys-chem",
+      "name": "Sciences Physiques & Chimiques",
+      "cycle": "Cycle Préparatoire / Tronc Commun",
+      "faculty": "Pôle Sciences Physiques"
     },
     {
-      "id": "l3-info",
-      "name": "L3 Génie Logiciel & Systèmes",
-      "cycle": "Licence 3",
-      "faculty": "Sciences et Ingénierie"
+      "id": "domain-tech-geom",
+      "name": "Dessin & Géométrie Technique",
+      "cycle": "Cycle Préparatoire / Tronc Commun",
+      "faculty": "Pôle Sciences de l'Ingénieur"
     },
     {
-      "id": "m1-ia",
-      "name": "M1 Intelligence Artificielle & Data",
-      "cycle": "Master 1",
-      "faculty": "Informatique Avancée"
+      "id": "domain-info",
+      "name": "Informatique & Algorithmique",
+      "cycle": "Cycle Préparatoire / Tronc Commun",
+      "faculty": "Pôle Sciences Numériques"
     },
     {
-      "id": "l2-phys",
-      "name": "L2 Physique & Sciences de l'Ingénieur",
-      "cycle": "Licence 2",
-      "faculty": "Sciences Physiques"
+      "id": "domain-ing-transv",
+      "name": "Ingénierie & Formation Transversale",
+      "cycle": "Cycle Préparatoire / Tronc Commun",
+      "faculty": "Pôle Formation Générale & Humaine"
     }
   ],
   "courses": [
     {
-      "id": "course-algo2",
-      "code": "INFO201",
-      "name": "Algorithmique & Structures de Données Avancées",
-      "promotionId": "l2-info",
-      "professor": "Prof. Laurent Mercier",
-      "description": "Arbres binaires de recherche, tas, graphes, algorithmes de Dijkstra et programmation dynamique.",
+      "id": "course-algebre",
+      "code": "MATH101",
+      "name": "Algèbre",
+      "credits": 8,
+      "promotionId": "domain-math",
+      "professor": "Équipe Pédagogique d'Algèbre",
+      "description": "Espaces vectoriels, applications linéaires, matrices, déterminants, systèmes linéaires, diagonalisation et formes quadratiques.",
       "chapters": [
-        {
-          "id": "chap-algo-1",
-          "number": 1,
-          "title": "Arbres Binaires de Recherche (ABR) et Équilibrage AVL"
-        },
-        {
-          "id": "chap-algo-2",
-          "number": 2,
-          "title": "Parcours et Plus Courts Chemins dans les Graphes"
-        },
-        {
-          "id": "chap-algo-3",
-          "number": 3,
-          "title": "Programmation Dynamique et Mémoïsation"
-        }
+        { "id": "chap-alg-1", "number": 1, "title": "Espaces Vectoriels et Familles Libres/Génératrices" },
+        { "id": "chap-alg-2", "number": 2, "title": "Matrices, Déterminants et Résolution de Systèmes Linéaires" },
+        { "id": "chap-alg-3", "number": 3, "title": "Applications Linéaires, Valeurs Propres et Diagonalisation" }
       ]
     },
     {
-      "id": "course-analyse2",
+      "id": "course-analyse",
       "code": "MATH102",
-      "name": "Analyse II : Calcul Intégral & Équations Différentielles",
-      "promotionId": "l1-mi",
-      "professor": "Prof. Éléonore Vasseur",
-      "description": "Intégrale de Riemann, méthodes d'intégration par parties et changement de variable, équations différentielles linéaires.",
+      "name": "Analyse Mathématique",
+      "credits": 8,
+      "promotionId": "domain-math",
+      "professor": "Équipe Pédagogique d'Analyse",
+      "description": "Limites, continuité, calcul différentiel, développements limités, intégrale de Riemann, techniques d'intégration et équations différentielles.",
       "chapters": [
-        {
-          "id": "chap-math-1",
-          "number": 1,
-          "title": "Primitives et Techniques d'Intégration"
-        },
-        {
-          "id": "chap-math-2",
-          "number": 2,
-          "title": "Intégrales Définies et Théorème Fondamental de l'Analyse"
-        },
-        {
-          "id": "chap-math-3",
-          "number": 3,
-          "title": "Équations Différentielles Linéaires du Premier et Second Ordre"
-        }
+        { "id": "chap-ana-1", "number": 1, "title": "Continuité, Dérivabilité et Théorèmes Fondamentaux" },
+        { "id": "chap-ana-2", "number": 2, "title": "Primitives et Techniques d'Intégration (IPP, Changement de variable)" },
+        { "id": "chap-ana-3", "number": 3, "title": "Équations Différentielles Linéaires du 1er et 2nd Ordre" }
       ]
     },
     {
-      "id": "course-meca",
+      "id": "course-geom-analytique",
+      "code": "MATH103A",
+      "name": "Géométrie Analytique",
+      "credits": 2,
+      "promotionId": "domain-math",
+      "professor": "Équipe de Géométrie",
+      "description": "Vecteurs dans le plan et l'espace, produits scalaire et vectoriel, équations cartésiennes de droites, plans, coniques et quadriques.",
+      "chapters": [
+        { "id": "chap-ga-1", "number": 1, "title": "Droites, Plans et Repères de l'Espace" },
+        { "id": "chap-ga-2", "number": 2, "title": "Coniques : Ellipses, Paraboles et Hyperboles" }
+      ]
+    },
+    {
+      "id": "course-trigo",
+      "code": "MATH103B",
+      "name": "Trigonométrie",
+      "credits": 1,
+      "promotionId": "domain-math",
+      "professor": "Équipe de Mathématiques",
+      "description": "Formules d'addition et de duplication, équations trigonométriques, fonctions circulaires et hyperboliques, coordonnées polaires.",
+      "chapters": [
+        { "id": "chap-trigo-1", "number": 1, "title": "Formules Fondamentales et Résolution d'Équations Trigonométriques" },
+        { "id": "chap-trigo-2", "number": 2, "title": "Fonctions Réciproques et Trigonométrie Hyperbolique" }
+      ]
+    },
+    {
+      "id": "course-math-comp",
+      "code": "MATH104",
+      "name": "Mathématiques Complémentaires",
+      "credits": 3,
+      "promotionId": "domain-math",
+      "professor": "Équipe de Mathématiques Appliquées",
+      "description": "Logique mathématique, ensembles, dénombrement, suites numériques et introduction aux probabilités discrètes.",
+      "chapters": [
+        { "id": "chap-mc-1", "number": 1, "title": "Logique Formelle, Ensembles et Dénombrement (Arrangements, Combinaisons)" },
+        { "id": "chap-mc-2", "number": 2, "title": "Suites Réelles et Notions Élémentaires de Probabilités" }
+      ]
+    },
+    {
+      "id": "course-geom-plane",
+      "code": "MATH105",
+      "name": "Géométrie Plane",
+      "credits": 2,
+      "promotionId": "domain-math",
+      "professor": "Équipe de Géométrie",
+      "description": "Propriétés métriques des figures planes, cercles, théorèmes de Thalès et Pythagore, transformations géométriques planes.",
+      "chapters": [
+        { "id": "chap-gp-1", "number": 1, "title": "Triangles, Cercles et Théorèmes Métriques Classiques" },
+        { "id": "chap-gp-2", "number": 2, "title": "Isométries et Homothéties du Plan" }
+      ]
+    },
+    {
+      "id": "course-chimie",
+      "code": "CHIM101",
+      "name": "Chimie Générale",
+      "credits": 6,
+      "promotionId": "domain-phys-chem",
+      "professor": "Équipe Pédagogique de Chimie",
+      "description": "Atomistique, tableau périodique, liaisons chimiques, thermochimie, cinétique chimique, équilibres acido-basiques et oxydoréduction.",
+      "chapters": [
+        { "id": "chap-chim-1", "number": 1, "title": "Structure Atomique, Modèle Quantique et Liaisons Chimiques" },
+        { "id": "chap-chim-2", "number": 2, "title": "Thermodynamique Chimique et Équilibres en Solution Aqueuse" },
+        { "id": "chap-chim-3", "number": 3, "title": "Cinétique et Réactions d'Oxydoréduction" }
+      ]
+    },
+    {
+      "id": "course-physique",
       "code": "PHYS101",
-      "name": "Mécanique du Point & Dynamique Newtonienne",
-      "promotionId": "l2-phys",
-      "professor": "Dr. Marc Beauchamp",
-      "description": "Lois de Newton, travail et énergie cinétique, oscillateur harmonique et théorèmes de conservation.",
+      "name": "Physique",
+      "credits": 6,
+      "promotionId": "domain-phys-chem",
+      "professor": "Équipe Pédagogique de Physique",
+      "description": "Cinématique, dynamique newtonienne du point matériel, travail, énergie, oscillateurs harmoniques, électrostatique et électrocinétique.",
       "chapters": [
-        {
-          "id": "chap-phys-1",
-          "number": 1,
-          "title": "Cinématique et Repères Mobiles"
-        },
-        {
-          "id": "chap-phys-2",
-          "number": 2,
-          "title": "Théorème de l'Énergie Cinétique et Énergie Potentielle"
-        },
-        {
-          "id": "chap-phys-3",
-          "number": 3,
-          "title": "Oscillateurs Harmoniques Libres et Amortis"
-        }
+        { "id": "chap-phys-1", "number": 1, "title": "Cinématique et Lois Fondamentales de Newton" },
+        { "id": "chap-phys-2", "number": 2, "title": "Travail, Énergie Mécanique et Oscillateurs Harmoniques" },
+        { "id": "chap-phys-3", "number": 3, "title": "Électrostatique et Circuits en Courant Continu" }
       ]
     },
     {
-      "id": "course-bd",
-      "code": "INFO202",
-      "name": "Bases de Données Relationnelles & SQL Avancé",
-      "promotionId": "l2-info",
-      "professor": "Prof. Amine Benali",
-      "description": "Algèbre relationnelle, formes normales (1FN à BCNF), requêtes analytiques SQL et optimisation d'index.",
+      "id": "course-dessin",
+      "code": "DESS101",
+      "name": "Dessin Technique",
+      "credits": 3,
+      "promotionId": "domain-tech-geom",
+      "professor": "Équipe de Dessin Industriel",
+      "description": "Normalisation ISO, projections orthogonales, vues en coupe et sections, cotation fonctionnelle et perspectives axonométriques.",
       "chapters": [
-        {
-          "id": "chap-bd-1",
-          "number": 1,
-          "title": "Conception Entité-Association et Modèle Relationnel"
-        },
-        {
-          "id": "chap-bd-2",
-          "number": 2,
-          "title": "Normalisation et Dépendances Fonctionnelles"
-        },
-        {
-          "id": "chap-bd-3",
-          "number": 3,
-          "title": "Jointures Avancées, Sous-requêtes et Indexation"
-        }
+        { "id": "chap-dess-1", "number": 1, "title": "Normes Graphiques, Échelles et Projections Orthogonales" },
+        { "id": "chap-dess-2", "number": 2, "title": "Coupes, Sections et Cotation Fonctionnelle" }
+      ]
+    },
+    {
+      "id": "course-geom-desc",
+      "code": "GEOM103",
+      "name": "Géométrie Descriptive",
+      "credits": 3,
+      "promotionId": "domain-tech-geom",
+      "professor": "Équipe de Géométrie Appliquée",
+      "description": "Système de double projection de Monge, épures du point, de la droite et du plan, intersections de volumes et vraies grandeurs.",
+      "chapters": [
+        { "id": "chap-gd-1", "number": 1, "title": "Méthode de Monge : Épure du Point, de la Droite et du Plan" },
+        { "id": "chap-gd-2", "number": 2, "title": "Intersections de Plans, Changements de Plan et Rabattements" }
+      ]
+    },
+    {
+      "id": "course-outils-info",
+      "code": "INFO101A",
+      "name": "Introduction aux Outils Informatiques",
+      "credits": 3,
+      "promotionId": "domain-info",
+      "professor": "Équipe des Sciences Numériques",
+      "description": "Environnement système d'exploitation, bureautique scientifique avancée, tableurs d'analyse de données et calcul numérique.",
+      "chapters": [
+        { "id": "chap-oi-1", "number": 1, "title": "Systèmes d'Exploitation et Gestion de Fichiers Scientifiques" },
+        { "id": "chap-oi-2", "number": 2, "title": "Tableurs Avancés, Formules et Traitement Numérique de Données" }
+      ]
+    },
+    {
+      "id": "course-algo",
+      "code": "INFO101B",
+      "name": "Algorithmique",
+      "credits": 3,
+      "promotionId": "domain-info",
+      "professor": "Équipe d'Algorithmique",
+      "description": "Variables, types abstraits, structures conditionnelles, boucles, tableaux, modularité, fonctions et algorithmes de tri/recherche.",
+      "chapters": [
+        { "id": "chap-alg-num-1", "number": 1, "title": "Variables, Types de Données et Structures Conditionnelles/Itératives" },
+        { "id": "chap-alg-num-2", "number": 2, "title": "Tableaux, Fonctions, Procédures et Algorithmes de Tri" }
+      ]
+    },
+    {
+      "id": "course-info",
+      "code": "INFO102",
+      "name": "Informatique",
+      "credits": 6,
+      "promotionId": "domain-info",
+      "professor": "Équipe d'Informatique Générale",
+      "description": "Architecture des ordinateurs, codage et représentation de l'information (binaire, hexadécimal), initiation aux langages compilés.",
+      "chapters": [
+        { "id": "chap-inf-1", "number": 1, "title": "Architecture Matérielle, Mémoire et Systèmes de Numération" },
+        { "id": "chap-inf-2", "number": 2, "title": "Programmation Structurée, Compilation et Gestion Mémoire" }
+      ]
+    },
+    {
+      "id": "course-metiers-ing",
+      "code": "ING101",
+      "name": "Métiers de l'Ingénierie",
+      "credits": 3,
+      "promotionId": "domain-ing-transv",
+      "professor": "Équipe d'Ingénierie & Société",
+      "description": "Découverte des branches de l'ingénierie, cycle de vie d'un projet technologique, éthique professionnelle et enjeux industriels.",
+      "chapters": [
+        { "id": "chap-mi-1", "number": 1, "title": "Panorama des Disciplines d'Ingénierie et Cycle de Projet" },
+        { "id": "chap-mi-2", "number": 2, "title": "Éthique, Sécurité Industrielle et Responsabilité Sociétale" }
+      ]
+    },
+    {
+      "id": "course-leadership",
+      "code": "HUM101",
+      "name": "Travail en Équipe et Leadership",
+      "credits": 3,
+      "promotionId": "domain-ing-transv",
+      "professor": "Équipe de Communication & Management",
+      "description": "Dynamique des groupes, communication interpersonnelle efficace, gestion des conflits, négociation et leadership collaboratif.",
+      "chapters": [
+        { "id": "chap-lead-1", "number": 1, "title": "Dynamique d'Équipe et Communication Interpersonnelle" },
+        { "id": "chap-lead-2", "number": 2, "title": "Leadership Participatif, Négociation et Résolution de Conflits" }
+      ]
+    },
+    {
+      "id": "course-anglais-tech",
+      "code": "LANG101",
+      "name": "Anglais Technique",
+      "credits": 4,
+      "promotionId": "domain-ing-transv",
+      "professor": "Équipe de Langues Appliquées",
+      "description": "Vocabulaire scientifique et technologique en anglais, lecture critique de manuels techniques, rédaction de rapports et présentation orale.",
+      "chapters": [
+        { "id": "chap-ang-1", "number": 1, "title": "Technical and Scientific Terminology" },
+        { "id": "chap-ang-2", "number": 2, "title": "Engineering Documentation and Technical Reporting" }
+      ]
+    },
+    {
+      "id": "course-citoyennete",
+      "code": "HUM102A",
+      "name": "Éducation à la Citoyenneté",
+      "credits": 2,
+      "promotionId": "domain-ing-transv",
+      "professor": "Équipe des Sciences Humaines",
+      "description": "Droits et devoirs du citoyen, institutions publiques, civisme, respect du bien public et engagement communautaire.",
+      "chapters": [
+        { "id": "chap-cit-1", "number": 1, "title": "Principes Républicains, Droits Humains et Devoirs Citoyens" },
+        { "id": "chap-cit-2", "number": 2, "title": "Civisme, Préservation du Bien Public et Vie Collective" }
+      ]
+    },
+    {
+      "id": "course-assainissement",
+      "code": "ENV101",
+      "name": "Assainissement",
+      "credits": 1,
+      "promotionId": "domain-ing-transv",
+      "professor": "Équipe de Génie Sanitaire & Environnement",
+      "description": "Gestion et traitement des eaux usées, collecte et valorisation des déchets solides, hygiène environnementale et salubrité.",
+      "chapters": [
+        { "id": "chap-ass-1", "number": 1, "title": "Gestion des Eaux Usées et Techniques d'Épuration" },
+        { "id": "chap-ass-2", "number": 2, "title": "Traitement des Déchets Solides et Hygiène du Cadre de Vie" }
+      ]
+    },
+    {
+      "id": "course-sante-pub",
+      "code": "SANT101",
+      "name": "Santé Publique",
+      "credits": 1,
+      "promotionId": "domain-ing-transv",
+      "professor": "Équipe de Santé Communautaire",
+      "description": "Notions d'épidémiologie, prévention des maladies transmissibles, promotion de la santé et hygiène en milieu de travail.",
+      "chapters": [
+        { "id": "chap-sp-1", "number": 1, "title": "Épidémiologie Élémentaire et Prévention Sanitaire" },
+        { "id": "chap-sp-2", "number": 2, "title": "Santé Communautaire et Ergonomie en Milieu Professionnel" }
+      ]
+    },
+    {
+      "id": "course-cit-sante",
+      "code": "HUM102",
+      "name": "Éducation à la Citoyenneté et Santé Publique",
+      "credits": 4,
+      "promotionId": "domain-ing-transv",
+      "professor": "Équipe Interdisciplinaire Sciences Humaines & Santé",
+      "description": "Enseignement intégré combinant civisme, éthique publique, salubrité environnementale et prévention sanitaire collective.",
+      "chapters": [
+        { "id": "chap-cs-1", "number": 1, "title": "Responsabilité Civique, Valeurs Démocratiques et Éthique" },
+        { "id": "chap-cs-2", "number": 2, "title": "Hygiène Collective, Salubrité et Prévention des Épidémies" }
+      ]
+    },
+    {
+      "id": "course-stage",
+      "code": "STAGE101",
+      "name": "Stage d'Imprégnation",
+      "credits": 1,
+      "promotionId": "domain-ing-transv",
+      "professor": "Commission des Stages Techniques",
+      "description": "Immersion en environnement technique ou industriel, observation des processus, tenue d'un journal de bord et rédaction d'un rapport d'imprégnation.",
+      "chapters": [
+        { "id": "chap-stage-1", "number": 1, "title": "Méthodologie d'Observation et Journal de Bord en Entreprise" },
+        { "id": "chap-stage-2", "number": 2, "title": "Structure et Rédaction du Rapport de Stage d'Imprégnation" }
       ]
     }
   ],
   "concepts": [
-    {
-      "id": "concept-derivation",
-      "name": "Dérivation et Taux de Variation",
-      "courseId": "course-analyse2",
-      "chapterId": "chap-math-1",
-      "prerequisites": []
-    },
-    {
-      "id": "concept-primitives",
-      "name": "Primitives de Fonctions Usuelles",
-      "courseId": "course-analyse2",
-      "chapterId": "chap-math-1",
-      "prerequisites": [
-        "concept-derivation"
-      ]
-    },
-    {
-      "id": "concept-ipp",
-      "name": "Intégration par Parties (IPP)",
-      "courseId": "course-analyse2",
-      "chapterId": "chap-math-1",
-      "prerequisites": [
-        "concept-primitives"
-      ]
-    },
-    {
-      "id": "concept-integrale-def",
-      "name": "Intégrale Définie de Riemann",
-      "courseId": "course-analyse2",
-      "chapterId": "chap-math-2",
-      "prerequisites": [
-        "concept-primitives"
-      ]
-    },
-    {
-      "id": "concept-chgt-var",
-      "name": "Changement de Variable dans une Intégrale",
-      "courseId": "course-analyse2",
-      "chapterId": "chap-math-2",
-      "prerequisites": [
-        "concept-integrale-def",
-        "concept-derivation"
-      ]
-    },
-    {
-      "id": "concept-arbre-abr",
-      "name": "Arbre Binaire de Recherche (Insertion & Recherche)",
-      "courseId": "course-algo2",
-      "chapterId": "chap-algo-1",
-      "prerequisites": []
-    },
-    {
-      "id": "concept-dijkstra",
-      "name": "Algorithme du Plus Court Chemin de Dijkstra",
-      "courseId": "course-algo2",
-      "chapterId": "chap-algo-2",
-      "prerequisites": []
-    },
-    {
-      "id": "concept-newton2",
-      "name": "Deuxième Loi de Newton (Principe Fondamental)",
-      "courseId": "course-meca",
-      "chapterId": "chap-phys-1",
-      "prerequisites": []
-    },
-    {
-      "id": "concept-energie-meca",
-      "name": "Conservation de l'Énergie Mécanique",
-      "courseId": "course-meca",
-      "chapterId": "chap-phys-2",
-      "prerequisites": [
-        "concept-newton2"
-      ]
-    },
-    {
-      "id": "concept-bcnf",
-      "name": "Forme Normale de Boyce-Codd (BCNF)",
-      "courseId": "course-bd",
-      "chapterId": "chap-bd-2",
-      "prerequisites": []
-    }
+    { "id": "concept-esp-vect", "name": "Espaces Vectoriels et Sous-espaces", "courseId": "course-algebre", "chapterId": "chap-alg-1", "prerequisites": [] },
+    { "id": "concept-matrices-det", "name": "Calcul Matriciel et Déterminants", "courseId": "course-algebre", "chapterId": "chap-alg-2", "prerequisites": ["concept-esp-vect"] },
+    { "id": "concept-diagonalisation", "name": "Valeurs Propres et Diagonalisation", "courseId": "course-algebre", "chapterId": "chap-alg-3", "prerequisites": ["concept-matrices-det"] },
+    { "id": "concept-derivation", "name": "Dérivation et Théorème des Accroissements Finis", "courseId": "course-analyse", "chapterId": "chap-ana-1", "prerequisites": [] },
+    { "id": "concept-primitives", "name": "Primitives de Fonctions Usuelles", "courseId": "course-analyse", "chapterId": "chap-ana-2", "prerequisites": ["concept-derivation"] },
+    { "id": "concept-ipp", "name": "Intégration par Parties (IPP)", "courseId": "course-analyse", "chapterId": "chap-ana-2", "prerequisites": ["concept-primitives"] },
+    { "id": "concept-integrale-def", "name": "Intégrale Définie de Riemann", "courseId": "course-analyse", "chapterId": "chap-ana-2", "prerequisites": ["concept-primitives"] },
+    { "id": "concept-equa-diff", "name": "Équations Différentielles Linéaires", "courseId": "course-analyse", "chapterId": "chap-ana-3", "prerequisites": ["concept-primitives", "concept-derivation"] },
+    { "id": "concept-droites-plans", "name": "Équations Cartésiennes et Paramétriques de Droites/Plans", "courseId": "course-geom-analytique", "chapterId": "chap-ga-1", "prerequisites": ["concept-esp-vect"] },
+    { "id": "concept-coniques", "name": "Étude et Équations Réduites des Coniques", "courseId": "course-geom-analytique", "chapterId": "chap-ga-2", "prerequisites": ["concept-droites-plans"] },
+    { "id": "concept-trigo-eq", "name": "Équations Trigonométriques et Formules de Moivre/Euler", "courseId": "course-trigo", "chapterId": "chap-trigo-1", "prerequisites": [] },
+    { "id": "concept-newton2", "name": "Deuxième Loi de Newton (Principe Fondamental)", "courseId": "course-physique", "chapterId": "chap-phys-1", "prerequisites": [] },
+    { "id": "concept-energie-meca", "name": "Théorème de l'Énergie Cinétique et Énergie Potentielle", "courseId": "course-physique", "chapterId": "chap-phys-2", "prerequisites": ["concept-newton2"] },
+    { "id": "concept-oscillateur", "name": "Oscillateurs Harmoniques Libres et Amortis", "courseId": "course-physique", "chapterId": "chap-phys-2", "prerequisites": ["concept-energie-meca", "concept-equa-diff"] },
+    { "id": "concept-liaisons-chim", "name": "Modèle Atomique de Lewis et Liaisons Covalentes", "courseId": "course-chimie", "chapterId": "chap-chim-1", "prerequisites": [] },
+    { "id": "concept-thermo-chim", "name": "Premier et Second Principes de Thermodynamique Chimique", "courseId": "course-chimie", "chapterId": "chap-chim-2", "prerequisites": [] },
+    { "id": "concept-redox", "name": "Équilibres d'Oxydoréduction et Potentiel Standard", "courseId": "course-chimie", "chapterId": "chap-chim-3", "prerequisites": ["concept-liaisons-chim"] },
+    { "id": "concept-proj-ortho", "name": "Projections Orthogonales et Vues Standardisées", "courseId": "course-dessin", "chapterId": "chap-dess-1", "prerequisites": [] },
+    { "id": "concept-monge", "name": "Double Projection Orthogonale de Monge", "courseId": "course-geom-desc", "chapterId": "chap-gd-1", "prerequisites": [] },
+    { "id": "concept-algo-boucles", "name": "Structures Conditionnelles et Boucles Itératives", "courseId": "course-algo", "chapterId": "chap-alg-num-1", "prerequisites": [] },
+    { "id": "concept-algo-tableaux", "name": "Manipulation de Tableaux et Algorithmes de Tri", "courseId": "course-algo", "chapterId": "chap-alg-num-2", "prerequisites": ["concept-algo-boucles"] },
+    { "id": "concept-num-binaire", "name": "Représentation Binaire, Hexadécimale et Complément à 2", "courseId": "course-info", "chapterId": "chap-inf-1", "prerequisites": [] },
+    { "id": "concept-leadership-dyn", "name": "Dynamique de Groupe et Leadership Collaboratif", "courseId": "course-leadership", "chapterId": "chap-lead-1", "prerequisites": [] },
+    { "id": "concept-anglais-tech-doc", "name": "Technical Documentation and Specifications Reading", "courseId": "course-anglais-tech", "chapterId": "chap-ang-1", "prerequisites": [] }
   ],
   "videos": [
     {
+      "id": "vid-alg-matrices",
+      "title": "Comprendre la Multiplication Matricielle et les Déterminants",
+      "channel": "Mathématiques Scientifiques",
+      "url": "https://www.youtube.com/watch?v=kYB8IZa5AuE",
+      "courseId": "course-algebre",
+      "conceptId": "concept-matrices-det",
+      "difficulty": "Débutant-Intermédiaire",
+      "duration": "10:15",
+      "language": "Français",
+      "validated": true,
+      "qualityScore": 98,
+      "transcript": "La multiplication matricielle correspond géométriquement à la composition de deux transformations linéaires. Le déterminant mesure le facteur de dilatation de volume orienté induit par la transformation.",
+      "checkQuestion": "Que représente géométriquement la valeur absolue du déterminant d'une matrice 2x2 ?",
+      "expectedAnswer": "Le facteur de multiplication de l'aire des figures sous la transformation linéaire associée."
+    },
+    {
       "id": "vid-math-ipp",
       "title": "Comprendre l'Intégration par Parties intuitivement",
-      "channel": "Maths Pédago & 3Blue1Brown FR",
+      "channel": "Maths Pédago & Analyse",
       "url": "https://www.youtube.com/watch?v=rfG8ce4nNh0",
-      "courseId": "course-analyse2",
+      "courseId": "course-analyse",
       "conceptId": "concept-ipp",
       "difficulty": "Intermédiaire",
       "duration": "11:45",
@@ -234,171 +370,430 @@
       "expectedAnswer": "De la formule de dérivation d'un produit de deux fonctions d(uv) = u'v + uv'"
     },
     {
-      "id": "vid-algo-dijkstra",
-      "title": "Dijkstra pas à pas avec animation d'un graphe",
-      "channel": "Algorithmique Visuelle",
-      "url": "https://www.youtube.com/watch?v=bZkzH5x0Ikk",
-      "courseId": "course-algo2",
-      "conceptId": "concept-dijkstra",
-      "difficulty": "Débutant-Intermédiaire",
-      "duration": "09:20",
-      "language": "Français",
-      "validated": true,
-      "qualityScore": 95,
-      "transcript": "Dijkstra maintient un tableau des distances provisoires et une file à priorité. À chaque étape, le sommet non visité avec la plus petite distance estimée est fixé définitivement car les poids sont strictement positifs.",
-      "checkQuestion": "Pourquoi l'algorithme de Dijkstra ne fonctionne-t-il pas correctement avec des poids d'arêtes négatifs ?",
-      "expectedAnswer": "Car une fois qu'un sommet est extrait avec la distance minimale courante, il est considéré comme optimal et ne sera plus mis à jour."
-    },
-    {
       "id": "vid-phys-energie",
       "title": "Énergie potentielle, travail et oscillateur mécanique",
-      "channel": "Sciences Physiques Universitaires",
+      "channel": "Sciences Physiques Appliquées",
       "url": "https://www.youtube.com/watch?v=Gk7436_d70E",
-      "courseId": "course-meca",
+      "courseId": "course-physique",
       "conceptId": "concept-energie-meca",
       "difficulty": "Intermédiaire",
       "duration": "14:10",
       "language": "Français",
       "validated": true,
-      "qualityScore": 92,
+      "qualityScore": 95,
       "transcript": "Le travail d'une force conservative dérive d'une énergie potentielle : W = -ΔEp. Si aucune force dissipative n'agit, l'énergie mécanique Em = Ec + Ep demeure strictement constante.",
       "checkQuestion": "Quel est le lien entre le travail d'une force conservative et la variation d'énergie potentielle ?",
       "expectedAnswer": "Le travail d'une force conservative est égal à l'opposé de la variation de l'énergie potentielle : W = -ΔEp."
+    },
+    {
+      "id": "vid-chim-redox",
+      "title": "Équilibrer les Réactions d'Oxydoréduction par Demi-équations",
+      "channel": "Chimie Générale & Méthodes",
+      "url": "https://www.youtube.com/watch?v=9hE03lW9_3s",
+      "courseId": "course-chimie",
+      "conceptId": "concept-redox",
+      "difficulty": "Intermédiaire",
+      "duration": "08:40",
+      "language": "Français",
+      "validated": true,
+      "qualityScore": 96,
+      "transcript": "Pour équilibrer une équation redox en milieu acide : 1) Équilibrer les éléments principaux, 2) Équilibrer l'oxygène avec H2O, 3) Équilibrer l'hydrogène avec H+, 4) Équilibrer les charges avec les électrons.",
+      "checkQuestion": "Comment équilibre-t-on les atomes d'oxygène dans une demi-équation en milieu acide ?",
+      "expectedAnswer": "En ajoutant des molécules d'eau H2O du côté déficitaire."
+    },
+    {
+      "id": "vid-dess-projections",
+      "title": "Les 3 Vues Fondamentales en Dessin Technique (Face, Dessus, Gauche)",
+      "channel": "Ingénierie & Dessin Industriel",
+      "url": "https://www.youtube.com/watch?v=y7kX9J3eG0A",
+      "courseId": "course-dessin",
+      "conceptId": "concept-proj-ortho",
+      "difficulty": "Débutant",
+      "duration": "07:30",
+      "language": "Français",
+      "validated": true,
+      "qualityScore": 94,
+      "transcript": "La disposition européenne place la vue de dessus sous la vue de face, et la vue de droite à gauche de la vue de face. L'alignement rigoureux des lignes de rappel permet de conserver les cotes.",
+      "checkQuestion": "En disposition européenne, où se place la vue de gauche par rapport à la vue de face ?",
+      "expectedAnswer": "Elle est dessinée à droite de la vue de face."
     }
   ],
   "resources": [
     {
-      "id": "res-exam-math-2025",
-      "title": "Examen Final - Session Principale 2025 : Calcul Intégral & Systèmes Différentiels",
+      "id": "res-exam-algebre-2025",
+      "title": "Examen d'Algèbre : Espaces Vectoriels, Matrices et Diagonalisation",
       "type": "Examen",
       "format": "pdf",
-      "courseId": "course-analyse2",
-      "promotionId": "l1-mi",
-      "academicYear": "2024-2025",
-      "session": "Session Principale (Janvier 2025)",
+      "courseId": "course-algebre",
+      "promotionId": "domain-math",
+      "academicYear": "2025-2026",
+      "session": "Session Principale",
       "semester": "Semestre 1",
-      "professor": "Prof. Éléonore Vasseur",
+      "professor": "Équipe Pédagogique d'Algèbre",
+      "chapter": "Espaces Vectoriels, Matrices et Valeurs Propres",
+      "status": "published",
+      "validationStatus": "approved",
+      "confidenceScore": 0.99,
+      "correctionId": "res-corr-algebre-2025",
+      "hasCorrection": true,
+      "fileSize": "420 Ko",
+      "fileName": "Examen_Algebre_Session_Principale.pdf",
+      "checksum": "a119482910482910482910482910482910482910482910482910482910482901",
+      "publishedAt": "2026-01-15T10:00:00Z",
+      "content": "ÉPREUVE D'ALGÈBRE LINÉAIRE (MATH101) — CRÉDITS : 8\nDurée : 3h00 — Tous documents et calculatrices interdits.\n\nEXERCICE 1 (6 points) — Espaces Vectoriels et Sous-espaces\nSoit E = R^3. On considère les sous-ensembles :\nF = { (x, y, z) ∈ R^3 / x + 2y - z = 0 } et G = Vect( (1, 1, 1), (0, 1, -1) ).\n1. Montrer que F est un sous-espace vectoriel de R^3 et déterminer une base et la dimension de F.\n2. Déterminer une base et la dimension de G.\n3. Trouver une base de l'intersection F ∩ G.\n4. Les sous-espaces F et G sont-ils supplémentaires dans R^3 ? Justifier.\n\nEXERCICE 2 (7 points) — Calcul Matriciel et Systèmes Linéaires\nSoit la matrice A = [[2, 1, 0], [1, 2, 1], [0, 1, 2]].\n1. Calculer le déterminant det(A) par la méthode des cofacteurs.\n2. Montrer que A est inversible et calculer sa matrice inverse A^(-1).\n3. Résoudre dans R^3 le système linéaire A · X = B avec B = [1, 0, 1]^T.\n\nEXERCICE 3 (7 points) — Réduction des Endomorphismes (Diagonalisation)\nSoit l'endomorphisme f de R^3 dont la matrice dans la base canonique est M = [[1, 0, 0], [1, 2, 0], [1, 1, 3]].\n1. Calculer le polynôme caractéristique P(λ) = det(M - λI).\n2. En déduire les valeurs propres de M et leurs multiplicités algébriques.\n3. Déterminer les sous-espaces propres associés à chaque valeur propre.\n4. Justifier que f est diagonalisable et donner une matrice de passage P ainsi que la matrice diagonale D."
+    },
+    {
+      "id": "res-corr-algebre-2025",
+      "title": "Corrigé Officiel — Examen d'Algèbre (Espaces Vectoriels & Diagonalisation)",
+      "type": "Corrigé",
+      "format": "pdf",
+      "courseId": "course-algebre",
+      "promotionId": "domain-math",
+      "academicYear": "2025-2026",
+      "session": "Session Principale",
+      "semester": "Semestre 1",
+      "professor": "Équipe Pédagogique d'Algèbre",
+      "chapter": "Corrigé Type Officiel Algèbre",
+      "status": "published",
+      "validationStatus": "approved",
+      "confidenceScore": 1.0,
+      "hasCorrection": false,
+      "fileSize": "390 Ko",
+      "fileName": "Corrige_Officiel_Algebre_2025.pdf",
+      "checksum": "b229482910482910482910482910482910482910482910482910482910482902",
+      "publishedAt": "2026-01-18T14:00:00Z",
+      "content": "CORRIGÉ OFFICIEL — EXAMEN D'ALGÈBRE LINÉAIRE (MATH101)\n\nSOLUTION EXERCICE 1 :\n1. F est le noyau de la forme linéaire non nulle (x, y, z) -> x + 2y - z. C'est donc un hyperplan de R^3 de dimension 2.\n   Une base de F : z = x + 2y => (x, y, x+2y) = x(1, 0, 1) + y(0, 1, 2). Base : {(1, 0, 1), (0, 1, 2)}.\n2. Les deux vecteurs de G ne sont pas colinéaires, donc dim(G) = 2 et {(1, 1, 1), (0, 1, -1)} forme une base de G.\n3. Intersection F ∩ G : un vecteur de G s'écrit (a, a+b, a-b). Il appartient à F ssi a + 2(a+b) - (a-b) = 0 => 2a + 3b = 0.\n   En posant a = 3, b = -2, on obtient le vecteur (3, 1, 5). Base de F ∩ G = {(3, 1, 5)}, dim(F ∩ G) = 1.\n4. dim(F + G) = dim(F) + dim(G) - dim(F ∩ G) = 2 + 2 - 1 = 3 = dim(R^3), mais F ∩ G ≠ {0}, donc la somme n'est pas directe. F et G ne sont pas supplémentaires.\n\nSOLUTION EXERCICE 2 :\n1. det(A) = 2*(4-1) - 1*(2-0) = 6 - 2 = 4 ≠ 0, donc A est inversible.\n2. Inverse par comatrice : A^(-1) = (1/4) * [[3, -2, 1], [-2, 4, -2], [1, -2, 3]].\n3. Solution X = A^(-1) * B = (1/4) * [4, -4, 4]^T = [1, -1, 1]^T.\n\nSOLUTION EXERCICE 3 :\n1. P(λ) = (1 - λ)(2 - λ)(3 - λ).\n2. Valeurs propres : λ1 = 1, λ2 = 2, λ3 = 3 (toutes simples et réelles).\n3. Trois valeurs propres distinctes en dimension 3 => f est diagonalisable.\n   Vecteurs propres : pour λ=1 : v1 = (2, -2, 1) ; pour λ=2 : v2 = (0, -1, 1) ; pour λ=3 : v3 = (0, 0, 1).\n4. P = [[2, 0, 0], [-2, -1, 0], [1, 1, 1]], D = diag(1, 2, 3)."
+    },
+    {
+      "id": "res-exam-analyse-2025",
+      "title": "Examen d'Analyse Mathématique : Calcul Intégral, Suites et Équations Différentielles",
+      "type": "Examen",
+      "format": "pdf",
+      "courseId": "course-analyse",
+      "promotionId": "domain-math",
+      "academicYear": "2025-2026",
+      "session": "Session Principale",
+      "semester": "Semestre 1",
+      "professor": "Équipe Pédagogique d'Analyse",
       "chapter": "Primitives, Intégrales Définies et Équations Différentielles",
       "status": "published",
       "validationStatus": "approved",
       "confidenceScore": 0.99,
-      "correctionId": "res-corr-math-2025",
+      "correctionId": "res-corr-analyse-2025",
       "hasCorrection": true,
-      "fileSize": "412 Ko",
-      "fileName": "Examen_Final_Analyse2_Janvier_2025.pdf",
+      "fileSize": "415 Ko",
+      "fileName": "Examen_Analyse_Mathematique.pdf",
       "checksum": "a8b3f17c490218de45bc38290f84a1e94819448bf823812048cd31726a8d9102",
-      "publishedAt": "2025-01-20T10:00:00Z",
-      "content": "UNIVERSITÉ DES SCIENCES ET TECHNIQUES — DÉPARTEMENT DE MATHÉMATIQUES\nÉpreuve : Analyse II (MATH102) — Durée : 2h00 — Calculatrices interdites.\nResponsable : Prof. Éléonore Vasseur — Session Principale 2024-2025\n\nEXERCICE 1 (6 points) — Calculs d'intégrales définies et méthodes d'intégration\n1. Calculer l'intégrale I = ∫ (de 0 à 1) x * e^(2x) dx en détaillant explicitement l'intégration par parties (choix de u et v').\n2. Calculer J = ∫ (de 0 à π/4) tan(x) / (cos^2(x)) dx à l'aide d'un changement de variable approprié en posant t = tan(x).\n3. Déterminer une primitive sur ]0, +∞[ de f(x) = ln(x) / x^2.\n\nEXERCICE 2 (7 points) — Équation différentielle du second ordre avec second membre\nOn considère l'équation différentielle (E) : y''(x) - 3y'(x) + 2y(x) = 4e^(3x).\n1. Déterminer l'équation caractéristique associée à l'équation homogène (E0) : r^2 - 3r + 2 = 0, et donner la solution générale de (E0).\n2. Trouver une solution particulière yp(x) de (E) sous la forme yp(x) = A * e^(3x).\n3. En déduire la solution générale de l'équation complète (E).\n4. Déterminer l'unique solution vérifiant les conditions initiales y(0) = 1 et y'(0) = 0.\n\nEXERCICE 3 (7 points) — Sommes de Riemann et limite d'une suite\nSoit Sn = ∑ (k=1 à n) [ n / (n^2 + k^2) ].\n1. Réécrire Sn sous la forme (1/n) * ∑ f(k/n) pour une fonction f que l'on précisera sur l'intervalle [0, 1].\n2. Justifier que f est continue sur [0, 1] et en déduire la limite de Sn lorsque n tend vers +∞ en calculant l'intégrale ∫ (de 0 à 1) dx / (1 + x^2)."
+      "publishedAt": "2026-01-20T10:00:00Z",
+      "content": "ÉPREUVE D'ANALYSE MATHÉMATIQUE (MATH102) — CRÉDITS : 8\nDurée : 3h00 — Calculatrices interdites.\n\nEXERCICE 1 (6 points) — Calculs d'intégrales définies et méthodes d'intégration\n1. Calculer l'intégrale I = ∫ (de 0 à 1) x * e^(2x) dx en détaillant explicitement l'intégration par parties (choix de u et v').\n2. Calculer J = ∫ (de 0 à π/4) tan(x) / (cos^2(x)) dx à l'aide d'un changement de variable approprié en posant t = tan(x).\n3. Déterminer une primitive sur ]0, +∞[ de f(x) = ln(x) / x^2.\n\nEXERCICE 2 (7 points) — Équation différentielle du second ordre avec second membre\nOn considère l'équation différentielle (E) : y''(x) - 3y'(x) + 2y(x) = 4e^(3x).\n1. Déterminer l'équation caractéristique associée à l'équation homogène (E0) : r^2 - 3r + 2 = 0, et donner la solution générale de (E0).\n2. Trouver une solution particulière yp(x) de (E) sous la forme yp(x) = A * e^(3x).\n3. En déduire la solution générale de l'équation complète (E).\n4. Déterminer l'unique solution vérifiant les conditions initiales y(0) = 1 et y'(0) = 0.\n\nEXERCICE 3 (7 points) — Sommes de Riemann et limite d'une suite\nSoit Sn = ∑ (k=1 à n) [ n / (n^2 + k^2) ].\n1. Réécrire Sn sous la forme (1/n) * ∑ f(k/n) pour une fonction f que l'on précisera sur l'intervalle [0, 1].\n2. Justifier que f est continue sur [0, 1] et en déduire la limite de Sn lorsque n tend vers +∞ en calculant l'intégrale ∫ (de 0 à 1) dx / (1 + x^2)."
     },
     {
-      "id": "res-corr-math-2025",
-      "title": "Corrigé Officiel Détaillé — Examen Final Analyse II 2025",
+      "id": "res-corr-analyse-2025",
+      "title": "Corrigé Type — Examen d'Analyse Mathématique (Intégrales & Équations Différentielles)",
       "type": "Corrigé",
       "format": "pdf",
-      "courseId": "course-analyse2",
-      "promotionId": "l1-mi",
-      "academicYear": "2024-2025",
-      "session": "Session Principale (Janvier 2025)",
+      "courseId": "course-analyse",
+      "promotionId": "domain-math",
+      "academicYear": "2025-2026",
+      "session": "Session Principale",
       "semester": "Semestre 1",
-      "professor": "Prof. Éléonore Vasseur",
-      "chapter": "Corrigé Type Examen 2025",
+      "professor": "Équipe Pédagogique d'Analyse",
+      "chapter": "Corrigé Type Officiel Analyse",
       "status": "published",
       "validationStatus": "approved",
-      "confidenceScore": 1,
+      "confidenceScore": 1.0,
       "hasCorrection": false,
       "fileSize": "380 Ko",
-      "fileName": "Corrige_Officiel_Analyse2_Janvier_2025.pdf",
+      "fileName": "Corrige_Officiel_Analyse_2025.pdf",
       "checksum": "b49204cd198a2fe7382103728491820491028475920381029482019485720194",
-      "publishedAt": "2025-01-22T14:00:00Z",
-      "content": "CORRIGÉ TYPE OFFICIEL — EXAMEN ANALYSE II (MATH102) - JANVIER 2025\nRédigé par Prof. Éléonore Vasseur\n\nSOLUTION EXERCICE 1 :\n1. Calcul de I = ∫ (de 0 à 1) x * e^(2x) dx :\n   Posons u(x) = x => u'(x) = 1.\n   Posons v'(x) = e^(2x) => v(x) = (1/2) * e^(2x).\n   Par la formule d'intégration par parties :\n   I = [ (x/2) * e^(2x) ]_0^1 - ∫_0^1 (1/2) * e^(2x) dx\n   I = (1/2 * e^2 - 0) - [ (1/4) * e^(2x) ]_0^1\n   I = (1/2)e^2 - (1/4)e^2 + 1/4 = (1/4)e^2 + 1/4 = (e^2 + 1) / 4.\n\n2. Calcul de J = ∫ (de 0 à π/4) tan(x) / (cos^2(x)) dx :\n   On remarque que (tan(x))' = 1 / (cos^2(x)).\n   Posons t = tan(x). Quand x=0, t=0 ; quand x=π/4, t=1. dt = dx / cos^2(x).\n   J = ∫_0^1 t dt = [ t^2 / 2 ]_0^1 = 1/2.\n\n3. Primitive de ln(x)/x^2 :\n   Par IPP : u = ln(x) => u' = 1/x ; v' = 1/x^2 => v = -1/x.\n   ∫ ln(x)/x^2 dx = -ln(x)/x - ∫ (-1/x^2) dx = -ln(x)/x - 1/x + C = -(ln(x) + 1)/x + C.\n\nSOLUTION EXERCICE 2 :\n1. Équation caractéristique : r^2 - 3r + 2 = 0 => (r - 1)(r - 2) = 0 => racines r1=1, r2=2.\n   Solution homogène yh(x) = C1 * e^x + C2 * e^(2x).\n2. Pour yp(x) = A * e^(3x) : yp' = 3A*e^(3x), yp'' = 9A*e^(3x).\n   9A - 9A + 2A = 4 => 2A = 4 => A = 2. Donc yp(x) = 2*e^(3x).\n3. Solution générale : y(x) = C1 * e^x + C2 * e^(2x) + 2*e^(3x).\n4. Avec y(0)=1 et y'(0)=0 :\n   y(0) = C1 + C2 + 2 = 1 => C1 + C2 = -1.\n   y'(x) = C1*e^x + 2*C2*e^(2x) + 6*e^(3x).\n   y'(0) = C1 + 2*C2 + 6 = 0 => C1 + 2*C2 = -6.\n   Par soustraction : C2 = -5, d'où C1 = 4.\n   Solution unique : y(x) = 4*e^x - 5*e^(2x) + 2*e^(3x)."
+      "publishedAt": "2026-01-22T14:00:00Z",
+      "content": "CORRIGÉ TYPE OFFICIEL — EXAMEN D'ANALYSE MATHÉMATIQUE (MATH102)\n\nSOLUTION EXERCICE 1 :\n1. I = ∫ (de 0 à 1) x * e^(2x) dx :\n   Posons u(x) = x => u'(x) = 1. Posons v'(x) = e^(2x) => v(x) = (1/2)e^(2x).\n   I = [ (x/2)e^(2x) ]_0^1 - ∫_0^1 (1/2)e^(2x) dx = (1/2)e^2 - [ (1/4)e^(2x) ]_0^1 = (e^2 + 1) / 4.\n2. J = ∫_0^(π/4) tan(x)/(cos^2(x)) dx :\n   t = tan(x) => dt = dx / cos^2(x). Bornes : x=0 => t=0 ; x=π/4 => t=1.\n   J = ∫_0^1 t dt = [ t^2 / 2 ]_0^1 = 1/2.\n3. Primitive de ln(x)/x^2 :\n   Par IPP : u = ln(x), v' = 1/x^2 => v = -1/x.\n   ∫ ln(x)/x^2 dx = -ln(x)/x - ∫ (-1/x^2) dx = -(ln(x) + 1)/x + C.\n\nSOLUTION EXERCICE 2 :\n1. r^2 - 3r + 2 = 0 => r1 = 1, r2 = 2. yh(x) = C1*e^x + C2*e^(2x).\n2. yp(x) = A*e^(3x) => yp' = 3A*e^(3x), yp'' = 9A*e^(3x).\n   (9 - 9 + 2)A = 4 => A = 2. yp(x) = 2*e^(3x).\n3. Solution générale : y(x) = C1*e^x + C2*e^(2x) + 2*e^(3x).\n4. Conditions initiales y(0)=1 et y'(0)=0 => C1 + C2 = -1 et C1 + 2C2 = -6 => C2 = -5, C1 = 4.\n   y(x) = 4*e^x - 5*e^(2x) + 2*e^(3x)."
     },
     {
-      "id": "res-tp-algo-avl",
-      "title": "TP n°3 : Implémentation et Équilibrage d'un Arbre AVL en C++",
-      "type": "TP",
-      "format": "code",
-      "courseId": "course-algo2",
-      "promotionId": "l2-info",
-      "academicYear": "2024-2025",
-      "session": "TP Noté Semestre 1",
+      "id": "res-cours-physique-meca",
+      "title": "Support de Cours : Lois de Newton, Énergie Mécanique et Oscillateurs",
+      "type": "Supports de Cours",
+      "format": "pdf",
+      "courseId": "course-physique",
+      "promotionId": "domain-phys-chem",
+      "academicYear": "2025-2026",
+      "session": "Cours Magistral",
       "semester": "Semestre 1",
-      "professor": "Prof. Laurent Mercier",
-      "chapter": "Arbres Binaires de Recherche (ABR) et Équilibrage AVL",
+      "professor": "Équipe Pédagogique de Physique",
+      "chapter": "Cinématique, Dynamique et Oscillations",
+      "status": "published",
+      "validationStatus": "approved",
+      "confidenceScore": 0.99,
+      "hasCorrection": false,
+      "fileSize": "680 Ko",
+      "fileName": "Cours_Complet_Physique_Mecanique.pdf",
+      "checksum": "c339482910482910482910482910482910482910482910482910482910482903",
+      "publishedAt": "2025-10-10T09:00:00Z",
+      "content": "COURS DE PHYSIQUE GÉNÉRALE (PHYS101) — CRÉDITS : 6\nChapitre 1 & 2 : Dynamique Newtonienne et Énergie Mécanique\n\n1. LES LOIS FONDAMENTALES DE NEWTON\n- 1ère Loi (Principe d'Inertie) : Dans un référentiel galiléen, tout corps persévère dans son état de repos ou de mouvement rectiligne uniforme si les forces extérieures se compensent (∑ F_ext = 0 <=> v = constante).\n- 2ème Loi (Principe Fondamental de la Dynamique) : ∑ F_ext = d(p)/dt = m * a (à masse constante).\n- 3ème Loi (Action et Réaction) : F_(A->B) = - F_(B->A).\n\n2. TRAVAIL ET ÉNERGIE CINÉTIQUE\n- Le travail élémentaire d'une force F lors d'un déplacement dr est dW = F · dr.\n- Théorème de l'Énergie Cinétique : ΔEc = Ec(B) - Ec(A) = ∑ W_(A->B)(F_ext).\n- Énergie potentielle d'une force conservative : dEp = - dW_cons.\n\n3. OSCILLATEUR HARMONIQUE\n- Équation différentielle : x''(t) + ω0^2 * x(t) = 0, avec pulsation propre ω0 = √(k/m).\n- Solution générale : x(t) = Xm * cos(ω0*t + φ).\n- Période propre : T0 = 2π / ω0 = 2π * √(m/k)."
+    },
+    {
+      "id": "res-interro-physique-2025",
+      "title": "Interrogation Écrite : Énergie Mécanique et Oscillations Amorties",
+      "type": "Interrogation",
+      "format": "pdf",
+      "courseId": "course-physique",
+      "promotionId": "domain-phys-chem",
+      "academicYear": "2025-2026",
+      "session": "Contrôle Continu",
+      "semester": "Semestre 1",
+      "professor": "Équipe Pédagogique de Physique",
+      "chapter": "Théorème de l'Énergie Cinétique et Oscillateurs",
       "status": "published",
       "validationStatus": "approved",
       "confidenceScore": 0.98,
       "hasCorrection": true,
-      "fileSize": "15 Ko",
-      "fileName": "tp3_arbres_avl.cpp",
-      "checksum": "c901847192847291038471902847190283748291048291048291048291048291",
-      "publishedAt": "2024-11-15T08:30:00Z",
-      "content": "// TP3 : Arbres AVL - Algorithmique et Structures de Données (INFO201)\n// Faculté d'Informatique - Prof. Laurent Mercier\n#include <iostream>\n#include <algorithm>\n\nstruct Node {\n    int key;\n    Node* left;\n    Node* right;\n    int height;\n    Node(int k) : key(k), left(nullptr), right(nullptr), height(1) {}\n};\n\nint getHeight(Node* n) {\n    return n ? n->height : 0;\n}\n\nint getBalanceFactor(Node* n) {\n    return n ? getHeight(n->left) - getHeight(n->right) : 0;\n}\n\nNode* rotateRight(Node* y) {\n    Node* x = y->left;\n    Node* T2 = x->right;\n    x->right = y;\n    y->left = T2;\n    y->height = std::max(getHeight(y->left), getHeight(y->right)) + 1;\n    x->height = std::max(getHeight(x->left), getHeight(x->right)) + 1;\n    return x;\n}\n\nNode* rotateLeft(Node* x) {\n    Node* y = x->right;\n    Node* T2 = y->left;\n    y->left = x;\n    x->right = T2;\n    x->height = std::max(getHeight(x->left), getHeight(x->right)) + 1;\n    y->height = std::max(getHeight(y->left), getHeight(y->right)) + 1;\n    return y;\n}\n\nNode* insertAVL(Node* node, int key) {\n    if (!node) return new Node(key);\n    if (key < node->key) node->left = insertAVL(node->left, key);\n    else if (key > node->key) node->right = insertAVL(node->right, key);\n    else return node;\n\n    node->height = 1 + std::max(getHeight(node->left), getHeight(node->right));\n    int balance = getBalanceFactor(node);\n\n    // Cas Gauche-Gauche\n    if (balance > 1 && key < node->left->key) return rotateRight(node);\n    // Cas Droite-Droite\n    if (balance < -1 && key > node->right->key) return rotateLeft(node);\n    // Cas Gauche-Droite\n    if (balance > 1 && key > node->left->key) {\n        node->left = rotateLeft(node->left);\n        return rotateRight(node);\n    }\n    // Cas Droite-Gauche\n    if (balance < -1 && key < node->right->key) {\n        node->right = rotateRight(node->right);\n        return rotateLeft(node);\n    }\n    return node;\n}\n\nint main() {\n    Node* root = nullptr;\n    int keys[] = {10, 20, 30, 40, 50, 25};\n    for (int k : keys) root = insertAVL(root, k);\n    std::cout << \"Arbre AVL construit avec succès. Hauteur racine = \" << root->height << std::endl;\n    return 0;\n}"
-    },
-    {
-      "id": "res-interro-meca-2024",
-      "title": "Interrogation Écrite n°2 : Énergie Mécanique & Oscillateur Harmonique",
-      "type": "Interrogation",
-      "format": "pdf",
-      "courseId": "course-meca",
-      "promotionId": "l2-phys",
-      "academicYear": "2024-2025",
-      "session": "Contrôle Continu",
-      "semester": "Semestre 1",
-      "professor": "Dr. Marc Beauchamp",
-      "chapter": "Théorème de l'Énergie Cinétique et Oscillateurs",
-      "status": "published",
-      "validationStatus": "approved",
-      "confidenceScore": 0.97,
-      "hasCorrection": true,
       "fileSize": "290 Ko",
-      "fileName": "Interro2_Mecanique_Novembre_2024.pdf",
+      "fileName": "Interro_Physique_Mecanique.pdf",
       "checksum": "d198273918204918203918471920481920384719203847192038471920384719",
-      "publishedAt": "2024-11-28T11:00:00Z",
-      "content": "UNIVERSITÉ DE PHYSIQUE APPLIQUÉE\nInterrogation de Contrôle Continu n°2 — Durée : 45 minutes\nMatière : Mécanique du Point (PHYS101) — Enseignant : Dr. Marc Beauchamp\n\nÉNONCÉ :\nUn solide ponctuel de masse m = 0.5 kg est attaché à un ressort horizontal de raideur k = 50 N/m.\nLe solide peut glisser sur un plan horizontal avec ou sans frottement.\nÀ l'instant t = 0, on écarte le solide de sa position d'équilibre x0 = 0.10 m (vers la droite) et on le lâche sans vitesse initiale (v0 = 0).\n\nPartie A — Cas sans frottement\n1. Établir l'équation différentielle du mouvement en appliquant la deuxième loi de Newton.\n2. Définir et calculer la pulsation propre ω0 ainsi que la période T0 des oscillations.\n3. Exprimer la position x(t) et la vitesse v(t) du solide à tout instant t.\n4. Calculer l'énergie mécanique totale Em du système. Montrer qu'elle est constante au cours du temps.\n\nPartie B — Cas avec force de frottement fluide\nOn applique désormais une force de frottement f = -λ * v avec λ = 0.2 kg/s.\n1. Réécrire l'équation différentielle du mouvement sous la forme x'' + 2γx' + ω0^2 x = 0.\n2. Identifier le régime d'oscillation (apériodique, critique ou pseudo-périodique) en calculant le discriminant caractéristique."
+      "publishedAt": "2025-11-28T11:00:00Z",
+      "content": "INTERROGATION DE CONTRÔLE CONTINU — PHYSIQUE (PHYS101)\nDurée : 45 minutes.\n\nÉNONCÉ :\nUn solide ponctuel de masse m = 0.5 kg est attaché à un ressort horizontal de raideur k = 50 N/m.\nLe solide peut glisser sur un plan horizontal avec ou sans frottement.\nÀ l'instant t = 0, on écarte le solide de sa position d'équilibre x0 = 0.10 m (vers la droite) et on le lâche sans vitesse initiale (v0 = 0).\n\nPartie A — Cas sans frottement\n1. Établir l'équation différentielle du mouvement en appliquant la deuxième loi de Newton.\n2. Définir et calculer la pulsation propre ω0 ainsi que la période T0 des oscillations.\n3. Exprimer la position x(t) et la vitesse v(t) du solide à tout instant t.\n4. Calculer l'énergie mécanique totale Em du système. Montrer qu'elle est constante au cours du temps.\n\nPartie B — Cas avec frottement fluide\nOn applique une force de frottement f = -λ * v avec λ = 0.2 kg/s.\n1. Réécrire l'équation différentielle du mouvement sous la forme x'' + 2γx' + ω0^2 x = 0.\n2. Identifier le régime d'oscillation (pseudo-périodique) en calculant le coefficient d'amortissement γ."
     },
     {
-      "id": "res-cours-cours-bd",
-      "title": "Syllabus & Notes de Cours : Formes Normales et Conception Relationnelle",
+      "id": "res-cours-chimie-generale",
+      "title": "Syllabus : Atomistique, Thermochimie et Réactions d'Oxydoréduction",
       "type": "Supports de Cours",
       "format": "office",
-      "courseId": "course-bd",
-      "promotionId": "l2-info",
-      "academicYear": "2024-2025",
+      "courseId": "course-chimie",
+      "promotionId": "domain-phys-chem",
+      "academicYear": "2025-2026",
       "session": "Cours Magistral",
       "semester": "Semestre 1",
-      "professor": "Prof. Amine Benali",
-      "chapter": "Normalisation et Dépendances Fonctionnelles",
+      "professor": "Équipe Pédagogique de Chimie",
+      "chapter": "Atomistique, Équilibres et Oxydoréduction",
       "status": "published",
       "validationStatus": "approved",
       "confidenceScore": 0.99,
       "hasCorrection": false,
-      "fileSize": "840 Ko",
-      "fileName": "Cours_Complet_Normalisation_BCNF_2025.docx",
-      "checksum": "e201948291048291048291048291048291048291048291048291048291048291",
-      "publishedAt": "2024-10-05T09:00:00Z",
-      "content": "SYLLABUS DU COURS : BASES DE DONNÉES RELATIONNELLES (INFO202)\nProfesseur Amine Benali — Chapitre 2 : La Normalisation Relationnelle\n\n1. POURQUOI NORMALISER ?\nLa normalisation est un processus formel qui décompose les relations pour éliminer les redondances d'information et prévenir les anomalies de mise à jour (insert, delete, update).\n\n2. LES DÉPENDANCES FONCTIONNELLES (DF)\nSoit R(A1, ..., An) un schéma de relation, et X, Y deux sous-ensembles d'attributs de R.\nOn dit que X détermine fonctionnellement Y (noté X -> Y) si pour tous tuples t1, t2 de toute instance valide de R, t1[X] = t2[X] implique t1[Y] = t2[Y].\nLes axiomes d'Armstrong (Réflexivité, Augmentation, Transitivité) permettent de calculer la fermeture d'un ensemble de dépendances F+.\n\n3. PREMIÈRE FORME NORMALE (1FN)\nUne relation est en 1FN si tous ses attributs sont atomiques (pas de listes, ni de structures imbriquées).\n\n4. DEUXIÈME FORME NORMALE (2FN)\nUne relation est en 2FN si elle est en 1FN et tout attribut non-clé dépend pleinement de la clé primaire entière (pas de dépendance partielle sur une sous-clé).\n\n5. TROISIÈME FORME NORMALE (3FN)\nUne relation est en 3FN si elle est en 2FN et aucun attribut non-clé ne dépend transitivement de la clé primaire (pas de X -> Y -> Z où Y n'est pas clé).\n\n6. FORME NORMALE DE BOYCE-CODD (BCNF)\nUne relation est en BCNF si pour toute dépendance fonctionnelle X -> Y non-triviale (Y non inclus dans X), X est une super-clé de R.\nToute relation en BCNF est strictement en 3FN."
+      "fileSize": "750 Ko",
+      "fileName": "Syllabus_Chimie_Generale.docx",
+      "checksum": "d449482910482910482910482910482910482910482910482910482910482904",
+      "publishedAt": "2025-10-12T10:00:00Z",
+      "content": "CHIMIE GÉNÉRALE (CHIM101) — CRÉDITS : 6\n\n1. STRUCTURE ATOMIQUE ET CLASSIFICATION PÉRIODIQUE\n- Les nombres quantiques : n (principal), l (azimutal), m_l (magnétique), m_s (spin).\n- Règle de Klechkowski, principe d'exclusion de Pauli et règle de Hund.\n- Électronégativité (échelle de Pauling), énergie d'ionisation et affinité électronique.\n\n2. THERMODYNAMIQUE CHIMIQUE\n- Enthalpie standard de réaction : ΔrH° = ∑ νi * ΔfH°(produits) - ∑ νj * ΔfH°(réactifs).\n- Énergie libre de Gibbs : ΔrG° = ΔrH° - T*ΔrS°.\n- Constante d'équilibre : ΔrG° = - R*T * ln(K°).\n\n3. OXYDORÉDUCTION EN SOLUTION AQUEUSE\n- Un oxydant capte des électrons (réduction) ; un réducteur cède des électrons (oxydation).\n- Formule de Nernst : E = E° + (0.059/n) * log( [Ox]^a / [Red]^b ) à 298 K."
     },
     {
-      "id": "res-exercices-algo-dijkstra",
-      "title": "Fiche d'Exercices Dirigés : Algorithmes de Dijkstra et Bellman-Ford",
+      "id": "res-exercices-chimie-redox",
+      "title": "Fiche de Travaux Dirigés : Équilibres Acido-Basiques et Piles d'Oxydoréduction",
       "type": "Exercices",
       "format": "pdf",
-      "courseId": "course-algo2",
-      "promotionId": "l2-info",
-      "academicYear": "2024-2025",
+      "courseId": "course-chimie",
+      "promotionId": "domain-phys-chem",
+      "academicYear": "2025-2026",
       "session": "Travaux Dirigés",
       "semester": "Semestre 1",
-      "professor": "Prof. Laurent Mercier",
-      "chapter": "Parcours et Plus Courts Chemins dans les Graphes",
+      "professor": "Équipe Pédagogique de Chimie",
+      "chapter": "Équilibres en Solution et Oxydoréduction",
       "status": "published",
       "validationStatus": "approved",
       "confidenceScore": 0.99,
       "hasCorrection": true,
-      "fileSize": "310 Ko",
-      "fileName": "TD4_Dijkstra_BellmanFord_Exercices.pdf",
-      "checksum": "f928401928471920384719203847192038471920384719203847192038471920",
-      "publishedAt": "2024-11-02T14:00:00Z",
-      "content": "DÉPARTEMENT D'INFORMATIQUE — TD n°4 (INFO201)\nThème : Plus Courts Chemins (Algorithme de Dijkstra)\nEnseignant : Prof. Laurent Mercier\n\nEXERCICE 1 — Trace manuelle de l'algorithme de Dijkstra\nSoit le graphe orienté pondéré G = (V, E) avec V = {A, B, C, D, E, F} et les arêtes suivantes :\n(A, B, 4), (A, C, 2), (B, C, 1), (B, D, 5), (C, D, 8), (C, E, 10), (D, E, 2), (D, F, 6), (E, F, 3).\n1. Construire le tableau d'exécution de l'algorithme de Dijkstra en prenant le sommet A comme source.\n2. Pour chaque itération, indiquer le sommet sélectionné, la distance minimale retenue et les mises à jour de distances pour les voisins.\n3. Reconstruire le chemin optimal de A vers F ainsi que sa longueur totale.\n\nEXERCICE 2 — Complexité temporelle\nComparer la complexité de Dijkstra selon l'implémentation de la file de priorité :\na) Avec un tableau simple non trié.\nb) Avec un tas binaire (Binary Heap).\nc) Avec un tas de Fibonacci (Fibonacci Heap)."
+      "fileSize": "340 Ko",
+      "fileName": "TD_Chimie_Oxydoreduction_Solutions.pdf",
+      "checksum": "e559482910482910482910482910482910482910482910482910482910482905",
+      "publishedAt": "2025-11-05T14:00:00Z",
+      "content": "TRAVAUX DIRIGÉS DE CHIMIE GÉNÉRALE (CHIM101)\nThème : Réactions Redox et Potentiels d'Électrode\n\nEXERCICE 1 — Équilibrage des réactions d'oxydoréduction\nÉquilibrer les réactions suivantes en milieu aqueux acide :\n1. MnO4^(-) + Fe^(2+) -> Mn^(2+) + Fe^(3+)\n2. Cr2O7^(2-) + I^(-) -> Cr^(3+) + I2\n3. Cu(s) + NO3^(-) -> Cu^(2+) + NO(g)\n\nEXERCICE 2 — Étude d'une pile Daniell\nOn réalise une pile constituée d'une demi-pile Zn / Zn^(2+) (C1 = 0.1 mol/L) et d'une demi-pile Cu / Cu^(2+) (C2 = 0.01 mol/L).\nDonnées : E°(Zn^(2+)/Zn) = -0.76 V ; E°(Cu^(2+)/Cu) = +0.34 V.\n1. Écrire les demi-équations aux électrodes et identifier l'anode et la cathode.\n2. Calculer le potentiel de chaque électrode en utilisant la loi de Nernst.\n3. En déduire la force électromotrice (f.e.m.) de la pile à circuit ouvert."
+    },
+    {
+      "id": "res-cours-dessin-tech",
+      "title": "Guide Pratique : Projections Orthogonales, Vues en Coupe et Cotation",
+      "type": "Supports de Cours",
+      "format": "pdf",
+      "courseId": "course-dessin",
+      "promotionId": "domain-tech-geom",
+      "academicYear": "2025-2026",
+      "session": "Cours Pratique",
+      "semester": "Semestre 1",
+      "professor": "Équipe de Dessin Industriel",
+      "chapter": "Normalisation, Projections et Vues en Coupe",
+      "status": "published",
+      "validationStatus": "approved",
+      "confidenceScore": 0.99,
+      "hasCorrection": false,
+      "fileSize": "820 Ko",
+      "fileName": "Guide_Dessin_Technique_Normalisation.pdf",
+      "checksum": "f669482910482910482910482910482910482910482910482910482910482906",
+      "publishedAt": "2025-10-18T08:00:00Z",
+      "content": "DESSIN TECHNIQUE & GRAPHISME INDUSTRIEL (DESS101) — CRÉDITS : 3\n\n1. RÈGLES DE DISPOSITION DES VUES (MÉTHODE EUROPÉENNE E)\n- Vue de face : choisie comme la plus représentative de la pièce.\n- Vue de dessus : placée SOUS la vue de face.\n- Vue de dessous : placée AU-DESSUS de la vue de face.\n- Vue de gauche : placée À DROITE de la vue de face.\n- Vue de droite : placée À GAUCHE de la vue de face.\n- Vue d'arrière : placée à l'extrémité droite ou gauche.\n\n2. TYPES DE TRAITS NORMALISÉS (ISO 128)\n- Trait fort continu : arêtes et contours vus.\n- Trait fin interrompu (pointillés) : arêtes et contours cachés.\n- Trait mixte fin (axe) : axes de révolution et plans de symétrie.\n- Trait fin continu : lignes de cote, lignes d'attache et hachures de coupe.\n\n3. HACHURES ET COUPES\n- Les hachures sont inclinées à 45° ou 30° par rapport aux lignes principales.\n- On ne coupe jamais longitudinalement les pièces pleines standards (vis, rivets, arbres pleins, billes)."
+    },
+    {
+      "id": "res-tp-algo-c",
+      "title": "TP Noté : Algorithmes de Tri et Manipulation de Tableaux en C",
+      "type": "TP",
+      "format": "code",
+      "courseId": "course-algo",
+      "promotionId": "domain-info",
+      "academicYear": "2025-2026",
+      "session": "Travaux Pratiques",
+      "semester": "Semestre 1",
+      "professor": "Équipe d'Algorithmique",
+      "chapter": "Tableaux, Fonctions et Tris",
+      "status": "published",
+      "validationStatus": "approved",
+      "confidenceScore": 0.99,
+      "hasCorrection": true,
+      "fileSize": "18 Ko",
+      "fileName": "tp_tri_tableaux.c",
+      "checksum": "c901847192847291038471902847190283748291048291048291048291048291",
+      "publishedAt": "2025-11-20T08:30:00Z",
+      "content": "// ALGORITHMIQUE & PROGRAMMATION (INFO101B) — CRÉDITS : 3\n// TP : Implémentation comparée des algorithmes de tri (Bulle, Insertion, Tri Rapide)\n#include <stdio.h>\n#include <stdlib.h>\n\nvoid echanger(int *a, int *b) {\n    int temp = *a;\n    *a = *b;\n    *b = temp;\n}\n\n// Tri à bulles optimisé\nvoid triABulles(int tab[], int n) {\n    for (int i = 0; i < n - 1; i++) {\n        int permute = 0;\n        for (int j = 0; j < n - i - 1; j++) {\n            if (tab[j] > tab[j + 1]) {\n                echanger(&tab[j], &tab[j + 1]);\n                permute = 1;\n            }\n        }\n        if (!permute) break;\n    }\n}\n\n// Partition pour le tri rapide (Quicksort)\nint partition(int tab[], int bas, int haut) {\n    int pivot = tab[haut];\n    int i = (bas - 1);\n    for (int j = bas; j < haut; j++) {\n        if (tab[j] < pivot) {\n            i++;\n            echanger(&tab[i], &tab[j]);\n        }\n    }\n    echanger(&tab[i + 1], &tab[haut]);\n    return (i + 1);\n}\n\nvoid triRapide(int tab[], int bas, int haut) {\n    if (bas < haut) {\n        int pi = partition(tab, bas, haut);\n        triRapide(tab, bas, pi - 1);\n        triRapide(tab, pi + 1, haut);\n    }\n}\n\nint main() {\n    int donnees[] = {64, 34, 25, 12, 22, 11, 90};\n    int n = sizeof(donnees) / sizeof(donnees[0]);\n    triRapide(donnees, 0, n - 1);\n    printf(\"Tableau trie avec succes : \");\n    for (int i = 0; i < n; i++) printf(\"%d \", donnees[i]);\n    printf(\"\\n\");\n    return 0;\n}"
+    },
+    {
+      "id": "res-cours-anglais-tech",
+      "title": "Technical English Handbook : Engineering Vocabulary & Report Writing",
+      "type": "Supports de Cours",
+      "format": "pdf",
+      "courseId": "course-anglais-tech",
+      "promotionId": "domain-ing-transv",
+      "academicYear": "2025-2026",
+      "session": "Cours Magistral",
+      "semester": "Semestre 1",
+      "professor": "Équipe de Langues Appliquées",
+      "chapter": "Scientific Vocabulary and Documentation",
+      "status": "published",
+      "validationStatus": "approved",
+      "confidenceScore": 0.99,
+      "hasCorrection": false,
+      "fileSize": "510 Ko",
+      "fileName": "Technical_English_Handbook.pdf",
+      "checksum": "a779482910482910482910482910482910482910482910482910482910482907",
+      "publishedAt": "2025-10-25T11:00:00Z",
+      "content": "TECHNICAL ENGLISH FOR ENGINEERS (LANG101) — CREDITS : 4\n\n1. KEY TECHNICAL VOCABULARY\n- Specifications, Constraints, Tolerances, Tensile strength, Fatigue failure, Thermal conductivity, Efficiency.\n- Measurement units: Pressure (Pascal), Power (Watt), Torque (Newton-meter), Frequency (Hertz).\n\n2. DESCRIBING PROCESSES & SYSTEMS\n- Passive voice usage in technical reports: 'The sample is heated to 300°C prior to mechanical testing.'\n- Cause and effect connectors: 'due to', 'as a consequence of', 'thereby resulting in', 'leads to'.\n\n3. STRUCTURING AN ENGINEERING REPORT\n- Abstract / Executive Summary: Problem, methodology, key findings, recommendations.\n- Introduction & Background.\n- Experimental Procedure & Calculations.\n- Discussion of Results & Error Analysis.\n- Conclusion and Engineering Recommendations."
+    },
+    {
+      "id": "res-lab-mesures-physique",
+      "title": "Feuille de Calcul Labo : Mesures Expérimentales & Amortissement Pseudo-Périodique",
+      "type": "TP",
+      "format": "sheet",
+      "courseId": "course-physique",
+      "promotionId": "domain-phys-chem",
+      "academicYear": "2025-2026",
+      "session": "Travaux Pratiques",
+      "semester": "Semestre 1",
+      "professor": "Laboratoire de Physique Expérimentale",
+      "chapter": "Oscillateur Harmonique et Régimes d'Amortissement",
+      "status": "published",
+      "validationStatus": "approved",
+      "confidenceScore": 0.99,
+      "hasCorrection": false,
+      "fileSize": "48 Ko",
+      "fileName": "Mesures_Labo_Oscillateur_Amorti.xlsx",
+      "checksum": "e889482910482910482910482910482910482910482910482910482910482908",
+      "publishedAt": "2025-11-15T15:00:00Z",
+      "content": "Feuille 1: Mesures Expérimentales (m = 0.500 kg, k = 49.3 N/m)\nN° | Temps t(s) | Amplitude x(cm) | Vitesse v(m/s) | Énergie Ec(J) | Énergie Ep(J) | Énergie Em(J)\n1  | 0.000      | 10.00           | 0.000          | 0.0000        | 0.2465        | 0.2465\n2  | 0.157      | 7.82            | -0.485         | 0.0588        | 0.1508        | 0.2096\n3  | 0.314      | 0.00            | -0.872         | 0.1901        | 0.0000        | 0.1901\n4  | 0.471      | -6.10           | -0.378         | 0.0357        | 0.0917        | 0.1274\n5  | 0.628      | -7.65           | 0.000          | 0.0000        | 0.1442        | 0.1442\n6  | 0.785      | 0.00            | 0.679          | 0.1153        | 0.0000        | 0.1153\n7  | 0.942      | 5.85            | 0.000          | 0.0000        | 0.0843        | 0.0843\n8  | 1.256      | 4.48            | 0.000          | 0.0000        | 0.0495        | 0.0495\n\nFormules calculées :\n- Période pseudo-périodique mesurée : T = 0.628 s (Théorique T0 = 2*pi*sqrt(m/k) = 0.632 s)\n- Décrément logarithmique : delta = ln(x(t)/x(t+T)) = ln(10.00/7.65) = 0.268\n- Facteur de qualité Q = pi / delta = 11.72"
+    },
+    {
+      "id": "res-slides-physique-meca",
+      "title": "Diapositives de Cours : Cinématique & Théorème de l'Énergie Mécanique",
+      "type": "Supports de Cours",
+      "format": "slides",
+      "courseId": "course-physique",
+      "promotionId": "domain-phys-chem",
+      "academicYear": "2025-2026",
+      "session": "Cours Magistral",
+      "semester": "Semestre 1",
+      "professor": "Équipe Pédagogique de Physique",
+      "chapter": "Cinématique du Point et Théorèmes Énergétiques",
+      "status": "published",
+      "validationStatus": "approved",
+      "confidenceScore": 0.99,
+      "hasCorrection": false,
+      "fileSize": "1.8 Mo",
+      "fileName": "CM_Physique_Dynamique_Energie.pptx",
+      "checksum": "f999482910482910482910482910482910482910482910482910482910482909",
+      "publishedAt": "2025-10-05T14:30:00Z",
+      "content": "SLIDE 1: Introduction à la Mécanique Classique\n- Repères d'espace et de temps (Cartésien, Cylindrique, Sphérique, Frénet)\n- Vitesse instantanée v(t) = dr/dt et vecteur accélération a(t) = dv/dt\n\nSLIDE 2: Les 3 Principes Fondamentaux de Newton\n- Principe d'Inertie dans les référentiels galiléens\n- Principe Fondamental de la Dynamique : Somme F_ext = m * a\n- Principe des actions réciproques : F_12 = - F_21\n\nSLIDE 3: Travail des Forces & Énergie Potentielle\n- Travail élémentaire dW = F . dr\n- Forces conservatives : dérive d'un potentiel dEp = - dW\n- Exemples : Poids (Ep = mgz), Ressort (Ep = 1/2 k x^2)\n\nSLIDE 4: Théorème de l'Énergie Mécanique\n- Em = Ec + Ep\n- Variation d'énergie mécanique : Delta Em = W(Forces non-conservatives)\n- En l'absence de frottement : Em = Constante du mouvement\n\nSLIDE 5: Synthèse & Méthodologie de Résolution\n- 1. Isoler le système et définir le référentiel galiléen\n- 2. Bilan des forces extérieures\n- 3. Choix de la méthode : PFD ou Théorème de l'Énergie Mécanique"
+    },
+    {
+      "id": "res-podcast-algebre",
+      "title": "Podcast Académique : Comprendre la Réduction des Matrices et Diagonalisation",
+      "type": "Supports de Cours",
+      "format": "audio",
+      "courseId": "course-algebre",
+      "promotionId": "domain-math",
+      "academicYear": "2025-2026",
+      "session": "Capsule Audio",
+      "semester": "Semestre 1",
+      "professor": "Prof. Algèbre Linéaire",
+      "chapter": "Espaces Vectoriels et Valeurs Propres",
+      "status": "published",
+      "validationStatus": "approved",
+      "confidenceScore": 0.99,
+      "hasCorrection": false,
+      "fileSize": "4.2 Mo",
+      "fileName": "Podcast_Algebre_Diagonalisation.mp3",
+      "checksum": "c119482910482910482910482910482910482910482910482910482910482911",
+      "publishedAt": "2025-11-10T16:00:00Z",
+      "content": "[00:00] Introduction : Pourquoi diagonaliser une matrice carrée d'ordre n ?\n[00:45] Le concept géométrique de valeur propre et de vecteur propre invariant.\n[02:10] Calcul pratique du polynôme caractéristique P(lambda) = det(A - lambda*I).\n[03:50] Condition nécessaire et suffisante : somme des dimensions des sous-espaces propres.\n[05:30] Construction pas à pas de la matrice de passage P et de la matrice diagonale D = P^(-1) * A * P.\n[07:15] Application concrète au calcul rapide des puissances de matrices A^k et systèmes différentiels linéaires."
+    },
+    {
+      "id": "res-plan-mecanique-dessin",
+      "title": "Plan Technique ISO : Bride de Fixation avec Coupe A-A & Tolérances Géométriques",
+      "type": "Supports de Cours",
+      "format": "image",
+      "courseId": "course-dessin",
+      "promotionId": "domain-tech-geom",
+      "academicYear": "2025-2026",
+      "session": "Dessin Industriel",
+      "semester": "Semestre 1",
+      "professor": "Bureau d'Études & Dessin Industriel",
+      "chapter": "Vues Normalisées, Hachures et Cotation Fonctionnelle",
+      "status": "published",
+      "validationStatus": "approved",
+      "confidenceScore": 0.99,
+      "hasCorrection": false,
+      "fileSize": "1.2 Mo",
+      "fileName": "Plan_Technique_Bride_Coupe_ISO.png",
+      "checksum": "d229482910482910482910482910482910482910482910482910482910482912",
+      "publishedAt": "2025-10-22T09:15:00Z",
+      "content": "PLAN TECHNIQUE NORMALISÉ (ÉCHELLE 1:1) — NORME ISO 128 / ISO 2768-mK\nPIÈCE : Bride de Serrage Hydraulique (Acier C45)\n\nCARTOUCHES & SPÉCIFICATIONS :\n- Vue de Face avec Plan de Coupe A-A horizontal passant par l'alésage central dia 25 H7.\n- Vue de Gauche projetée avec hachures régulières à 45° espacées de 2 mm.\n- 4 Trous de fixation taraudés M8x1.25 équidistants sur un cercle primitif dia 60.\n- Tolérance de coaxialité : 0.02 mm entre l'alésage central et le centrage extérieur.\n- État de surface : Ra = 0.8 micromètres sur les portées d'étanchéité."
+    },
+    {
+      "id": "res-tp-python-dijkstra",
+      "title": "TP Algorithmique Avancée : Plus Court Chemin (Dijkstra) & Graphes en Python",
+      "type": "TP",
+      "format": "code",
+      "courseId": "course-algo",
+      "promotionId": "domain-info",
+      "academicYear": "2025-2026",
+      "session": "Travaux Pratiques",
+      "semester": "Semestre 1",
+      "professor": "Équipe d'Algorithmique",
+      "chapter": "Structures de Données et Graphes",
+      "status": "published",
+      "validationStatus": "approved",
+      "confidenceScore": 0.99,
+      "hasCorrection": true,
+      "fileSize": "22 Ko",
+      "fileName": "tp_graphe_dijkstra.py",
+      "checksum": "c339482910482910482910482910482910482910482910482910482910482913",
+      "publishedAt": "2025-11-25T10:00:00Z",
+      "content": "# ALGORITHMIQUE & STRUCTURES DE DONNÉES (INFO101B)\n# TP : Algorithme de Dijkstra avec file de priorité (heapq)\nimport heapq\n\ndef dijkstra(graphe, depart):\n    distances = {noeud: float('infinity') for noeud in graphe}\n    distances[depart] = 0\n    precedents = {noeud: None for noeud in graphe}\n    file_prio = [(0, depart)]\n    \n    while file_prio:\n        dist_actuelle, noeud_actuel = heapq.heappop(file_prio)\n        \n        if dist_actuelle > distances[noeud_actuel]:\n            continue\n            \n        for voisin, poids in graphe[noeud_actuel].items():\n            distance = dist_actuelle + poids\n            if distance < distances[voisin]:\n                distances[voisin] = distance\n                precedents[voisin] = noeud_actuel\n                heapq.heappush(file_prio, (distance, voisin))\n                \n    return distances, precedents\n\n# Graphe de test du TP\ngraphe_campus = {\n    'A': {'B': 4, 'C': 2},\n    'B': {'A': 4, 'C': 1, 'D': 5},\n    'C': {'A': 2, 'B': 1, 'D': 8, 'E': 10},\n    'D': {'B': 5, 'C': 8, 'E': 2, 'Z': 6},\n    'E': {'C': 10, 'D': 2, 'Z': 3},\n    'Z': {'D': 6, 'E': 3}\n}\n\ndist, prec = dijkstra(graphe_campus, 'A')\nprint(\"=== RÉSULTAT DU CALCUL DES PLUS COURTS CHEMINS (DÉPART 'A') ===\")\nfor destination, d in sorted(dist.items()):\n    print(f\"-> Destination '{destination}' : Distance minimale = {d}\")"
+    },
+    {
+      "id": "res-video-cours-algebre",
+      "title": "Vidéo Démonstration : Diagonalisation et Calcul des Puissances de Matrices",
+      "type": "Supports de Cours",
+      "format": "video",
+      "courseId": "course-algebre",
+      "promotionId": "domain-math",
+      "academicYear": "2025-2026",
+      "session": "Cours Enregistré",
+      "semester": "Semestre 1",
+      "professor": "Équipe Pédagogique d'Algèbre",
+      "chapter": "Réduction des Endomorphismes et Applications",
+      "status": "published",
+      "validationStatus": "approved",
+      "confidenceScore": 0.99,
+      "hasCorrection": false,
+      "fileSize": "48.5 Mo",
+      "fileName": "Video_Cours_Diagonalisation_Matrices.mp4",
+      "checksum": "e449482910482910482910482910482910482910482910482910482910482914",
+      "publishedAt": "2025-11-30T14:00:00Z",
+      "content": "[00:00] Introduction de la séance : Objectifs de la diagonalisation en dimension n.\n[01:30] Rappel du calcul du polynôme caractéristique et recherche des racines.\n[03:45] Étude des sous-espaces propres E_lambda = Ker(A - lambda*I).\n[06:20] Démonstration géométrique : invariance des droites vectorielles.\n[08:50] Méthode pas à pas pour inverser la matrice de passage P et obtenir D.\n[10:15] Résumé et exercices conseillés pour la séance de révision."
     }
   ],
   "adminAgents": [
@@ -407,35 +802,35 @@
       "name": "Agent Alpha (Cours & Ingestion)",
       "specialty": "Supports de cours, syllabus & TPs",
       "status": "idle",
-      "apiKeyStatus": "active (System Fallback Relay)",
+      "apiKeyStatus": "active (Système Intelligent)",
       "preferredModel": "gemini-3.8-flash",
       "jobsProcessed": 16,
       "currentJobId": null,
-      "lastHeartbeat": "2026-09-04T13:54:26.655Z",
+      "lastHeartbeat": "2026-09-06T10:45:00.000Z",
       "lastError": null
     },
     {
       "id": "agent-2",
-      "name": "Agent Bêta (Examens & Mathématiques)",
+      "name": "Agent Bêta (Examens & Sciences)",
       "specialty": "Examens, Interrogations & Corrigés",
       "status": "idle",
-      "apiKeyStatus": "active (System Fallback Relay)",
+      "apiKeyStatus": "active (Système Intelligent)",
       "preferredModel": "gemini-3.8-flash",
       "jobsProcessed": 22,
       "currentJobId": null,
-      "lastHeartbeat": "2026-09-04T13:54:26.655Z",
+      "lastHeartbeat": "2026-09-06T10:45:00.000Z",
       "lastError": null
     },
     {
       "id": "agent-3",
-      "name": "Agent Gamma (Contrôle & Qualité)",
-      "specialty": "Classification, Déduplication & Tâches Ad-Hoc",
+      "name": "Agent Gamma (Qualité & Indexation)",
+      "specialty": "Classification, Déduplication & RAG",
       "status": "idle",
-      "apiKeyStatus": "active (System Fallback Relay)",
+      "apiKeyStatus": "active (Système Intelligent)",
       "preferredModel": "gemini-3.1-flash-lite",
       "jobsProcessed": 19,
       "currentJobId": null,
-      "lastHeartbeat": "2026-09-04T13:54:26.655Z",
+      "lastHeartbeat": "2026-09-06T10:45:00.000Z",
       "lastError": null
     }
   ],
@@ -443,139 +838,90 @@
   "studentProfiles": {
     "default-student": {
       "studentId": "default-student",
-      "levelDeclared": 5,
+      "levelDeclared": 6,
       "masteryScores": {
+        "concept-esp-vect": 0.7,
+        "concept-matrices-det": 0.65,
+        "concept-diagonalisation": 0.45,
         "concept-derivation": 0.85,
         "concept-primitives": 0.6,
-        "concept-ipp": 0.45,
-        "concept-integrale-def": 0.5,
-        "concept-arbre-abr": 0.75,
-        "concept-dijkstra": 0.65,
+        "concept-ipp": 0.5,
         "concept-newton2": 0.8,
-        "concept-energie-meca": 0.55
+        "concept-energie-meca": 0.6,
+        "concept-algo-boucles": 0.8,
+        "concept-proj-ortho": 0.75
       },
       "learningStateTree": {
-        "activeGoal": "Maîtrise du Calcul Intégral et IPP",
-        "activeNodeId": "node-ipp",
+        "activeGoal": "Maîtrise de l'Algèbre Linéaire & Calcul Intégral",
+        "activeNodeId": "node-alg",
         "nodes": [
           {
-            "id": "node-ipp",
-            "conceptId": "concept-ipp",
-            "title": "Intégration par Parties",
+            "id": "node-alg",
+            "conceptId": "concept-matrices-det",
+            "title": "Calcul Matriciel et Déterminants",
             "status": "active",
             "parentNodeId": null,
-            "masteryBefore": 0.3,
-            "masteryAfter": 0.45,
-            "branches": [
-              {
-                "id": "node-branch-primitives",
-                "conceptId": "concept-primitives",
-                "title": "Révision des Primitives Fondamentales",
-                "status": "completed",
-                "reasonForBranch": "Hésitation répétée sur ∫ x*e^(2x) dx",
-                "openedAt": "2026-09-04T12:52:50.197Z",
-                "closedAt": "2026-09-04T13:22:50.197Z",
-                "masteryAfter": 0.6
-              }
-            ]
+            "masteryBefore": 0.5,
+            "masteryAfter": 0.65,
+            "branches": []
           }
         ]
       },
       "weakConcepts": [
-        "concept-ipp",
-        "concept-energie-meca"
+        "concept-diagonalisation",
+        "concept-ipp"
       ],
       "strongConcepts": [
         "concept-derivation",
-        "concept-newton2"
+        "concept-newton2",
+        "concept-algo-boucles"
       ],
       "preferredExplanationStyle": "Exemple guidé pas-à-pas avec analogie visuelle"
     },
     "std_local": {
       "studentId": "std_local",
-      "levelDeclared": 5,
+      "levelDeclared": 6,
       "masteryScores": {
+        "concept-esp-vect": 0.7,
+        "concept-matrices-det": 0.65,
+        "concept-diagonalisation": 0.45,
         "concept-derivation": 0.85,
         "concept-primitives": 0.6,
-        "concept-ipp": 0.45,
-        "concept-integrale-def": 0.5,
-        "concept-arbre-abr": 0.75,
-        "concept-dijkstra": 0.65,
+        "concept-ipp": 0.5,
         "concept-newton2": 0.8,
-        "concept-energie-meca": 0.55
+        "concept-energie-meca": 0.6,
+        "concept-algo-boucles": 0.8,
+        "concept-proj-ortho": 0.75
       },
       "learningStateTree": {
-        "activeGoal": "Maîtrise du Calcul Intégral et IPP",
-        "activeNodeId": "node-ipp",
+        "activeGoal": "Maîtrise de l'Algèbre Linéaire & Calcul Intégral",
+        "activeNodeId": "node-alg",
         "nodes": [
           {
-            "id": "node-ipp",
-            "conceptId": "concept-ipp",
-            "title": "Intégration par Parties",
+            "id": "node-alg",
+            "conceptId": "concept-matrices-det",
+            "title": "Calcul Matriciel et Déterminants",
             "status": "active",
             "parentNodeId": null,
-            "masteryBefore": 0.3,
-            "masteryAfter": 0.45,
-            "branches": [
-              {
-                "id": "node-branch-primitives",
-                "conceptId": "concept-primitives",
-                "title": "Révision des Primitives Fondamentales",
-                "status": "completed",
-                "reasonForBranch": "Hésitation répétée sur ∫ x*e^(2x) dx",
-                "openedAt": "2026-09-04T12:54:30.701Z",
-                "closedAt": "2026-09-04T13:24:30.701Z",
-                "masteryAfter": 0.6
-              }
-            ]
+            "masteryBefore": 0.5,
+            "masteryAfter": 0.65,
+            "branches": []
           }
         ]
       },
       "weakConcepts": [
-        "concept-ipp",
-        "concept-energie-meca"
+        "concept-diagonalisation",
+        "concept-ipp"
       ],
       "strongConcepts": [
         "concept-derivation",
-        "concept-newton2"
+        "concept-newton2",
+        "concept-algo-boucles"
       ],
       "preferredExplanationStyle": "Exemple guidé pas-à-pas avec analogie visuelle"
     }
   },
   "favorites": [],
   "history": [],
-  "auditLogs": [
-    {
-      "id": "audit-1788529985546",
-      "timestamp": "2026-09-04T13:53:05.546Z",
-      "action": "ADMIN_CONSOLE_COMMAND",
-      "command": "audit_quality",
-      "result": {
-        "action": "RAPPORT DE GOUVERNANCE ET QUALITÉ DU CORPUS (Page 55)",
-        "totalDocuments": 6,
-        "indexedDocuments": 6,
-        "publishedDocuments": 6,
-        "pendingReview": 0,
-        "documentsWithoutChapter": 0,
-        "examsWithoutCorrection": 0,
-        "qualityScore": "100%"
-      }
-    },
-    {
-      "id": "audit-1788529978525",
-      "timestamp": "2026-09-04T13:52:58.525Z",
-      "action": "ADMIN_CONSOLE_COMMAND",
-      "command": "audit_quality",
-      "result": {
-        "action": "RAPPORT DE GOUVERNANCE ET QUALITÉ DU CORPUS (Page 55)",
-        "totalDocuments": 6,
-        "indexedDocuments": 6,
-        "publishedDocuments": 6,
-        "pendingReview": 0,
-        "documentsWithoutChapter": 0,
-        "examsWithoutCorrection": 0,
-        "qualityScore": "100%"
-      }
-    }
-  ]
+  "auditLogs": []
 }

@@ -502,6 +502,7 @@ class AcademicDatabase {
       adminAgents: INITIAL_ADMIN_AGENTS,
       jobs: [],
       studentProfiles: {},
+      chapterSessions: {},
       favorites: [],
       history: [],
       auditLogs: []
@@ -837,6 +838,40 @@ class AcademicDatabase {
     this.data.studentProfiles[studentId] = { ...profile, ...updates };
     this.saveToDisk();
     return this.data.studentProfiles[studentId];
+  }
+
+  // Dedicated Chapter Learning Sessions (Mode Apprendre - Page 01-80 & Detailed Spec)
+  getChapterSession(sessionId) {
+    if (!this.data.chapterSessions) this.data.chapterSessions = {};
+    return this.data.chapterSessions[sessionId] || null;
+  }
+
+  getStudentActiveChapterSession(studentId = 'default-student', courseId = null, chapterId = null) {
+    if (!this.data.chapterSessions) this.data.chapterSessions = {};
+    const sessions = Object.values(this.data.chapterSessions).filter(s => s.studentId === studentId);
+    if (chapterId && courseId) {
+      return sessions.find(s => s.courseId === courseId && s.chapterId === chapterId) || null;
+    }
+    if (courseId) {
+      return sessions.find(s => s.courseId === courseId && s.status !== 'completed') || null;
+    }
+    // Most recent active session
+    return sessions.sort((a, b) => new Date(b.lastUpdatedAt) - new Date(a.lastUpdatedAt))[0] || null;
+  }
+
+  saveChapterSession(session) {
+    if (!this.data.chapterSessions) this.data.chapterSessions = {};
+    session.lastUpdatedAt = new Date().toISOString();
+    this.data.chapterSessions[session.sessionId] = session;
+    this.saveToDisk();
+    return session;
+  }
+
+  getAllStudentChapterSessions(studentId = 'default-student') {
+    if (!this.data.chapterSessions) this.data.chapterSessions = {};
+    return Object.values(this.data.chapterSessions)
+      .filter(s => s.studentId === studentId)
+      .sort((a, b) => new Date(b.lastUpdatedAt) - new Date(a.lastUpdatedAt));
   }
 
   // Admin Tri-Agents & Jobs

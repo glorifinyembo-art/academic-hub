@@ -1,6 +1,6 @@
 {
   "name": "Academic Hub",
-  "description": "Centre d'information académique universitaire : banque de ressources centralisée, recherche documentaire avancée, lecteurs multi-formats et accompagnement pédagogique de faculté.",
+  "description": "Centre d'information académique intelligent : bibliothèque de cours, annales corrigées, recherche instantanée et accompagnement pédagogique adaptatif.",
   "requestFramePermissions": [
     "camera",
     "microphone"

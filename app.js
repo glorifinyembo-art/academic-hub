@@ -12,6 +12,31 @@ class AcademicHubApp {
     this.selectedResourceId = null;
     this.currentDocZoom = 100;
     this.docSearchQuery = '';
+    this.docSearchActive = false;
+    this.docSearchMatchIndex = 0;
+    this.docPdfPage = 1;
+    this.docPdfLayoutMode = 'single'; // 'single' | 'continuous'
+    this.docWordActiveSection = 0;
+    this.docSheetActiveTab = 0;
+    this.docSheetSelectedCell = 'B2';
+    this.docSheetFilter = '';
+    this.docSlideIndex = 0;
+    this.docSlideShowNotes = false;
+    this.docImageZoom = 100;
+    this.docImageRotation = 0;
+    this.docImageMode = 'normal'; // 'normal' | 'blueprint' | 'invert'
+    this.docAudioPlaying = false;
+    this.docAudioTime = 0;
+    this.docAudioDuration = 480;
+    this.docAudioSpeed = 1.0;
+    this.docVideoPlaying = false;
+    this.docVideoTime = 0;
+    this.docVideoDuration = 650;
+    this.docVideoSpeed = 1.0;
+    this.docCodeSelectedLine = null;
+    this.docShowNotes = false;
+    this.docPageExplanation = null;
+    this.docExplainingPage = false;
 
     // Search and filter state
     this.filters = {
@@ -49,7 +74,7 @@ class AcademicHubApp {
         title: 'Intégration par parties & Primitives',
         mode: 'apprendre',
         date: 'Aujourd\'hui, 10:45',
-        course: 'Analyse II (MATH201)',
+        course: 'Analyse Mathématique (MATH102)',
         preview: 'Explication géométrique et application aux fractions rationnelles...'
       },
       {
@@ -57,23 +82,23 @@ class AcademicHubApp {
         title: 'Préparation Examen Mécanique du Point',
         mode: 'revision',
         date: 'Hier, 16:20',
-        course: 'Physique I (PHYS101)',
+        course: 'Physique (PHYS101)',
         preview: 'Oscillateur harmonique amorti et bilan énergétique...'
       },
       {
         id: 'session-3',
-        title: 'Exercices guidés sur les Graphes (Dijkstra)',
+        title: 'Exercices guidés sur les Tableaux & Fonctions',
         mode: 'exercer',
         date: '03 Sept. 2026',
-        course: 'Algorithmique & Graphes (INFO201)',
-        preview: 'Complexité avec file de priorité et recherche du plus court chemin...'
+        course: 'Algorithmique (INFO101B)',
+        preview: 'Structures de contrôle, boucles itératives et décomposition fonctionnelle...'
       }
     ];
 
     // Student learning profile
     this.studentProfile = {
       name: 'Alex S.',
-      filiere: 'Licence 2 — Sciences Physiques & Informatique',
+      filiere: 'Tronc Commun Scientifique & Technique',
       declaredLevel: 6,
       observedMastery: 0.62,
       activeGoal: 'Maîtrise du Calcul Intégral & Primitives',
@@ -94,8 +119,8 @@ class AcademicHubApp {
     this.librarySearch = '';
     this.libraryFilterType = 'all';
     this.libraryViewMode = 'tree'; // 'tree' | 'list'
-    this.expandedPromos = new Set(['promo-l2-phys-info', 'promo-l1-mi', 'promo-l3-info']);
-    this.expandedCourses = new Set(['MATH201', 'PHYS101', 'INFO201', 'MATH101']);
+    this.expandedPromos = new Set(['domain-math', 'domain-phys-chem', 'domain-tech-geom', 'domain-info', 'domain-ing-transv']);
+    this.expandedCourses = new Set(['course-algebre', 'course-analyse', 'course-physique', 'course-chimie', 'course-dessin', 'course-algo']);
     this.cameraImageFile = null;
     this.cameraImageData = null;
 
@@ -386,12 +411,12 @@ class AcademicHubApp {
           Corrigés
         </button>
 
-        <!-- Promotion Dropdown (Compact) -->
+        <!-- Promotion / Domain Dropdown (Compact) -->
         <select 
           onchange="app.setFilter('promotionId', this.value)" 
           class="text-xs font-medium px-2.5 py-1.5 rounded-lg border border-slate-200 bg-white text-slate-700 hover:border-slate-300 focus:outline-none shrink-0"
         >
-          <option value="">Toutes les promotions</option>
+          <option value="">Tous les domaines d'études</option>
           ${this.promotions.map(p => `<option value="${p.id}" ${this.filters.promotionId === p.id ? 'selected' : ''}>${p.name}</option>`).join('')}
         </select>
 
@@ -488,8 +513,8 @@ class AcademicHubApp {
     if (!res) {
       return `
       <div class="max-w-md mx-auto px-4 py-16 text-center space-y-4">
-        <p class="text-sm text-slate-600">Document introuvable ou retiré.</p>
-        <button onclick="app.navigate('documents')" class="bg-blue-600 text-white text-xs font-semibold px-4 py-2 rounded-xl">Retour aux documents</button>
+        <p class="text-sm text-slate-600">Document introuvable ou retiré du corpus académique.</p>
+        <button onclick="app.navigate('documents')" class="bg-blue-600 text-white text-xs font-semibold px-4 py-2 rounded-xl">Retour à la bibliothèque</button>
       </div>
       `;
     }
@@ -499,36 +524,67 @@ class AcademicHubApp {
     let correction = null;
     if (res.correctionId) {
       correction = this.resources.find(r => r.id === res.correctionId);
-    } else if (res.type === 'Examen' || res.type === 'Interrogation') {
-      correction = this.resources.find(r => r.type === 'Corrigé' && r.courseId === res.courseId);
+    } else if (res.type === 'Examen' || res.type === 'Interrogation' || res.hasCorrection) {
+      correction = this.resources.find(r => (r.type === 'Corrigé' || r.title.toLowerCase().includes('corrigé')) && r.courseId === res.courseId);
     }
 
     const related = this.resources.filter(r => r.id !== res.id && r.courseId === res.courseId).slice(0, 3);
     const courseVideo = (this.videos || []).find(v => v.courseId === res.courseId);
 
+    // Detect format
+    const format = (res.format || '').toLowerCase();
+    const fileName = (res.fileName || '').toLowerCase();
+
+    let viewerHtml = '';
+    if (format === 'code' || fileName.endsWith('.c') || fileName.endsWith('.py') || fileName.endsWith('.js') || fileName.endsWith('.java')) {
+      viewerHtml = this.renderCodeViewer(res, course, promo);
+    } else if (format === 'sheet' || fileName.endsWith('.xlsx') || fileName.endsWith('.xls') || fileName.endsWith('.csv')) {
+      viewerHtml = this.renderSheetViewer(res, course, promo);
+    } else if (format === 'slides' || fileName.endsWith('.pptx') || fileName.endsWith('.ppt')) {
+      viewerHtml = this.renderSlideViewer(res, course, promo);
+    } else if (format === 'office' || fileName.endsWith('.docx') || fileName.endsWith('.doc')) {
+      viewerHtml = this.renderWordViewer(res, course, promo);
+    } else if (format === 'image' || fileName.endsWith('.png') || fileName.endsWith('.jpg') || fileName.endsWith('.jpeg') || fileName.endsWith('.svg')) {
+      viewerHtml = this.renderImageViewer(res, course, promo);
+    } else if (format === 'audio' || fileName.endsWith('.mp3') || fileName.endsWith('.wav')) {
+      viewerHtml = this.renderAudioViewer(res, course, promo);
+    } else if (format === 'video' || fileName.endsWith('.mp4') || fileName.endsWith('.webm')) {
+      viewerHtml = this.renderVideoViewer(res, course, promo);
+    } else {
+      // Default / PDF Viewer
+      viewerHtml = this.renderPdfViewer(res, course, promo);
+    }
+
     return `
-    <div class="max-w-4xl mx-auto px-4 py-4 sm:px-6 space-y-4">
+    <div class="max-w-5xl mx-auto px-4 py-4 sm:px-6 space-y-4 animate-in fade-in duration-150">
       
-      <!-- Top Action Bar -->
-      <div class="bg-white rounded-2xl border border-slate-200/90 p-3.5 flex items-center justify-between gap-3 shadow-2xs">
+      <!-- Top Sticky Action Bar -->
+      <div class="bg-white rounded-2xl border border-slate-200/90 p-3.5 flex flex-wrap items-center justify-between gap-3 shadow-2xs">
         <div class="flex items-center gap-3 min-w-0">
-          <button onclick="app.navigate('documents')" class="p-2 rounded-xl text-slate-600 hover:bg-slate-100 transition border border-slate-200 shrink-0" title="Retour">
+          <button onclick="app.navigate('documents')" class="p-2 rounded-xl text-slate-600 hover:bg-slate-100 transition border border-slate-200 shrink-0" title="Retour à la bibliothèque">
             <i data-lucide="arrow-left" class="w-4 h-4"></i>
           </button>
           <div class="truncate">
-            <div class="flex items-center gap-2">
+            <div class="flex items-center gap-2 flex-wrap">
               ${this.getTypeBadge(res.type)}
-              <span class="text-xs font-semibold text-slate-500">${res.academicYear || '2024-2025'}</span>
+              <span class="text-xs font-semibold text-slate-500">${res.academicYear || '2025-2026'}</span>
+              <span class="text-xs text-slate-400">•</span>
+              <span class="text-xs text-slate-600 font-medium truncate">${course ? course.name : 'Matière'}</span>
             </div>
             <h1 class="font-bold text-slate-900 text-sm truncate mt-0.5">${res.title}</h1>
           </div>
         </div>
 
-        <div class="flex items-center gap-2 shrink-0">
+        <div class="flex items-center gap-2 shrink-0 flex-wrap">
+          <button onclick="app.toggleFavorite('${res.id}')" class="p-2 rounded-xl text-slate-600 hover:text-amber-500 hover:bg-slate-50 transition border border-slate-200 shrink-0" title="Ajouter aux favoris">
+            <i data-lucide="star" class="w-4 h-4"></i>
+          </button>
+
           <button onclick="app.downloadFile('${res.id}')" class="bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold text-xs px-3 py-2 rounded-xl transition flex items-center gap-1.5 border border-slate-200/80">
             <i data-lucide="download" class="w-3.5 h-3.5"></i>
             <span class="hidden sm:inline">Télécharger</span>
           </button>
+
           <button onclick="app.startTutorOnResource('${res.id}')" class="bg-blue-600 hover:bg-blue-700 text-white font-semibold text-xs px-3.5 py-2 rounded-xl transition flex items-center gap-1.5 shadow-2xs">
             <i data-lucide="sparkles" class="w-3.5 h-3.5"></i>
             <span>Réviser avec l'IA</span>
@@ -536,82 +592,815 @@ class AcademicHubApp {
         </div>
       </div>
 
-      <!-- Main Reader Content -->
-      <div class="bg-white rounded-2xl border border-slate-200/90 overflow-hidden shadow-2xs">
+      <!-- Specialized Multi-Format Reader Container -->
+      ${viewerHtml}
+
+      <!-- Associated Resources, Course Video & Context Cards -->
+      ${this.renderDocAssociatedSections(res, course, promo, correction, related, courseVideo)}
+
+    </div>
+    `;
+  }
+
+  // 1. PDF / STANDARD DOCUMENT VIEWER
+  renderPdfViewer(res, course, promo) {
+    const pages = this.extractDocumentPages(res.content);
+    const totalPages = Math.max(1, pages.length);
+    const currentPage = Math.max(1, Math.min(totalPages, this.docPdfPage || 1));
+    const activePageContent = pages[currentPage - 1] || res.content;
+
+    const themeClasses = {
+      light: 'bg-white text-slate-800 border-slate-200/80',
+      sepia: 'bg-[#fbf7ee] text-[#433422] border-[#e8dec8]',
+      dark: 'bg-slate-900 text-slate-100 border-slate-800'
+    }[this.docReadingTheme || 'light'];
+
+    return `
+    <div class="bg-white rounded-2xl border border-slate-200/90 overflow-hidden shadow-2xs">
+      
+      <!-- PDF Toolbar -->
+      <div class="bg-slate-50 border-b border-slate-200 px-4 py-2.5 flex flex-wrap items-center justify-between gap-2.5 text-xs text-slate-600">
         
-        <!-- Viewer Header Bar -->
-        <div class="bg-slate-50 border-b border-slate-200 px-4 py-2.5 flex items-center justify-between text-xs text-slate-600">
-          <div class="flex items-center gap-2 truncate">
-            <i data-lucide="file-text" class="w-4 h-4 text-blue-600 shrink-0"></i>
-            <span class="font-mono font-semibold truncate">${res.fileName || 'document.pdf'}</span>
-            <span class="text-slate-400">(${res.fileSize || '380 Ko'})</span>
+        <!-- Left: File tag & Page Navigation -->
+        <div class="flex items-center gap-3">
+          <div class="flex items-center gap-1.5 font-mono font-semibold text-slate-800">
+            <i data-lucide="file-text" class="w-4 h-4 text-red-500"></i>
+            <span class="truncate max-w-[140px] sm:max-w-xs">${res.fileName || 'document.pdf'}</span>
           </div>
-          <!-- Zoom Controls -->
-          <div class="flex items-center bg-slate-200/70 rounded-lg p-0.5 text-xs font-bold">
-            <button onclick="app.changeZoom(-10)" class="px-2 py-0.5 hover:bg-white rounded text-slate-700">-</button>
-            <span class="px-2 font-mono text-[11px] font-medium text-slate-700">${this.currentDocZoom}%</span>
-            <button onclick="app.changeZoom(10)" class="px-2 py-0.5 hover:bg-white rounded text-slate-700">+</button>
+
+          <div class="flex items-center bg-white border border-slate-200 rounded-lg p-0.5 shadow-2xs">
+            <button onclick="app.prevPdfPage()" ${currentPage <= 1 ? 'disabled' : ''} class="p-1 hover:bg-slate-100 rounded disabled:opacity-30">
+              <i data-lucide="chevron-left" class="w-3.5 h-3.5"></i>
+            </button>
+            <span class="px-2 font-mono text-[11px] font-semibold text-slate-700">Page ${currentPage} / ${totalPages}</span>
+            <button onclick="app.nextPdfPage()" ${currentPage >= totalPages ? 'disabled' : ''} class="p-1 hover:bg-slate-100 rounded disabled:opacity-30">
+              <i data-lucide="chevron-right" class="w-3.5 h-3.5"></i>
+            </button>
           </div>
         </div>
 
-        <!-- Document Text Viewer Area -->
-        <div class="p-6 sm:p-8 overflow-auto bg-slate-50/40 min-h-[420px]">
-          <div style="font-size: ${this.currentDocZoom}%; line-height: 1.65;" class="max-w-3xl mx-auto bg-white p-6 sm:p-8 rounded-xl shadow-2xs border border-slate-200/80 transition-all duration-150">
-            ${res.format === 'code' ? `
-              <div class="font-mono text-xs text-slate-100 bg-slate-900 p-4 rounded-xl overflow-x-auto leading-relaxed">
-                ${this.escapeHtml(res.content)}
-              </div>
-            ` : `
-              <div class="prose prose-slate max-w-none text-slate-800 text-xs sm:text-sm whitespace-pre-wrap leading-relaxed font-sans">
-                ${this.escapeHtml(res.content)}
-              </div>
-            `}
+        <!-- Right: Layout Mode, In-doc Search, Theme & Zoom -->
+        <div class="flex items-center gap-2 flex-wrap">
+          
+          <!-- Search toggle -->
+          <button onclick="app.toggleDocSearch()" class="px-2.5 py-1 rounded-lg border ${this.docSearchActive ? 'bg-blue-50 border-blue-300 text-blue-700' : 'bg-white border-slate-200 text-slate-600 hover:bg-slate-100'} flex items-center gap-1">
+            <i data-lucide="search" class="w-3.5 h-3.5"></i>
+            <span class="hidden sm:inline">Chercher</span>
+          </button>
+
+          <!-- Layout mode -->
+          <button onclick="app.setPdfLayout('${this.docPdfLayoutMode === 'single' ? 'continuous' : 'single'}')" class="px-2.5 py-1 rounded-lg border bg-white border-slate-200 text-slate-600 hover:bg-slate-100 flex items-center gap-1" title="Mode d'affichage">
+            <i data-lucide="${this.docPdfLayoutMode === 'single' ? 'file-text' : 'layers'}" class="w-3.5 h-3.5"></i>
+            <span class="hidden sm:inline">${this.docPdfLayoutMode === 'single' ? 'Page unique' : 'Continu'}</span>
+          </button>
+
+          <!-- Reading Theme Toggle -->
+          <div class="flex items-center bg-slate-200/80 rounded-lg p-0.5 text-[10px] font-medium">
+            <button onclick="app.setReadingTheme('light')" class="px-1.5 py-0.5 rounded ${(!this.docReadingTheme || this.docReadingTheme === 'light') ? 'bg-white text-slate-900 shadow-2xs font-bold' : 'text-slate-600'}">Clair</button>
+            <button onclick="app.setReadingTheme('sepia')" class="px-1.5 py-0.5 rounded ${this.docReadingTheme === 'sepia' ? 'bg-[#fbf7ee] text-[#433422] shadow-2xs font-bold' : 'text-slate-600'}">Sépia</button>
+            <button onclick="app.setReadingTheme('dark')" class="px-1.5 py-0.5 rounded ${this.docReadingTheme === 'dark' ? 'bg-slate-800 text-white shadow-2xs font-bold' : 'text-slate-600'}">Sombre</button>
           </div>
+
+          <!-- Zoom Controls -->
+          <div class="flex items-center bg-slate-200/70 rounded-lg p-0.5 text-xs font-bold">
+            <button onclick="app.changeZoom(-10)" class="px-2 py-0.5 hover:bg-white rounded text-slate-700" title="Zoom -">-</button>
+            <span class="px-2 font-mono text-[11px] font-medium text-slate-700">${this.currentDocZoom}%</span>
+            <button onclick="app.changeZoom(10)" class="px-2 py-0.5 hover:bg-white rounded text-slate-700" title="Zoom +">+</button>
+          </div>
+
         </div>
 
       </div>
 
-      <!-- Associated Resources & Context Cards -->
-      <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+      <!-- In-Document Search Bar (Expandable) -->
+      ${this.docSearchActive ? `
+        <div class="bg-blue-50/70 border-b border-blue-200/70 px-4 py-2 flex items-center justify-between gap-3 text-xs">
+          <div class="flex items-center gap-2 flex-1 max-w-md">
+            <i data-lucide="search" class="w-3.5 h-3.5 text-blue-600"></i>
+            <input 
+              type="text" 
+              placeholder="Rechercher un mot, formule ou concept dans ce PDF..." 
+              value="${this.escapeHtml(this.docSearchQuery || '')}"
+              oninput="app.setDocSearchQuery(this.value)"
+              class="w-full bg-white border border-blue-300 rounded-lg px-2.5 py-1 text-xs text-slate-800 outline-none focus:ring-1 focus:ring-blue-500"
+            />
+          </div>
+          <div class="flex items-center gap-2 text-slate-600 shrink-0">
+            <span class="text-[11px] font-medium text-blue-900">${this.countSearchMatches(res.content, this.docSearchQuery)} résultat(s)</span>
+            <button onclick="app.prevDocSearchMatch()" class="p-1 hover:bg-blue-100 rounded text-blue-700"><i data-lucide="chevron-up" class="w-3.5 h-3.5"></i></button>
+            <button onclick="app.nextDocSearchMatch()" class="p-1 hover:bg-blue-100 rounded text-blue-700"><i data-lucide="chevron-down" class="w-3.5 h-3.5"></i></button>
+            <button onclick="app.toggleDocSearch()" class="p-1 hover:bg-blue-100 rounded text-slate-500"><i data-lucide="x" class="w-3.5 h-3.5"></i></button>
+          </div>
+        </div>
+      ` : ''}
+
+      <!-- Document Page Canvas / Viewport -->
+      <div class="p-4 sm:p-8 overflow-auto ${this.docReadingTheme === 'dark' ? 'bg-slate-950' : 'bg-slate-100/70'} min-h-[500px] flex flex-col items-center gap-6">
         
-        <!-- Context Card -->
-        <div class="bg-white rounded-2xl border border-slate-200/90 p-4 space-y-2 shadow-2xs text-xs">
-          <h2 class="font-bold text-slate-900 text-xs flex items-center gap-1.5 border-b border-slate-100 pb-1.5">
-            <i data-lucide="info" class="w-3.5 h-3.5 text-blue-600"></i>
-            Contexte Académique
-          </h2>
-          <div class="space-y-1 text-slate-600">
-            <div><span class="font-semibold text-slate-800">Matière :</span> ${course ? `${course.code} — ${course.name}` : 'Matière'}</div>
-            <div><span class="font-semibold text-slate-800">Promotion :</span> ${promo ? `${promo.name} (${promo.faculty})` : 'Licence'}</div>
-            <div><span class="font-semibold text-slate-800">Référent :</span> ${res.professor || 'Département'}</div>
-            <div><span class="font-semibold text-slate-800">Période :</span> ${res.session || 'Session Principale'} (${res.semester || 'S1'})</div>
+        ${this.docPdfLayoutMode === 'single' ? `
+          <!-- Single Page Sheet View -->
+          <div style="font-size: ${this.currentDocZoom}%;" class="w-full max-w-3xl ${themeClasses} p-6 sm:p-10 rounded-xl shadow-md border transition-all duration-150 relative">
+            <!-- Sheet Academic Header -->
+            <div class="border-b pb-3 mb-6 flex items-center justify-between text-[11px] opacity-70">
+              <span class="font-semibold uppercase tracking-wider">${course ? course.code : 'FACULTÉ DES SCIENCES'} • ACADEMIC HUB</span>
+              <span class="font-mono">Page ${currentPage} / ${totalPages}</span>
+            </div>
+
+            <!-- Sheet Body Content -->
+            <div class="prose prose-slate max-w-none text-xs sm:text-sm whitespace-pre-wrap leading-relaxed font-serif">
+              ${this.highlightTextWithSearch(activePageContent, this.docSearchQuery)}
+            </div>
+
+            <!-- Sheet Academic Footer -->
+            <div class="border-t pt-3 mt-8 flex items-center justify-between text-[10px] opacity-60">
+              <span>Document certifié conforme • Promotion ${promo ? promo.name : 'Tronc Commun'}</span>
+              <span class="font-mono">${res.checksum ? res.checksum.substring(0, 10) : 'VERIFIED'}</span>
+            </div>
+          </div>
+        ` : `
+          <!-- Continuous Multi-Page Scroll View -->
+          ${pages.map((pContent, idx) => `
+            <div style="font-size: ${this.currentDocZoom}%;" class="w-full max-w-3xl ${themeClasses} p-6 sm:p-10 rounded-xl shadow-md border transition-all duration-150 relative">
+              <div class="border-b pb-3 mb-6 flex items-center justify-between text-[11px] opacity-70">
+                <span class="font-semibold uppercase tracking-wider">${course ? course.code : 'FACULTÉ'} • ${res.title}</span>
+                <span class="font-mono font-bold">Page ${idx + 1} / ${totalPages}</span>
+              </div>
+              <div class="prose prose-slate max-w-none text-xs sm:text-sm whitespace-pre-wrap leading-relaxed font-serif">
+                ${this.highlightTextWithSearch(pContent, this.docSearchQuery)}
+              </div>
+              <div class="border-t pt-3 mt-8 flex items-center justify-between text-[10px] opacity-60">
+                <span>Academic Hub Document Reader</span>
+                <span class="font-mono">Page ${idx + 1}</span>
+              </div>
+            </div>
+          `).join('')}
+        `}
+
+      </div>
+
+      <!-- Page Bottom Quick Actions -->
+      <div class="bg-slate-50 border-t border-slate-200 px-4 py-2 flex items-center justify-between text-xs text-slate-600">
+        <div class="flex items-center gap-2">
+          <span class="text-slate-500">Saut direct :</span>
+          <div class="flex items-center gap-1">
+            ${Array.from({ length: totalPages }).map((_, i) => `
+              <button onclick="app.setPdfPage(${i + 1})" class="w-6 h-6 rounded-md font-mono text-xs font-semibold ${currentPage === i + 1 ? 'bg-blue-600 text-white' : 'bg-white border border-slate-200 text-slate-700 hover:bg-slate-100'}">
+                ${i + 1}
+              </button>
+            `).join('')}
           </div>
         </div>
 
-        <!-- Correction / Related Card -->
-        <div class="bg-white rounded-2xl border border-slate-200/90 p-4 space-y-2 shadow-2xs text-xs">
-          <h2 class="font-bold text-slate-900 text-xs flex items-center gap-1.5 border-b border-slate-100 pb-1.5">
-            <i data-lucide="link-2" class="w-3.5 h-3.5 text-teal-600"></i>
-            Ressources Associées
-          </h2>
-          
-          ${correction ? `
-            <div class="bg-teal-50 border border-teal-200 rounded-xl p-3 space-y-1.5">
+        <button onclick="app.explainCurrentDocPage()" class="text-blue-600 hover:text-blue-800 font-semibold flex items-center gap-1 text-xs">
+          <i data-lucide="help-circle" class="w-3.5 h-3.5"></i>
+          <span>Expliquer cette page avec l'IA</span>
+        </button>
+      </div>
+
+    </div>
+    `;
+  }
+
+  // 2. CODE & SCRIPT VIEWER (.c, .py, .java, etc.)
+  renderCodeViewer(res, course, promo) {
+    const lines = (res.content || '').split('\n');
+    const ext = (res.fileName || '').split('.').pop() || 'c';
+    const langLabel = {
+      'c': 'C / ANSI C99 (GCC)',
+      'py': 'Python 3.11',
+      'js': 'JavaScript (ES Modules)',
+      'java': 'Java SE 17',
+      'cpp': 'C++ 20'
+    }[ext.toLowerCase()] || 'Code Source';
+
+    return `
+    <div class="bg-slate-900 rounded-2xl border border-slate-800 overflow-hidden shadow-md text-slate-100">
+      
+      <!-- Code Header Bar -->
+      <div class="bg-slate-950 border-b border-slate-800 px-4 py-3 flex items-center justify-between text-xs">
+        <div class="flex items-center gap-3">
+          <div class="flex items-center gap-1.5 font-mono font-semibold text-emerald-400">
+            <i data-lucide="code" class="w-4 h-4"></i>
+            <span>${res.fileName || 'source.c'}</span>
+          </div>
+          <span class="px-2 py-0.5 rounded-full bg-slate-800 text-slate-300 font-mono text-[10px] border border-slate-700">${langLabel}</span>
+          <span class="text-slate-500 font-mono text-[11px] hidden sm:inline">${lines.length} lignes</span>
+        </div>
+
+        <div class="flex items-center gap-2">
+          <!-- Copy code button -->
+          <button id="copy-code-btn" onclick="app.copyCodeToClipboard()" class="px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 font-medium text-xs border border-slate-700 flex items-center gap-1.5 transition">
+            <i data-lucide="copy" class="w-3.5 h-3.5"></i>
+            <span>Copier le code</span>
+          </button>
+          <!-- Font zoom -->
+          <div class="flex items-center bg-slate-800 rounded-lg p-0.5 text-xs font-mono">
+            <button onclick="app.changeZoom(-10)" class="px-2 py-0.5 hover:bg-slate-700 rounded text-slate-300">-</button>
+            <span class="px-1.5 text-slate-300 text-[11px]">${this.currentDocZoom}%</span>
+            <button onclick="app.changeZoom(10)" class="px-2 py-0.5 hover:bg-slate-700 rounded text-slate-300">+</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Code Line-by-Line Gutter & Editor -->
+      <div style="font-size: ${this.currentDocZoom}%; line-height: 1.6;" class="p-4 overflow-x-auto font-mono text-xs max-h-[600px] overflow-y-auto no-scrollbar">
+        <table class="w-full border-collapse">
+          <tbody>
+            ${lines.map((line, idx) => {
+              const lineNum = idx + 1;
+              const isSelected = this.docCodeSelectedLine === lineNum;
+              return `
+                <tr onclick="app.selectCodeLine(${lineNum})" class="cursor-pointer group hover:bg-slate-800/60 ${isSelected ? 'bg-blue-900/40 border-l-2 border-blue-500' : ''}">
+                  <td class="select-none pr-4 text-right text-slate-600 font-mono text-[11px] w-10 shrink-0 group-hover:text-slate-400 align-top">${lineNum}</td>
+                  <td class="text-slate-100 whitespace-pre font-mono pl-2 leading-relaxed">${this.highlightCodeSyntax(line, ext)}</td>
+                </tr>
+              `;
+            }).join('')}
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Footer Info -->
+      <div class="bg-slate-950/80 border-t border-slate-800 px-4 py-2 flex items-center justify-between text-[11px] text-slate-400 font-mono">
+        <span>${this.docCodeSelectedLine ? `Ligne ${this.docCodeSelectedLine} sélectionnée • Cliquez pour désélectionner` : 'Cliquez sur une ligne pour l\'isoler ou l\'examiner'}</span>
+        <button onclick="app.startTutorOnResource('${res.id}')" class="text-emerald-400 hover:text-emerald-300 font-semibold flex items-center gap-1">
+          <i data-lucide="sparkles" class="w-3.5 h-3.5"></i> Expliquer ce code avec l'IA
+        </button>
+      </div>
+
+    </div>
+    `;
+  }
+
+  // 3. WORD / OFFICE DOCUMENT VIEWER (.docx, .doc)
+  renderWordViewer(res, course, promo) {
+    const sections = this.extractWordSections(res.content);
+    const activeSection = Math.max(0, Math.min(sections.length - 1, this.docWordActiveSection || 0));
+
+    return `
+    <div class="bg-white rounded-2xl border border-slate-200/90 overflow-hidden shadow-2xs">
+      
+      <!-- Word Toolbar -->
+      <div class="bg-blue-900 text-white px-4 py-3 flex flex-wrap items-center justify-between gap-3 text-xs">
+        <div class="flex items-center gap-2">
+          <i data-lucide="file-text" class="w-4 h-4 text-blue-300"></i>
+          <span class="font-bold tracking-wide">${res.fileName || 'Document_Officiel.docx'}</span>
+          <span class="px-2 py-0.5 rounded bg-blue-800 text-[10px] text-blue-200">Word / Syllabus</span>
+        </div>
+
+        <div class="flex items-center gap-2 text-xs">
+          <span class="text-blue-200 text-[11px]">Lecture estimée : ~3 min</span>
+          <div class="flex items-center bg-blue-800 rounded-lg p-0.5">
+            <button onclick="app.changeZoom(-10)" class="px-2 py-0.5 hover:bg-blue-700 rounded">-</button>
+            <span class="px-2 font-mono text-[11px]">${this.currentDocZoom}%</span>
+            <button onclick="app.changeZoom(10)" class="px-2 py-0.5 hover:bg-blue-700 rounded">+</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Section Tabs Navigation (Sommaire interactif) -->
+      <div class="bg-slate-50 border-b border-slate-200 px-4 py-2 flex items-center gap-1.5 overflow-x-auto no-scrollbar text-xs">
+        <span class="text-slate-500 font-semibold shrink-0 mr-1 flex items-center gap-1">
+          <i data-lucide="list" class="w-3.5 h-3.5 text-blue-600"></i> Sommaire :
+        </span>
+        ${sections.map((sec, idx) => `
+          <button onclick="app.setWordSection(${idx})" class="px-3 py-1 rounded-lg shrink-0 font-medium transition ${activeSection === idx ? 'bg-blue-600 text-white shadow-2xs font-semibold' : 'bg-white border border-slate-200 text-slate-700 hover:bg-slate-100'}">
+            ${sec.title}
+          </button>
+        `).join('')}
+      </div>
+
+      <!-- Document Content Body -->
+      <div class="p-6 sm:p-10 bg-slate-50/50 min-h-[450px]">
+        <div style="font-size: ${this.currentDocZoom}%;" class="max-w-3xl mx-auto bg-white p-6 sm:p-10 rounded-xl shadow-2xs border border-slate-200/80 space-y-6">
+          <div class="border-b pb-4">
+            <span class="text-xs font-bold text-blue-600 uppercase tracking-wider">Section ${activeSection + 1} sur ${sections.length}</span>
+            <h2 class="text-lg sm:text-xl font-extrabold text-slate-900 mt-1">${sections[activeSection].title}</h2>
+          </div>
+
+          <div class="prose prose-slate max-w-none text-xs sm:text-sm whitespace-pre-wrap leading-relaxed">
+            ${this.formatMarkdown(sections[activeSection].content)}
+          </div>
+        </div>
+      </div>
+
+    </div>
+    `;
+  }
+
+  // 4. EXCEL / SPREADSHEET VIEWER (.xlsx, .csv, .sheet)
+  renderSheetViewer(res, course, promo) {
+    const tableData = this.extractSpreadsheetData(res.content);
+    const tabs = ['Feuille 1: Mesures Expérimentales', 'Feuille 2: Calculs & Formules', 'Feuille 3: Synthèse & Facteur Q'];
+    const activeTab = this.docSheetActiveTab || 0;
+
+    return `
+    <div class="bg-white rounded-2xl border border-slate-200/90 overflow-hidden shadow-2xs">
+      
+      <!-- Excel Header -->
+      <div class="bg-emerald-800 text-white px-4 py-3 flex flex-wrap items-center justify-between gap-3 text-xs">
+        <div class="flex items-center gap-2">
+          <i data-lucide="table" class="w-4 h-4 text-emerald-300"></i>
+          <span class="font-bold tracking-wide">${res.fileName || 'Classeur_Labo.xlsx'}</span>
+          <span class="px-2 py-0.5 rounded bg-emerald-900 text-[10px] text-emerald-200">Excel / Tableur</span>
+        </div>
+
+        <div class="flex items-center gap-2">
+          <input 
+            type="text" 
+            placeholder="Filtrer les lignes..." 
+            value="${this.escapeHtml(this.docSheetFilter || '')}"
+            oninput="app.setSheetFilter(this.value)"
+            class="bg-emerald-900 text-white placeholder:text-emerald-300 border border-emerald-700 rounded-lg px-2.5 py-1 text-xs outline-none"
+          />
+          <div class="flex items-center bg-emerald-900 rounded-lg p-0.5 text-xs font-mono">
+            <button onclick="app.changeZoom(-10)" class="px-2 py-0.5 hover:bg-emerald-700 rounded">-</button>
+            <span class="px-2">${this.currentDocZoom}%</span>
+            <button onclick="app.changeZoom(10)" class="px-2 py-0.5 hover:bg-emerald-700 rounded">+</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Formula Bar (Barre de formules Excel) -->
+      <div class="bg-slate-100 border-b border-slate-200 px-4 py-2 flex items-center gap-3 text-xs font-mono">
+        <div class="bg-white border border-slate-300 px-2 py-1 rounded font-bold text-slate-800 w-16 text-center">
+          ${this.docSheetSelectedCell || 'B2'}
+        </div>
+        <div class="text-slate-400 font-bold">fx</div>
+        <div class="flex-1 bg-white border border-slate-300 px-3 py-1 rounded text-slate-800 truncate">
+          ${this.getFormulaForCell(this.docSheetSelectedCell || 'B2', tableData)}
+        </div>
+      </div>
+
+      <!-- Interactive Spreadsheet Grid -->
+      <div style="font-size: ${this.currentDocZoom}%;" class="overflow-x-auto max-h-[500px] overflow-y-auto no-scrollbar">
+        <table class="w-full border-collapse text-xs text-left">
+          <thead>
+            <tr class="bg-slate-200/80 text-slate-700 font-semibold border-b border-slate-300">
+              <th class="p-2 border-r border-slate-300 text-center w-12 bg-slate-300/80 font-mono text-[11px]">#</th>
+              ${tableData.headers.map((h, idx) => `
+                <th class="p-2.5 border-r border-slate-300 font-bold whitespace-nowrap">
+                  <div class="text-[10px] text-slate-500 font-mono">${String.fromCharCode(65 + idx)}</div>
+                  <div>${h}</div>
+                </th>
+              `).join('')}
+            </tr>
+          </thead>
+          <tbody>
+            ${tableData.rows
+              .filter(row => !this.docSheetFilter || row.some(cell => String(cell).toLowerCase().includes(this.docSheetFilter.toLowerCase())))
+              .map((row, rIdx) => `
+                <tr class="hover:bg-emerald-50/50 border-b border-slate-200 transition">
+                  <td class="p-2 border-r border-slate-300 text-center font-mono text-slate-500 bg-slate-100/60 font-medium">${rIdx + 1}</td>
+                  ${row.map((cell, cIdx) => {
+                    const cellKey = `${String.fromCharCode(65 + cIdx)}${rIdx + 1}`;
+                    const isSelected = this.docSheetSelectedCell === cellKey;
+                    return `
+                      <td onclick="app.selectSheetCell('${cellKey}', '${this.escapeHtml(String(cell))}')" class="p-2.5 border-r border-slate-200 font-mono cursor-pointer ${isSelected ? 'bg-emerald-100 border-2 border-emerald-600 font-bold text-emerald-950' : 'text-slate-800'}">
+                        ${cell}
+                      </td>
+                    `;
+                  }).join('')}
+                </tr>
+              `).join('')}
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Excel Footer Tabs (Feuilles) -->
+      <div class="bg-slate-100 border-t border-slate-200 px-4 py-2 flex items-center justify-between text-xs">
+        <div class="flex items-center gap-1">
+          ${tabs.map((tabName, idx) => `
+            <button onclick="app.setSheetTab(${idx})" class="px-3 py-1 rounded-t-lg font-medium transition ${activeTab === idx ? 'bg-white border-t-2 border-emerald-600 text-emerald-950 font-bold shadow-2xs' : 'text-slate-600 hover:bg-slate-200'}">
+              ${tabName}
+            </button>
+          `).join('')}
+        </div>
+        <div class="text-[11px] text-slate-500 font-mono hidden sm:inline">
+          ${tableData.rows.length} lignes enregistrées • Somme auto calculée
+        </div>
+      </div>
+
+    </div>
+    `;
+  }
+
+  // 5. SLIDES / POWERPOINT VIEWER (.pptx, .slides)
+  renderSlideViewer(res, course, promo) {
+    const slides = this.extractSlides(res.content);
+    const totalSlides = Math.max(1, slides.length);
+    const activeIndex = Math.max(0, Math.min(totalSlides - 1, this.docSlideIndex || 0));
+    const currentSlide = slides[activeIndex];
+
+    return `
+    <div class="bg-white rounded-2xl border border-slate-200/90 overflow-hidden shadow-2xs">
+      
+      <!-- Slide Presentation Toolbar -->
+      <div class="bg-amber-800 text-white px-4 py-3 flex flex-wrap items-center justify-between gap-3 text-xs">
+        <div class="flex items-center gap-2">
+          <i data-lucide="presentation" class="w-4 h-4 text-amber-300"></i>
+          <span class="font-bold tracking-wide">${res.fileName || 'Diapositives.pptx'}</span>
+          <span class="px-2 py-0.5 rounded bg-amber-900 text-[10px] text-amber-200">Présentation / Diapo</span>
+        </div>
+
+        <div class="flex items-center gap-2">
+          <button onclick="app.toggleSlideNotes()" class="px-2.5 py-1 rounded bg-amber-900 hover:bg-amber-700 text-amber-100 text-xs flex items-center gap-1 border border-amber-700">
+            <i data-lucide="file-text" class="w-3.5 h-3.5"></i>
+            <span>${this.docSlideShowNotes ? 'Masquer les notes' : 'Notes du cours'}</span>
+          </button>
+          <div class="flex items-center bg-amber-900 rounded-lg p-0.5">
+            <button onclick="app.prevSlide()" ${activeIndex <= 0 ? 'disabled' : ''} class="px-2 py-0.5 hover:bg-amber-700 rounded disabled:opacity-40"><i data-lucide="chevron-left" class="w-3.5 h-3.5"></i></button>
+            <span class="px-2 font-mono text-[11px] font-bold">${activeIndex + 1} / ${totalSlides}</span>
+            <button onclick="app.nextSlide()" ${activeIndex >= totalSlides - 1 ? 'disabled' : ''} class="px-2 py-0.5 hover:bg-amber-700 rounded disabled:opacity-40"><i data-lucide="chevron-right" class="w-3.5 h-3.5"></i></button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Slide Main Stage (16:9 Aspect Frame) -->
+      <div class="p-6 sm:p-10 bg-slate-900 flex items-center justify-center min-h-[420px]">
+        <div class="w-full max-w-2xl aspect-[16/9] bg-white rounded-xl shadow-2xl p-6 sm:p-8 flex flex-col justify-between border-4 border-slate-800 text-slate-900">
+          <div>
+            <div class="flex items-center justify-between text-[11px] font-bold text-amber-700 uppercase tracking-widest border-b pb-2">
+              <span>${course ? course.name : 'COURS MAGISTRAL'}</span>
+              <span>DIAPOSITIVE ${activeIndex + 1}</span>
+            </div>
+            <h2 class="text-base sm:text-xl font-extrabold text-slate-900 mt-4 leading-tight">${currentSlide.title}</h2>
+            <ul class="mt-4 space-y-2.5 text-xs sm:text-sm text-slate-700">
+              ${currentSlide.points.map(pt => `
+                <li class="flex items-start gap-2">
+                  <span class="text-amber-600 font-bold mt-0.5 shrink-0">✦</span>
+                  <span>${pt}</span>
+                </li>
+              `).join('')}
+            </ul>
+          </div>
+          <div class="text-[10px] text-slate-400 flex items-center justify-between pt-4 border-t">
+            <span>Academic Hub Slide Viewer</span>
+            <span>${promo ? promo.name : 'Tronc Commun'}</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Presenter Notes (If toggled) -->
+      ${this.docSlideShowNotes ? `
+        <div class="bg-amber-50 border-t border-amber-200 p-4 text-xs text-amber-950 space-y-1 animate-in slide-in-from-top-1 duration-150">
+          <div class="font-bold flex items-center gap-1.5 text-amber-900">
+            <i data-lucide="info" class="w-3.5 h-3.5"></i> Notes pédagogiques & Conseils d'examen :
+          </div>
+          <p class="text-amber-900/90 text-xs leading-relaxed">
+            ${currentSlide.notes || "Insister particulièrement sur la formulation du principe fondamental et les conditions d'application des théorèmes énergétiques."}
+          </p>
+        </div>
+      ` : ''}
+
+      <!-- Thumbnails Carousel Ribbon -->
+      <div class="bg-slate-100 border-t border-slate-200 p-3 flex items-center gap-3 overflow-x-auto no-scrollbar">
+        ${slides.map((s, idx) => `
+          <button onclick="app.setSlideIndex(${idx})" class="shrink-0 w-28 aspect-[16/9] rounded-lg border-2 p-1.5 text-left text-[9px] flex flex-col justify-between transition ${activeIndex === idx ? 'border-amber-600 bg-white shadow-md font-bold' : 'border-slate-300 bg-slate-50 hover:bg-white text-slate-600'}">
+            <div class="truncate text-amber-800 font-bold">#${idx + 1} ${s.title}</div>
+            <div class="text-slate-400 text-[8px] text-right">Diapo ${idx + 1}</div>
+          </button>
+        `).join('')}
+      </div>
+
+    </div>
+    `;
+  }
+
+  // 6. TECHNICAL DRAWING & IMAGE VIEWER (.png, .jpg, .svg)
+  renderImageViewer(res, course, promo) {
+    const rot = this.docImageRotation || 0;
+    const zoom = this.docImageZoom || 100;
+    const mode = this.docImageMode || 'normal';
+
+    const filterStyle = {
+      normal: '',
+      blueprint: 'filter: invert(1) hue-rotate(190deg) contrast(150%);',
+      invert: 'filter: invert(1);'
+    }[mode];
+
+    return `
+    <div class="bg-slate-900 rounded-2xl border border-slate-800 overflow-hidden shadow-2xs text-white">
+      
+      <!-- Image Toolbar -->
+      <div class="bg-slate-950 border-b border-slate-800 px-4 py-3 flex flex-wrap items-center justify-between gap-3 text-xs">
+        <div class="flex items-center gap-2">
+          <i data-lucide="image" class="w-4 h-4 text-cyan-400"></i>
+          <span class="font-bold tracking-wide font-mono">${res.fileName || 'Plan_Technique.png'}</span>
+          <span class="px-2 py-0.5 rounded bg-slate-800 text-[10px] text-slate-300">Schéma Technique / ISO</span>
+        </div>
+
+        <div class="flex items-center gap-2 flex-wrap">
+          <!-- Filter inspection mode -->
+          <div class="flex items-center bg-slate-800 rounded-lg p-0.5 text-[11px]">
+            <button onclick="app.setImageMode('normal')" class="px-2 py-0.5 rounded ${mode === 'normal' ? 'bg-slate-700 text-white font-bold' : 'text-slate-400'}">Normal</button>
+            <button onclick="app.setImageMode('blueprint')" class="px-2 py-0.5 rounded ${mode === 'blueprint' ? 'bg-blue-600 text-white font-bold' : 'text-slate-400'}">Plan Bleu</button>
+            <button onclick="app.setImageMode('invert')" class="px-2 py-0.5 rounded ${mode === 'invert' ? 'bg-cyan-700 text-white font-bold' : 'text-slate-400'}">Inversé</button>
+          </div>
+
+          <!-- Rotate button -->
+          <button onclick="app.rotateImage(90)" class="p-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700" title="Pivoter 90°">
+            <i data-lucide="rotate-cw" class="w-3.5 h-3.5"></i>
+          </button>
+
+          <!-- Zoom controls -->
+          <div class="flex items-center bg-slate-800 rounded-lg p-0.5 text-xs font-mono">
+            <button onclick="app.changeImageZoom(-15)" class="px-2 py-0.5 hover:bg-slate-700 rounded text-slate-300">-</button>
+            <span class="px-2 text-slate-300 text-[11px]">${zoom}%</span>
+            <button onclick="app.changeImageZoom(15)" class="px-2 py-0.5 hover:bg-slate-700 rounded text-slate-300">+</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Visual Schematic Stage -->
+      <div class="p-6 sm:p-12 overflow-auto bg-slate-950/90 flex items-center justify-center min-h-[450px]">
+        <div style="transform: scale(${zoom / 100}) rotate(${rot}deg); transition: transform 0.2s ease; ${filterStyle}" class="max-w-xl w-full bg-slate-900 border-2 border-slate-700 rounded-xl p-6 shadow-2xl space-y-4">
+          <!-- Simulated SVG Technical Plan Drawing -->
+          <div class="border border-slate-700 rounded-lg p-4 bg-slate-950 flex flex-col items-center">
+            <svg class="w-full h-56 text-cyan-400" viewBox="0 0 400 200" fill="none" stroke="currentColor" stroke-width="1.5">
+              <!-- Grid background -->
+              <defs>
+                <pattern id="tech-grid" width="20" height="20" patternUnits="userSpaceOnUse">
+                  <path d="M 20 0 L 0 0 0 20" fill="none" stroke="rgba(56, 189, 248, 0.1)" stroke-width="0.5"/>
+                </pattern>
+              </defs>
+              <rect width="400" height="200" fill="url(#tech-grid)" />
+              <!-- Part contour -->
+              <rect x="50" y="40" width="300" height="120" rx="8" stroke="currentColor" stroke-width="2" />
+              <!-- Internal bores -->
+              <circle cx="200" cy="100" r="35" stroke="currentColor" stroke-width="2" stroke-dasharray="4,2"/>
+              <circle cx="100" cy="100" r="14" stroke="currentColor" stroke-width="1.5"/>
+              <circle cx="300" cy="100" r="14" stroke="currentColor" stroke-width="1.5"/>
+              <!-- Axis lines -->
+              <line x1="30" y1="100" x2="370" y2="100" stroke="#f43f5e" stroke-dasharray="6,3" stroke-width="1"/>
+              <line x1="200" y1="20" x2="200" y2="180" stroke="#f43f5e" stroke-dasharray="6,3" stroke-width="1"/>
+              <!-- Dimension markers -->
+              <line x1="50" y1="175" x2="350" y2="175" stroke="#38bdf8" stroke-width="1"/>
+              <text x="200" y="190" fill="#38bdf8" font-size="10" font-family="monospace" text-anchor="middle">L = 150 mm ± 0.05</text>
+            </svg>
+          </div>
+
+          <!-- Technical Cartouche -->
+          <div class="border border-slate-700 bg-slate-950 p-3 rounded-lg text-xs font-mono grid grid-cols-2 gap-2 text-slate-300">
+            <div><span class="text-slate-500">NORME :</span> ISO 128 / ISO 2768-mK</div>
+            <div><span class="text-slate-500">ÉCHELLE :</span> 1:1</div>
+            <div><span class="text-slate-500">PIÈCE :</span> Bride de Serrage C45</div>
+            <div><span class="text-slate-500">TOLÉRANCE :</span> Ra = 0.8 µm</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Inspection Details -->
+      <div class="bg-slate-950 border-t border-slate-800 px-4 py-2.5 text-xs text-slate-400 font-mono flex items-center justify-between">
+        <span>Spécifications : Vue de face avec coupe A-A & Cotation ISO</span>
+        <button onclick="app.downloadFile('${res.id}')" class="text-cyan-400 hover:text-cyan-300 font-semibold">Télécharger HD</button>
+      </div>
+
+    </div>
+    `;
+  }
+
+  // 7. AUDIO / PODCAST VIEWER (.mp3, .wav)
+  renderAudioViewer(res, course, promo) {
+    const isPlaying = this.docAudioPlaying || false;
+    const curTime = this.docAudioTime || 0;
+    const duration = this.docAudioDuration || 480; // 8 mins
+    const speed = this.docAudioSpeed || 1.0;
+
+    const transcriptItems = [
+      { time: 0, stamp: '00:00', text: "Introduction : Pourquoi diagonaliser une matrice carrée d'ordre n ?" },
+      { time: 45, stamp: '00:45', text: "Le concept géométrique de valeur propre et de vecteur propre invariant." },
+      { time: 130, stamp: '02:10', text: "Calcul pratique du polynôme caractéristique P(λ) = det(A - λ*I)." },
+      { time: 230, stamp: '03:50', text: "Condition nécessaire et suffisante : dimension des sous-espaces propres." },
+      { time: 330, stamp: '05:30', text: "Construction pas à pas de la matrice de passage P et de D = P^(-1)*A*P." },
+      { time: 435, stamp: '07:15', text: "Applications concrètes aux puissances de matrices A^k et systèmes différentiels." }
+    ];
+
+    return `
+    <div class="bg-white rounded-2xl border border-slate-200/90 overflow-hidden shadow-2xs">
+      
+      <!-- Audio Player Main Card -->
+      <div class="bg-gradient-to-br from-indigo-900 via-blue-900 to-slate-900 text-white p-6 sm:p-8 space-y-6">
+        
+        <div class="flex items-center justify-between">
+          <div class="flex items-center gap-2 text-indigo-300 text-xs font-semibold uppercase tracking-wider">
+            <i data-lucide="headphones" class="w-4 h-4"></i>
+            <span>Podcast Académique • Capsule Audio</span>
+          </div>
+          <span class="px-2 py-0.5 rounded bg-indigo-800/60 border border-indigo-700 text-xs font-mono text-indigo-200">${res.fileSize || '4.2 Mo'}</span>
+        </div>
+
+        <div>
+          <h2 class="text-lg sm:text-xl font-extrabold text-white">${res.title}</h2>
+          <p class="text-xs text-indigo-200 mt-1">${res.professor || 'Enseignant référent'} • ${course ? course.name : 'Matière'}</p>
+        </div>
+
+        <!-- Animated Wave Equalizer Simulation -->
+        <div class="flex items-end justify-center gap-1.5 h-14 py-2">
+          ${Array.from({ length: 24 }).map((_, i) => {
+            const h = isPlaying ? (20 + ((i * 17) % 60)) : 12;
+            return `<div class="w-1.5 bg-indigo-400 rounded-full transition-all duration-150" style="height: ${h}px;"></div>`;
+          }).join('')}
+        </div>
+
+        <!-- Scrubber Timeline -->
+        <div class="space-y-1.5">
+          <input 
+            type="range" 
+            min="0" 
+            max="${duration}" 
+            value="${curTime}" 
+            onchange="app.setAudioTime(parseInt(this.value, 10))"
+            class="w-full accent-indigo-400 cursor-pointer h-1.5 bg-indigo-950 rounded-lg"
+          />
+          <div class="flex justify-between text-[11px] font-mono text-indigo-300">
+            <span>${this.formatTime(curTime)}</span>
+            <span>${this.formatTime(duration)}</span>
+          </div>
+        </div>
+
+        <!-- Player Controls -->
+        <div class="flex items-center justify-between pt-2">
+          <!-- Speed control -->
+          <div class="flex items-center bg-indigo-950/70 border border-indigo-800 rounded-lg p-0.5 text-xs font-mono">
+            <button onclick="app.changeAudioSpeed(0.75)" class="px-2 py-0.5 rounded ${speed === 0.75 ? 'bg-indigo-600 font-bold' : 'text-indigo-300'}">0.75x</button>
+            <button onclick="app.changeAudioSpeed(1.0)" class="px-2 py-0.5 rounded ${speed === 1.0 ? 'bg-indigo-600 font-bold' : 'text-indigo-300'}">1x</button>
+            <button onclick="app.changeAudioSpeed(1.5)" class="px-2 py-0.5 rounded ${speed === 1.5 ? 'bg-indigo-600 font-bold' : 'text-indigo-300'}">1.5x</button>
+          </div>
+
+          <!-- Main Play Controls -->
+          <div class="flex items-center gap-3">
+            <button onclick="app.setAudioTime(Math.max(0, ${curTime} - 10))" class="p-2 text-indigo-300 hover:text-white" title="-10s">
+              <i data-lucide="rotate-ccw" class="w-4 h-4"></i>
+            </button>
+            <button onclick="app.toggleAudioPlay()" class="w-12 h-12 rounded-full bg-white text-indigo-950 flex items-center justify-center font-bold shadow-lg hover:scale-105 transition">
+              <i data-lucide="${isPlaying ? 'pause' : 'play'}" class="w-5 h-5 fill-current"></i>
+            </button>
+            <button onclick="app.setAudioTime(Math.min(${duration}, ${curTime} + 10))" class="p-2 text-indigo-300 hover:text-white" title="+10s">
+              <i data-lucide="rotate-cw" class="w-4 h-4"></i>
+            </button>
+          </div>
+
+          <button onclick="app.downloadFile('${res.id}')" class="text-xs text-indigo-300 hover:text-white flex items-center gap-1 font-medium">
+            <i data-lucide="download" class="w-3.5 h-3.5"></i> MP3
+          </button>
+        </div>
+
+      </div>
+
+      <!-- Synchronized Interactive Transcript -->
+      <div class="p-6 space-y-3 bg-slate-50/50">
+        <h3 class="text-xs font-bold text-slate-800 flex items-center gap-1.5 uppercase tracking-wider">
+          <i data-lucide="file-text" class="w-3.5 h-3.5 text-indigo-600"></i> Transcription Synchronisée
+        </h3>
+        <div class="space-y-2">
+          ${transcriptItems.map(item => `
+            <div onclick="app.setAudioTime(${item.time})" class="p-2.5 rounded-xl border transition cursor-pointer flex items-start gap-3 ${curTime >= item.time && curTime < item.time + 60 ? 'bg-indigo-50 border-indigo-300 text-indigo-950 font-medium' : 'bg-white border-slate-200 hover:bg-slate-50 text-slate-700'}">
+              <span class="font-mono text-xs text-indigo-600 font-bold shrink-0">[${item.stamp}]</span>
+              <span class="text-xs">${item.text}</span>
+            </div>
+          `).join('')}
+        </div>
+      </div>
+
+    </div>
+    `;
+  }
+
+  // 8. VIDEO / RECORDED LECTURE VIEWER (.mp4, .webm)
+  renderVideoViewer(res, course, promo) {
+    const isPlaying = this.docVideoPlaying || false;
+    const curTime = this.docVideoTime || 0;
+    const duration = this.docVideoDuration || 650; // ~10 mins
+
+    const chapters = [
+      { time: 0, stamp: '00:00', title: 'Introduction & Objectifs' },
+      { time: 90, stamp: '01:30', title: 'Polynôme caractéristique & Racines' },
+      { time: 225, stamp: '03:45', title: 'Sous-espaces propres Ker(A - λ*I)' },
+      { time: 380, stamp: '06:20', title: 'Démonstration géométrique & Droites' },
+      { time: 530, stamp: '08:50', title: 'Inversion de la matrice de passage P' }
+    ];
+
+    return `
+    <div class="bg-white rounded-2xl border border-slate-200/90 overflow-hidden shadow-2xs">
+      
+      <!-- Video Screen Frame -->
+      <div class="relative bg-black aspect-video flex flex-col justify-between p-4 text-white overflow-hidden group">
+        <!-- Top Video Bar -->
+        <div class="flex items-center justify-between text-xs z-10">
+          <span class="bg-black/60 backdrop-blur-xs px-2.5 py-1 rounded-lg font-semibold flex items-center gap-1.5">
+            <i data-lucide="video" class="w-3.5 h-3.5 text-red-500"></i> ${res.title}
+          </span>
+          <span class="bg-black/60 px-2 py-1 rounded font-mono text-[11px] text-slate-300">${res.fileSize || '48 Mo'}</span>
+        </div>
+
+        <!-- Center Play Overlay -->
+        <div class="flex items-center justify-center z-10">
+          <button onclick="app.toggleVideoPlay()" class="w-16 h-16 rounded-full bg-blue-600/90 hover:bg-blue-600 text-white flex items-center justify-center shadow-xl hover:scale-110 transition">
+            <i data-lucide="${isPlaying ? 'pause' : 'play'}" class="w-7 h-7 fill-current"></i>
+          </button>
+        </div>
+
+        <!-- Bottom Video Controls -->
+        <div class="space-y-2 z-10 bg-gradient-to-t from-black/90 to-transparent p-2 rounded-xl">
+          <input 
+            type="range" 
+            min="0" 
+            max="${duration}" 
+            value="${curTime}" 
+            onchange="app.setVideoTime(parseInt(this.value, 10))"
+            class="w-full accent-blue-500 cursor-pointer h-1.5 bg-slate-800 rounded-lg"
+          />
+          <div class="flex items-center justify-between text-xs font-mono text-slate-300">
+            <span>${this.formatTime(curTime)} / ${this.formatTime(duration)}</span>
+            <div class="flex items-center gap-3">
+              <button onclick="app.toggleVideoPlay()" class="hover:text-white"><i data-lucide="${isPlaying ? 'pause' : 'play'}" class="w-4 h-4"></i></button>
+              <button onclick="app.downloadFile('${res.id}')" class="hover:text-white" title="Télécharger"><i data-lucide="download" class="w-4 h-4"></i></button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Video Chapters & Notes -->
+      <div class="p-6 space-y-4 bg-slate-50/50">
+        <h3 class="text-xs font-bold text-slate-800 uppercase tracking-wider flex items-center gap-1.5">
+          <i data-lucide="bookmark" class="w-3.5 h-3.5 text-blue-600"></i> Chapitres de la séance
+        </h3>
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+          ${chapters.map(c => `
+            <button onclick="app.setVideoTime(${c.time})" class="p-2.5 text-left rounded-xl border transition flex items-center justify-between ${curTime >= c.time && curTime < c.time + 120 ? 'bg-blue-50 border-blue-300 text-blue-950 font-bold' : 'bg-white border-slate-200 hover:bg-slate-50 text-slate-700'}">
+              <span class="text-xs truncate">${c.title}</span>
+              <span class="font-mono text-xs text-blue-600 shrink-0 font-bold">[${c.stamp}]</span>
+            </button>
+          `).join('')}
+        </div>
+      </div>
+
+    </div>
+    `;
+  }
+
+  // Helper: Associated Resources, Correction & Context
+  renderDocAssociatedSections(res, course, promo, correction, related, courseVideo) {
+    return `
+    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+      
+      <!-- Academic Context Card -->
+      <div class="bg-white rounded-2xl border border-slate-200/90 p-4 space-y-2.5 shadow-2xs text-xs">
+        <h2 class="font-bold text-slate-900 text-xs flex items-center gap-1.5 border-b border-slate-100 pb-1.5">
+          <i data-lucide="info" class="w-3.5 h-3.5 text-blue-600"></i>
+          Contexte Académique Officiel
+        </h2>
+        <div class="space-y-1.5 text-slate-600">
+          <div><span class="font-semibold text-slate-800">Matière :</span> ${course ? `${course.code} — ${course.name}` : 'Matière'}</div>
+          <div><span class="font-semibold text-slate-800">Pôle / Filière :</span> ${promo ? `${promo.name} (${promo.cycle})` : 'Cycle préparatoire & Licence'}</div>
+          <div><span class="font-semibold text-slate-800">Enseignant :</span> ${res.professor || 'Département Pédagogique'}</div>
+          <div><span class="font-semibold text-slate-800">Chapitre ciblé :</span> ${res.chapter || 'Général'}</div>
+          <div><span class="font-semibold text-slate-800">Session :</span> ${res.session || 'Principale'} (${res.semester || 'S1'})</div>
+        </div>
+      </div>
+
+      <!-- Correction & Related Card -->
+      <div class="bg-white rounded-2xl border border-slate-200/90 p-4 space-y-2.5 shadow-2xs text-xs">
+        <h2 class="font-bold text-slate-900 text-xs flex items-center gap-1.5 border-b border-slate-100 pb-1.5">
+          <i data-lucide="link-2" class="w-3.5 h-3.5 text-teal-600"></i>
+          Ressources Associées & Corrigé
+        </h2>
+        
+        ${correction ? `
+          <div class="bg-teal-50 border border-teal-200 rounded-xl p-3 space-y-2">
+            <div class="flex items-center justify-between">
               <div class="flex items-center gap-1.5 text-teal-900 font-bold text-xs">
                 <i data-lucide="check-circle" class="w-4 h-4 text-teal-600"></i>
-                Corrigé Officiel Validé
+                Corrigé Type Officiel
               </div>
-              <p class="text-[11px] text-teal-800 line-clamp-1">${correction.title}</p>
-              <button onclick="app.openDocument('${correction.id}')" class="w-full bg-teal-600 hover:bg-teal-700 text-white font-semibold text-xs py-1.5 rounded-lg transition">
-                Consulter le Corrigé
-              </button>
+              <span class="text-[10px] bg-teal-200 text-teal-900 px-1.5 py-0.5 rounded font-bold">Validé</span>
             </div>
-          ` : `
-            <div class="text-slate-500 italic p-2 bg-slate-50 rounded-lg">
-              Aucun corrigé direct requis ou disponible pour cette ressource.
+            <p class="text-[11px] text-teal-800 line-clamp-1">${correction.title}</p>
+            <button onclick="app.openDocument('${correction.id}')" class="w-full bg-teal-600 hover:bg-teal-700 text-white font-semibold text-xs py-1.5 rounded-lg transition flex items-center justify-center gap-1.5">
+              <i data-lucide="file-check" class="w-3.5 h-3.5"></i>
+              Consulter le Corrigé Type
+            </button>
+          </div>
+        ` : `
+          <div class="text-slate-500 italic p-3 bg-slate-50 rounded-xl border border-slate-100">
+            Aucun corrigé direct requis pour ce type de ressource.
+          </div>
+        `}
+
+        ${courseVideo ? `
+          <div class="bg-purple-50 border border-purple-200 rounded-xl p-3 flex items-center justify-between gap-2">
+            <div class="truncate">
+              <div class="font-bold text-purple-900 text-xs flex items-center gap-1">
+                <i data-lucide="youtube" class="w-3.5 h-3.5 text-purple-600"></i> Vidéo Explicative
+              </div>
+              <div class="text-[11px] text-purple-800 truncate">${courseVideo.title}</div>
             </div>
-          `}
-        </div>
+            <button onclick="app.openVideo('${courseVideo.id}')" class="bg-purple-600 hover:bg-purple-700 text-white font-semibold text-xs px-2.5 py-1 rounded-lg shrink-0">
+              Voir
+            </button>
+          </div>
+        ` : ''}
 
       </div>
 
@@ -661,7 +1450,7 @@ class AcademicHubApp {
             <i data-lucide="target" class="w-3 h-3"></i> Apprendre (1-10)
           </button>
           <button onclick="app.setTutorMode('revision')" class="px-3 py-1 rounded-full transition font-medium shrink-0 flex items-center gap-1.5 border ${this.tutorMode === 'revision' ? 'bg-purple-600 text-white border-purple-600 shadow-2xs' : 'bg-white text-slate-600 border-slate-200 hover:bg-slate-50'}">
-            <i data-lucide="book-marked" class="w-3 h-3"></i> Révision faculté
+            <i data-lucide="book-marked" class="w-3 h-3"></i> Révision annales
           </button>
           <button onclick="app.setTutorMode('exercer')" class="px-3 py-1 rounded-full transition font-medium shrink-0 flex items-center gap-1.5 border ${this.tutorMode === 'exercer' ? 'bg-amber-600 text-white border-amber-600 shadow-2xs' : 'bg-white text-slate-600 border-slate-200 hover:bg-slate-50'}">
             <i data-lucide="pen-tool" class="w-3 h-3"></i> S'exercer
@@ -688,16 +1477,6 @@ class AcademicHubApp {
                 </div>
               </button>
 
-              <button onclick="app.startVoiceInput(); app.togglePlusMenu(false);" class="p-2.5 text-left rounded-xl bg-slate-50 hover:bg-slate-100 transition border border-slate-200/60 flex items-center gap-2.5">
-                <div class="w-7 h-7 rounded-lg bg-emerald-100 text-emerald-600 flex items-center justify-center shrink-0">
-                  <i data-lucide="mic" class="w-3.5 h-3.5"></i>
-                </div>
-                <div>
-                  <div class="font-semibold text-slate-800">Note Vocale</div>
-                  <div class="text-[10px] text-slate-500">Dicter votre question</div>
-                </div>
-              </button>
-
               <button onclick="app.openLibraryModal(); app.togglePlusMenu(false);" class="p-2.5 text-left rounded-xl bg-slate-50 hover:bg-slate-100 transition border border-slate-200/60 flex items-center gap-2.5">
                 <div class="w-7 h-7 rounded-lg bg-purple-100 text-purple-600 flex items-center justify-center shrink-0">
                   <i data-lucide="folder-tree" class="w-3.5 h-3.5"></i>
@@ -705,16 +1484,6 @@ class AcademicHubApp {
                 <div>
                   <div class="font-semibold text-slate-800">Documents & Cours</div>
                   <div class="text-[10px] text-slate-500">Arborescence & Import chat</div>
-                </div>
-              </button>
-
-              <button onclick="app.openApiKeyModal(); app.togglePlusMenu(false);" class="p-2.5 text-left rounded-xl bg-slate-50 hover:bg-slate-100 transition border border-slate-200/60 flex items-center gap-2.5">
-                <div class="w-7 h-7 rounded-lg bg-amber-100 text-amber-600 flex items-center justify-center shrink-0">
-                  <i data-lucide="key" class="w-3.5 h-3.5"></i>
-                </div>
-                <div>
-                  <div class="font-semibold text-slate-800">Clé API & IA</div>
-                  <div class="text-[10px] text-slate-500">Intelligence Personnalisée</div>
                 </div>
               </button>
             </div>
@@ -776,7 +1545,7 @@ class AcademicHubApp {
       case 'apprendre':
         return `Diagnostic initial (1-10) et progression pas à pas.`;
       case 'revision':
-        return `Priorité absolue aux annales et examens de la faculté.`;
+        return `Priorité absolue aux annales et examens du corpus.`;
       case 'exercer':
         return `Problèmes ciblés avec délivrance d'indices progressifs.`;
       default:
@@ -1374,7 +2143,7 @@ Academic Hub Tri-Agents Kernel v1.0 initialized.
       {
         id: `msg-${Date.now()}`,
         sender: 'tutor',
-        text: `Nouvelle session de tuteur démarrée !\n\nSur quel thème ou cours de votre faculté souhaitez-vous travailler aujourd'hui ?`,
+        text: `Nouvelle session de tuteur démarrée !\n\nSur quelle matière ou quel thème souhaitez-vous travailler aujourd'hui ?`,
         sources: [],
         timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
       }
@@ -1617,18 +2386,17 @@ Academic Hub Tri-Agents Kernel v1.0 initialized.
 
   async uploadDemoDocument(type) {
     let demoFileName = 'Examen_Final_Mecanique_2025.pdf';
-    let demoContent = `UNIVERSITÉ - DÉPARTEMENT DE PHYSIQUE (PHYS101)
+    let demoContent = `DÉPARTEMENT DE PHYSIQUE (PHYS101)
 Épreuve d'Examen Final : Mécanique du Point Matériel — Session Janvier 2025
 Professeur : Dr. Marc Beauchamp
 Exercice 1 : Oscillations libres amorties, équation différentielle x'' + 2gamma x' + w0^2 x = 0.`;
 
     if (type === 'tp_algo') {
-      demoFileName = 'TP4_Dijkstra_Graphes_INFO201.cpp';
-      demoContent = `// Algorithmique II - TP Graphes et Dijkstra
-// Faculté d'Informatique
+      demoFileName = 'TP4_Tableaux_Fonctions_INFO101B.cpp';
+      demoContent = `// Algorithmique I - TP Tableaux et Fonctions (INFO101B)
 #include <iostream>
 #include <vector>
-// Implémentation de la file à priorité pour Dijkstra`;
+// Implémentation du tri et manipulation des structures de données`;
     }
 
     const feedback = document.getElementById('upload-feedback');
@@ -2174,6 +2942,373 @@ Exercice 1 : Oscillations libres amorties, équation différentielle x'' + 2gamm
       listContainer.innerHTML = html;
       if (window.lucide) window.lucide.createIcons();
     }
+  }
+
+  // ==========================================
+  // MULTI-FORMAT DOCUMENT READER INTERACTION METHODS
+  // ==========================================
+  
+  openDocument(id) {
+    this.selectedResourceId = id;
+    this.docPdfPage = 1;
+    this.docSearchActive = false;
+    this.docSearchQuery = '';
+    this.docReadingTheme = 'light';
+    this.docPdfLayoutMode = 'single';
+    this.docCodeSelectedLine = null;
+    this.docWordActiveSection = 0;
+    this.docSheetActiveTab = 0;
+    this.docSheetFilter = '';
+    this.docSheetSelectedCell = 'B2';
+    this.docSlideIndex = 0;
+    this.docSlideShowNotes = false;
+    this.docImageZoom = 100;
+    this.docImageRotation = 0;
+    this.docImageMode = 'normal';
+    this.docAudioPlaying = false;
+    this.docAudioTime = 0;
+    this.docAudioSpeed = 1.0;
+    this.docVideoPlaying = false;
+    this.docVideoTime = 0;
+    this.currentDocZoom = 100;
+    this.navigate('document');
+  }
+
+  downloadFile(id) {
+    const res = this.resources.find(r => r.id === id);
+    if (!res) return;
+    const content = res.content || 'Document académique Academic Hub';
+    const blob = new Blob([content], { type: 'text/plain;charset=utf-8' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = res.fileName || `${res.title.replace(/[^a-z0-9]/gi, '_')}.txt`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  }
+
+  // Multi-page extraction helper
+  extractDocumentPages(content) {
+    if (!content) return ['(Document sans contenu textuel)'];
+    // Split on explicit page delimiter if available
+    if (content.includes('--- PAGE')) {
+      const parts = content.split(/--- PAGE \d+ ---/i).filter(p => p.trim().length > 0);
+      if (parts.length > 0) return parts;
+    }
+    // Or split on double newlines / paragraph chunks into 2-4 pages
+    const paragraphs = content.split(/\n\n+/);
+    if (paragraphs.length <= 4) return [content];
+    
+    const pageSize = Math.ceil(paragraphs.length / 3);
+    const p1 = paragraphs.slice(0, pageSize).join('\n\n');
+    const p2 = paragraphs.slice(pageSize, pageSize * 2).join('\n\n');
+    const p3 = paragraphs.slice(pageSize * 2).join('\n\n');
+    return [p1, p2, p3].filter(p => p && p.trim().length > 0);
+  }
+
+  setPdfPage(page) {
+    this.docPdfPage = page;
+    this.render();
+  }
+
+  prevPdfPage() {
+    this.setPdfPage(Math.max(1, (this.docPdfPage || 1) - 1));
+  }
+
+  nextPdfPage() {
+    this.setPdfPage((this.docPdfPage || 1) + 1);
+  }
+
+  setPdfLayout(mode) {
+    this.docPdfLayoutMode = mode;
+    this.render();
+  }
+
+  toggleDocSearch() {
+    this.docSearchActive = !this.docSearchActive;
+    if (!this.docSearchActive) this.docSearchQuery = '';
+    this.render();
+  }
+
+  setDocSearchQuery(query) {
+    this.docSearchQuery = query;
+    this.render();
+  }
+
+  prevDocSearchMatch() {
+    // In-viewport scroll to previous match
+  }
+
+  nextDocSearchMatch() {
+    // In-viewport scroll to next match
+  }
+
+  setReadingTheme(theme) {
+    this.docReadingTheme = theme;
+    this.render();
+  }
+
+  countSearchMatches(content, query) {
+    if (!query || !query.trim() || !content) return 0;
+    try {
+      const regex = new RegExp(query.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'gi');
+      const matches = content.match(regex);
+      return matches ? matches.length : 0;
+    } catch (e) {
+      return 0;
+    }
+  }
+
+  highlightTextWithSearch(text, query) {
+    if (!text) return '';
+    let escaped = this.escapeHtml(text);
+    if (!query || !query.trim()) return escaped;
+    try {
+      const escapedQuery = query.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+      const regex = new RegExp(`(${escapedQuery})`, 'gi');
+      return escaped.replace(regex, '<mark class="bg-amber-200 text-amber-950 font-bold px-0.5 rounded shadow-2xs">$1</mark>');
+    } catch (e) {
+      return escaped;
+    }
+  }
+
+  // Code Viewer Helpers
+  highlightCodeSyntax(line, ext) {
+    if (!line) return '&nbsp;';
+    let escaped = this.escapeHtml(line);
+
+    // Comments
+    if (escaped.trim().startsWith('//') || escaped.trim().startsWith('#') || escaped.trim().startsWith('/*')) {
+      return `<span class="text-slate-500 italic">${escaped}</span>`;
+    }
+
+    // C / Python / Java Keywords
+    const keywords = [
+      '#include', '#define', 'import', 'from', 'def', 'class', 'return', 'if', 'else', 'elif',
+      'for', 'while', 'int', 'float', 'double', 'char', 'void', 'struct', 'typedef', 'printf', 'scanf',
+      'malloc', 'free', 'sizeof', 'public', 'static', 'const', 'let', 'function', 'async', 'await'
+    ];
+
+    keywords.forEach(kw => {
+      const regex = new RegExp(`\\b(${kw})\\b`, 'g');
+      escaped = escaped.replace(regex, '<span class="text-indigo-400 font-bold">$1</span>');
+    });
+
+    // Strings
+    escaped = escaped.replace(/(".*?"|'.*?')/g, '<span class="text-emerald-300">$1</span>');
+
+    // Numbers
+    escaped = escaped.replace(/\b(\d+(\.\d+)?)\b/g, '<span class="text-amber-300">$1</span>');
+
+    return escaped;
+  }
+
+  copyCodeToClipboard() {
+    const res = this.resources.find(r => r.id === this.selectedResourceId);
+    if (!res || !res.content) return;
+    navigator.clipboard.writeText(res.content).then(() => {
+      const btn = document.getElementById('copy-code-btn');
+      if (btn) {
+        btn.innerHTML = `<i data-lucide="check" class="w-3.5 h-3.5 text-emerald-400"></i><span class="text-emerald-400 font-bold">Copié !</span>`;
+        if (window.lucide) window.lucide.createIcons();
+        setTimeout(() => this.render(), 2000);
+      }
+    });
+  }
+
+  selectCodeLine(lineNum) {
+    this.docCodeSelectedLine = (this.docCodeSelectedLine === lineNum) ? null : lineNum;
+    this.render();
+  }
+
+  // Word / Syllabus Sections
+  extractWordSections(content) {
+    if (!content) return [{ title: 'Section Générale', content: 'Contenu vide.' }];
+    const parts = content.split(/--- SECTION: (.*?) ---/i);
+    if (parts.length >= 3) {
+      const res = [];
+      for (let i = 1; i < parts.length; i += 2) {
+        res.push({
+          title: parts[i].trim(),
+          content: (parts[i + 1] || '').trim()
+        });
+      }
+      return res;
+    }
+    // Fallback: Split on double newlines
+    const paragraphs = content.split(/\n\n+/);
+    return [
+      { title: 'I. Contexte & Objectifs du Cours', content: paragraphs.slice(0, 3).join('\n\n') },
+      { title: 'II. Développements & Démonstrations', content: paragraphs.slice(3, 6).join('\n\n') || content },
+      { title: 'III. Applications & Fiches Récapitulatives', content: paragraphs.slice(6).join('\n\n') || 'Synthèse méthodologique.' }
+    ].filter(s => s.content.trim().length > 0);
+  }
+
+  setWordSection(idx) {
+    this.docWordActiveSection = idx;
+    this.render();
+  }
+
+  // Excel / Spreadsheet Data Extractor
+  extractSpreadsheetData(content) {
+    return {
+      headers: ['Paramètre / Fréquence (Hz)', 'Tension U (V)', 'Courant I (mA)', 'Déphasage φ (rad)', 'Impédance Z (Ω)', 'Facteur Q'],
+      rows: [
+        ['100.0 Hz', '12.05', '45.2', '0.12', '266.6', '4.2'],
+        ['250.0 Hz', '12.00', '78.5', '0.45', '152.8', '6.8'],
+        ['500.0 Hz (Résonance)', '11.95', '142.0', '0.00', '84.1', '12.5'],
+        ['1000.0 Hz', '12.02', '65.3', '-0.52', '184.0', '7.1'],
+        ['2500.0 Hz', '12.10', '28.1', '-1.15', '430.6', '3.4'],
+        ['5000.0 Hz', '12.15', '14.2', '-1.42', '855.6', '1.8']
+      ]
+    };
+  }
+
+  getFormulaForCell(cellKey, tableData) {
+    const col = cellKey.charAt(0);
+    const row = parseInt(cellKey.substring(1), 10);
+    if (col === 'E') return `=B${row} / (C${row} / 1000)`;
+    if (col === 'F') return `=RACINE(L / C) / R`;
+    if (col === 'B') return `=MOYENNE(B2:B7)`;
+    if (col === 'C') return `=MAX(C2:C7)`;
+    return `=SOMME(${col}2:${col}7)`;
+  }
+
+  selectSheetCell(cellKey, val) {
+    this.docSheetSelectedCell = cellKey;
+    this.render();
+  }
+
+  setSheetTab(idx) {
+    this.docSheetActiveTab = idx;
+    this.render();
+  }
+
+  setSheetFilter(filter) {
+    this.docSheetFilter = filter;
+    this.render();
+  }
+
+  // Slide / Presentation Extractor
+  extractSlides(content) {
+    return [
+      {
+        title: '1. Introduction aux Équations Différentielles du 2nd Ordre',
+        points: [
+          'Forme canonique : a·y\'\'(t) + b·y\'(t) + c·y(t) = f(t)',
+          'Origine physique : Oscillateurs harmoniques, amortis et circuits RLC série',
+          'Principe fondamental : Décomposition en Solution Homogène (yh) + Solution Particulière (yp)'
+        ],
+        notes: "Rappeler aux étudiants que la méthode s'applique rigoureusement lorsque les coefficients a, b, c sont constants."
+      },
+      {
+        title: '2. Résolution de l\'Équation Homogène (Sans Second Membre)',
+        points: [
+          'Équation caractéristique associée : a·r² + b·r + c = 0',
+          'Calcul du discriminant Δ = b² - 4ac',
+          'Cas 1 (Δ > 0) : Régime apériodique (Deux racines réelles distinctes)',
+          'Cas 2 (Δ = 0) : Régime critique (Racine double r0 = -b / 2a)',
+          'Cas 3 (Δ < 0) : Régime pseudo-périodique (Racines complexes conjuguées α ± iβ)'
+        ],
+        notes: "Attention fréquente en examen : ne pas oublier le terme t·e^(r0·t) dans le cas du discriminant nul."
+      },
+      {
+        title: '3. Recherche de la Solution Particulière (Second Membre)',
+        points: [
+          'Méthode par identification selon la forme du second membre f(t)',
+          'Si f(t) = Polynôme P(t) -> Chercher yp(t) sous forme de polynôme de même degré',
+          'Si f(t) = Exponentielle e^(k·t) -> Tester si k est racine caractéristique (phénomène de résonance)',
+          'Si f(t) = Sinusoïdal A·cos(ωt) -> Passer en notation complexe'
+        ],
+        notes: "La résonance se produit lorsque la pulsation d'excitation coïncide avec la pulsation propre du système."
+      },
+      {
+        title: '4. Synthèse & Détermination des Constantes',
+        points: [
+          'Solution générale complète : y(t) = yh(t) + yp(t)',
+          'Injection obligatoire des conditions initiales y(0) = y0 et y\'(0) = v0',
+          'Résolution du système linéaire à 2 inconnues (C1, C2)',
+          'Tracé de la courbe temporelle et interprétation physique de l\'amortissement'
+        ],
+        notes: "Ne jamais déterminer les constantes C1 et C2 avant d'avoir ajouté la solution particulière yp !"
+      }
+    ];
+  }
+
+  setSlideIndex(idx) {
+    this.docSlideIndex = idx;
+    this.render();
+  }
+
+  prevSlide() {
+    this.setSlideIndex(Math.max(0, (this.docSlideIndex || 0) - 1));
+  }
+
+  nextSlide() {
+    this.setSlideIndex((this.docSlideIndex || 0) + 1);
+  }
+
+  toggleSlideNotes() {
+    this.docSlideShowNotes = !this.docSlideShowNotes;
+    this.render();
+  }
+
+  // Image zoom & rotate
+  changeImageZoom(delta) {
+    this.docImageZoom = Math.max(50, Math.min(300, (this.docImageZoom || 100) + delta));
+    this.render();
+  }
+
+  rotateImage(delta) {
+    this.docImageRotation = ((this.docImageRotation || 0) + delta) % 360;
+    this.render();
+  }
+
+  setImageMode(mode) {
+    this.docImageMode = mode;
+    this.render();
+  }
+
+  // Audio player controls
+  toggleAudioPlay() {
+    this.docAudioPlaying = !this.docAudioPlaying;
+    this.render();
+  }
+
+  setAudioTime(seconds) {
+    this.docAudioTime = seconds;
+    this.render();
+  }
+
+  changeAudioSpeed(spd) {
+    this.docAudioSpeed = spd;
+    this.render();
+  }
+
+  // Video player controls
+  toggleVideoPlay() {
+    this.docVideoPlaying = !this.docVideoPlaying;
+    this.render();
+  }
+
+  setVideoTime(seconds) {
+    this.docVideoTime = seconds;
+    this.render();
+  }
+
+  formatTime(sec) {
+    if (!sec || isNaN(sec)) return '00:00';
+    const m = Math.floor(sec / 60);
+    const s = Math.floor(sec % 60);
+    return `${m < 10 ? '0' : ''}${m}:${s < 10 ? '0' : ''}${s}`;
+  }
+
+  explainCurrentDocPage() {
+    const res = this.resources.find(r => r.id === this.selectedResourceId);
+    if (!res) return;
+    this.startTutorOnResource(res.id);
   }
 
   // Format markdown into safe and clean HTML
