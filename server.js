@@ -16,12 +16,20 @@ app.use(express.urlencoded({ extended: true, limit: '25mb' }));
 // Mount API routes
 app.use('/api', apiRoutes);
 
-// Static assets
+// Admin site at /admin
+app.use('/admin', express.static(path.join(__dirname, 'admin')));
+app.get('/admin*', (req, res) => {
+  res.sendFile(path.join(__dirname, 'admin', 'index.html'));
+});
+
+// Student site static assets and routes
+app.use('/student', express.static(path.join(__dirname, 'student')));
+app.use(express.static(path.join(__dirname, 'student')));
 app.use(express.static(__dirname));
 
-// Client-side routing fallback
+// Default student site SPA fallback
 app.get('*', (req, res) => {
-  res.sendFile(path.join(__dirname, 'index.html'));
+  res.sendFile(path.join(__dirname, 'student', 'index.html'));
 });
 
 app.listen(PORT, () => {

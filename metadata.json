@@ -1,6 +1,6 @@
 {
   "name": "Academic Hub",
-  "description": "Centre d'information académique intelligent : bibliothèque de cours, annales corrigées, recherche instantanée et accompagnement pédagogique adaptatif.",
+  "description": "Centre d'information académique intelligent et tuteur pédagogique universitaire : recherche dans les cours, annales corrigées, mode Apprendre adaptatif et révisions guidées.",
   "requestFramePermissions": [
     "camera",
     "microphone"

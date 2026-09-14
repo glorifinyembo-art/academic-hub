@@ -32,9 +32,16 @@ export class TriAgentsManager {
     db.updateJob(job.id, { status: 'processing', workerId: agent.id });
 
     try {
-      // 1. Calculate SHA-256 for deduplication
-      const checksum = db.computeHash(job.content || job.fileName);
-      const existing = db.data.resources.find(r => r.checksum === checksum);
+      // 1. Calculate SHA-256 on actual file binary or distinct content
+      const checksumSource = job.fileBufferBase64 
+        || job.dataUrl 
+        || (job.content && job.content.length > 80 && !job.content.startsWith('Document académique :') ? job.content : `${job.fileName}_${Date.now()}`);
+      const checksum = db.computeHash(checksumSource);
+      const existing = (db.data.resources || []).find(r => 
+        r.checksum === checksum && 
+        r.fileName === job.fileName && 
+        r.courseId === job.courseId
+      );
       if (existing) {
         db.updateJob(job.id, {
           status: 'completed',
@@ -51,31 +58,39 @@ export class TriAgentsManager {
         return job;
       }
 
-      // 2. Classify with Gemini
-      const prompt = `Tu es un agent IA spécialisé dans l'analyse de documents universitaires pour Academic Hub.
+      // 2. Classify with Gemini & Extract Clean Academic Content
+      let attachment = null;
+      if (job.fileBufferBase64) {
+        if (job.format === 'pdf') {
+          attachment = { mimeType: 'application/pdf', base64: job.fileBufferBase64 };
+        } else if (job.format === 'image') {
+          attachment = { mimeType: 'image/jpeg', base64: job.fileBufferBase64 };
+        }
+      }
+
+      const prompt = `Tu es un agent IA spécialisé dans l'analyse et la transcription de documents universitaires pour Academic Hub.
 Analyse le document ci-dessous et retourne UNIQUEMENT un objet JSON valide avec la structure suivante :
 {
   "type": "TP" | "Interrogation" | "Examen" | "Exercices" | "Supports de Cours" | "Corrigé",
-  "title": "Titre académique clair et normalisé",
+  "title": "Titre académique clair, explicite et complet (ex: Analyse Mathématique - Chapitre 1 : Intégrales)",
   "courseName": "Nom de la matière ou du cours",
-  "courseCode": "Code du cours (ex: INFO201, MATH102)",
+  "courseCode": "Code du cours (ex: MATH101, INFO101, PHYS101)",
   "promotion": "Niveau (ex: L1, L2, L3, M1)",
   "academicYear": "Année académique (ex: 2024-2025)",
   "session": "Session d'examen ou contrôle",
   "semester": "Semestre (ex: Semestre 1)",
   "chapter": "Chapitre ou thème couvert",
   "professor": "Nom du professeur si détecté",
+  "extractedContent": "Transcription propre et structurée en Markdown du document avec formules ($...$), définitions, théorèmes et énoncés. Sépare les pages avec '--- PAGE 1 ---', '--- PAGE 2 ---' si multi-pages.",
   "confidence": 0.95
 }
 
 NOM DU FICHIER : "${job.fileName}"
-CONTENU DU DOCUMENT (EXTRAIT) :
-"""
-${(job.content || '').substring(0, 3000)}
-"""`;
+${job.content && !job.content.startsWith('%PDF') ? `EXTRAIT TEXTE :\n"""\n${job.content.substring(0, 3500)}\n"""` : ''}`;
 
       const aiResponse = await geminiService.executeWithFallback({
         prompt,
+        attachment,
         userApiKey,
         jsonMode: true,
         preferredModel: agent.preferredModel
@@ -92,40 +107,67 @@ ${(job.content || '').substring(0, 3000)}
         metadata = this.deterministicRuleClassifier(job.fileName, job.content);
       }
 
-      // Map to courseId and promotionId
-      const course = db.data.courses.find(c => 
-        (metadata.courseCode && c.code.toLowerCase().includes(metadata.courseCode.toLowerCase())) ||
-        (metadata.courseName && c.name.toLowerCase().includes(metadata.courseName.toLowerCase()))
-      ) || db.data.courses[0];
+      let finalContent = (metadata.extractedContent && metadata.extractedContent.trim().length > 20)
+        ? metadata.extractedContent.trim()
+        : (job.content || '');
 
-      // Add as pending/review resource in Academic DB
-      const { resource } = db.addResource({
-        title: metadata.title || job.fileName,
-        type: metadata.type || 'Supports de Cours',
+      // Sanitize against raw PDF binary stream artifacts
+      if (finalContent.startsWith('%PDF-') || finalContent.includes('FlateDecode') || finalContent.includes('/ObjStm')) {
+        finalContent = `### Document : ${metadata.title || job.fileName}\n\n**Matière :** ${metadata.courseName || 'Cours'}\n**Chapitre :** ${metadata.chapter || 'Général'}\n\nCe document a été importé avec succès. Vous pouvez le lire avec la visionneuse intégrée ou poser vos questions au tuteur IA.`;
+      }
+
+      // Map to courseId and promotionId
+      let course = null;
+      if (job.courseId) {
+        course = (db.data.courses || []).find(c => c.id === job.courseId);
+      }
+      if (!course) {
+        course = (db.data.courses || []).find(c => 
+          (metadata.courseCode && c.code && c.code.toLowerCase().includes(metadata.courseCode.toLowerCase())) ||
+          (metadata.courseName && c.name && c.name.toLowerCase().includes(metadata.courseName.toLowerCase()))
+        ) || (db.data.courses && db.data.courses.length > 0 ? db.data.courses[0] : null);
+      }
+
+      const courseId = course ? course.id : (job.courseId || '');
+      const promotionId = course ? course.promotionId : '';
+      const courseProf = course ? course.professor : '';
+      const defaultChapter = (course && course.chapters && course.chapters.length > 0 && course.chapters[0])
+        ? (typeof course.chapters[0] === 'string' ? course.chapters[0] : (course.chapters[0].title || 'Général'))
+        : 'Général';
+      const resourceType = job.resourceType || metadata.type || 'Supports de Cours';
+
+      // Add as resource in Academic DB
+      const resultObj = db.addResource({
+        title: metadata.title || job.fileName.replace(/\.[^/.]+$/, ''),
+        type: resourceType,
         format: job.format || 'pdf',
-        courseId: course.id,
-        promotionId: course.promotionId,
+        courseId: courseId,
+        courseName: course ? course.name : (metadata.courseName || ''),
+        promotionId: promotionId,
         academicYear: metadata.academicYear || '2024-2025',
         session: metadata.session || 'Session Ordinaire',
         semester: metadata.semester || 'Semestre 1',
-        professor: metadata.professor || course.professor,
-        chapter: metadata.chapter || (course.chapters[0] ? course.chapters[0].title : 'Général'),
-        status: metadata.confidence > 0.85 ? 'published' : 'needs_review',
-        validationStatus: metadata.confidence > 0.85 ? 'approved' : 'pending',
-        confidenceScore: metadata.confidence || 0.9,
-        hasCorrection: metadata.type === 'Examen' || metadata.type === 'Interrogation',
+        professor: metadata.professor || courseProf || '',
+        chapter: metadata.chapter || defaultChapter,
+        status: 'published',
+        validationStatus: 'approved',
+        confidenceScore: metadata.confidence || 0.95,
+        hasCorrection: resourceType === 'Examen' || resourceType === 'Interrogation' || resourceType === 'Corrigé',
         fileSize: job.fileSize || '120 Ko',
         fileName: job.fileName,
+        dataUrl: job.dataUrl || (job.fileBufferBase64 ? `data:${job.format === 'pdf' ? 'application/pdf' : 'application/octet-stream'};base64,${job.fileBufferBase64}` : ''),
         checksum,
-        content: job.content || ''
+        content: finalContent
       });
+
+      const resource = resultObj.resource;
 
       db.updateJob(job.id, {
         status: 'completed',
         workerId: agent.id,
         modelUsed: aiResponse.modelUsed || 'règles heuristiques',
         result: {
-          resourceId: resource.id,
+          resourceId: resource ? resource.id : null,
           metadata,
           modelUsed: aiResponse.modelUsed
         }

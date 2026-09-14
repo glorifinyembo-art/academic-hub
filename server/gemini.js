@@ -1,11 +1,9 @@
 // Academic Hub - Gemini & ModelPolicy Fallback Service
 import { GoogleGenAI } from '@google/genai';
 
-// Fallback hierarchy as specified in specs
+// Fallback hierarchy with active, validated models
 export const MODEL_HIERARCHY = [
-  'gemini-3.8-flash',
-  'gemini-3.1-flash-lite',
-  'gemini-flash-latest'
+  'gemini-3.6-flash'
 ];
 
 export class GeminiService {
@@ -27,7 +25,7 @@ export class GeminiService {
       return { success: false, error: 'Clé API vide.' };
     }
 
-    const testModels = ['gemini-3.8-flash', 'gemini-3.1-flash-lite', 'gemini-flash-latest'];
+    const testModels = ['gemini-3.6-flash'];
     let lastError = 'Impossible de contacter Google AI Studio.';
 
     for (const model of testModels) {
@@ -51,7 +49,7 @@ export class GeminiService {
   }
 
   // Robust execute with automatic fallback through the model hierarchy
-  async executeWithFallback({ prompt, systemInstruction = '', userApiKey = '', jsonMode = false, preferredModel = null, image = null }) {
+  async executeWithFallback({ prompt, systemInstruction = '', userApiKey = '', jsonMode = false, preferredModel = null, image = null, attachment = null }) {
     const client = this.getClient(userApiKey);
     if (!client) {
       return {
@@ -69,19 +67,34 @@ export class GeminiService {
     const attempts = [];
     let hadQuotaExhaustion = false;
 
-    // Format multimodal contents if image attachment is present
+    // Format multimodal contents if image or file attachment is present
     let contents = prompt;
-    if (image && image.base64) {
-      const cleanBase64 = image.base64.replace(/^data:image\/[a-zA-Z0-9+-]+;base64,/, '');
-      contents = [
-        { text: prompt },
-        {
-          inlineData: {
-            mimeType: image.mimeType || 'image/jpeg',
-            data: cleanBase64
+    if (attachment && attachment.base64) {
+      const cleanBase64 = attachment.base64.replace(/^data:[a-zA-Z0-9\/-]+;base64,/, '');
+      contents = {
+        parts: [
+          { text: prompt },
+          {
+            inlineData: {
+              mimeType: attachment.mimeType || 'application/pdf',
+              data: cleanBase64
+            }
           }
-        }
-      ];
+        ]
+      };
+    } else if (image && image.base64) {
+      const cleanBase64 = image.base64.replace(/^data:image\/[a-zA-Z0-9+-]+;base64,/, '');
+      contents = {
+        parts: [
+          { text: prompt },
+          {
+            inlineData: {
+              mimeType: image.mimeType || 'image/jpeg',
+              data: cleanBase64
+            }
+          }
+        ]
+      };
     }
 
     for (const model of modelsToTry) {

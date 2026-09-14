@@ -8,459 +8,84 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const DATA_FILE = path.join(__dirname, 'academic_data.json');
 
-// Initial seed data with authentic university-grade materials
-const SEED_PROMOTIONS = [
-  { id: 'l1-mi', name: 'L1 Mathématiques & Informatique', cycle: 'Licence 1', faculty: 'Sciences Fondamentales' },
-  { id: 'l2-info', name: 'L2 Informatique Générale', cycle: 'Licence 2', faculty: 'Sciences et Ingénierie' },
-  { id: 'l3-info', name: 'L3 Génie Logiciel & Systèmes', cycle: 'Licence 3', faculty: 'Sciences et Ingénierie' },
-  { id: 'm1-ia', name: 'M1 Intelligence Artificielle & Data', cycle: 'Master 1', faculty: 'Informatique Avancée' },
-  { id: 'l2-phys', name: 'L2 Physique & Sciences de l\'Ingénieur', cycle: 'Licence 2', faculty: 'Sciences Physiques' },
-];
-
-const SEED_COURSES = [
-  {
-    id: 'course-algo2',
-    code: 'INFO201',
-    name: 'Algorithmique & Structures de Données Avancées',
-    promotionId: 'l2-info',
-    professor: 'Prof. Laurent Mercier',
-    description: 'Arbres binaires de recherche, tas, graphes, algorithmes de Dijkstra et programmation dynamique.',
-    chapters: [
-      { id: 'chap-algo-1', number: 1, title: 'Arbres Binaires de Recherche (ABR) et Équilibrage AVL' },
-      { id: 'chap-algo-2', number: 2, title: 'Parcours et Plus Courts Chemins dans les Graphes' },
-      { id: 'chap-algo-3', number: 3, title: 'Programmation Dynamique et Mémoïsation' },
-    ]
-  },
-  {
-    id: 'course-analyse2',
-    code: 'MATH102',
-    name: 'Analyse II : Calcul Intégral & Équations Différentielles',
-    promotionId: 'l1-mi',
-    professor: 'Prof. Éléonore Vasseur',
-    description: 'Intégrale de Riemann, méthodes d\'intégration par parties et changement de variable, équations différentielles linéaires.',
-    chapters: [
-      { id: 'chap-math-1', number: 1, title: 'Primitives et Techniques d\'Intégration' },
-      { id: 'chap-math-2', number: 2, title: 'Intégrales Définies et Théorème Fondamental de l\'Analyse' },
-      { id: 'chap-math-3', number: 3, title: 'Équations Différentielles Linéaires du Premier et Second Ordre' },
-    ]
-  },
-  {
-    id: 'course-meca',
-    code: 'PHYS101',
-    name: 'Mécanique du Point & Dynamique Newtonienne',
-    promotionId: 'l2-phys',
-    professor: 'Dr. Marc Beauchamp',
-    description: 'Lois de Newton, travail et énergie cinétique, oscillateur harmonique et théorèmes de conservation.',
-    chapters: [
-      { id: 'chap-phys-1', number: 1, title: 'Cinématique et Repères Mobiles' },
-      { id: 'chap-phys-2', number: 2, title: 'Théorème de l\'Énergie Cinétique et Énergie Potentielle' },
-      { id: 'chap-phys-3', number: 3, title: 'Oscillateurs Harmoniques Libres et Amortis' },
-    ]
-  },
-  {
-    id: 'course-bd',
-    code: 'INFO202',
-    name: 'Bases de Données Relationnelles & SQL Avancé',
-    promotionId: 'l2-info',
-    professor: 'Prof. Amine Benali',
-    description: 'Algèbre relationnelle, formes normales (1FN à BCNF), requêtes analytiques SQL et optimisation d\'index.',
-    chapters: [
-      { id: 'chap-bd-1', number: 1, title: 'Conception Entité-Association et Modèle Relationnel' },
-      { id: 'chap-bd-2', number: 2, title: 'Normalisation et Dépendances Fonctionnelles' },
-      { id: 'chap-bd-3', number: 3, title: 'Jointures Avancées, Sous-requêtes et Indexation' },
-    ]
-  }
-];
-
-const SEED_CONCEPTS = [
-  { id: 'concept-derivation', name: 'Dérivation et Taux de Variation', courseId: 'course-analyse2', chapterId: 'chap-math-1', prerequisites: [] },
-  { id: 'concept-primitives', name: 'Primitives de Fonctions Usuelles', courseId: 'course-analyse2', chapterId: 'chap-math-1', prerequisites: ['concept-derivation'] },
-  { id: 'concept-ipp', name: 'Intégration par Parties (IPP)', courseId: 'course-analyse2', chapterId: 'chap-math-1', prerequisites: ['concept-primitives'] },
-  { id: 'concept-integrale-def', name: 'Intégrale Définie de Riemann', courseId: 'course-analyse2', chapterId: 'chap-math-2', prerequisites: ['concept-primitives'] },
-  { id: 'concept-chgt-var', name: 'Changement de Variable dans une Intégrale', courseId: 'course-analyse2', chapterId: 'chap-math-2', prerequisites: ['concept-integrale-def', 'concept-derivation'] },
-  { id: 'concept-arbre-abr', name: 'Arbre Binaire de Recherche (Insertion & Recherche)', courseId: 'course-algo2', chapterId: 'chap-algo-1', prerequisites: [] },
-  { id: 'concept-dijkstra', name: 'Algorithme du Plus Court Chemin de Dijkstra', courseId: 'course-algo2', chapterId: 'chap-algo-2', prerequisites: [] },
-  { id: 'concept-newton2', name: 'Deuxième Loi de Newton (Principe Fondamental)', courseId: 'course-meca', chapterId: 'chap-phys-1', prerequisites: [] },
-  { id: 'concept-energie-meca', name: 'Conservation de l\'Énergie Mécanique', courseId: 'course-meca', chapterId: 'chap-phys-2', prerequisites: ['concept-newton2'] },
-  { id: 'concept-bcnf', name: 'Forme Normale de Boyce-Codd (BCNF)', courseId: 'course-bd', chapterId: 'chap-bd-2', prerequisites: [] }
-];
-
+// Curated authentic university YouTube videos for core academic concepts
 const SEED_VIDEOS = [
   {
-    id: 'vid-math-ipp',
-    title: 'Comprendre l\'Intégration par Parties intuitivement',
-    channel: 'Maths Pédago & 3Blue1Brown FR',
-    url: 'https://www.youtube.com/watch?v=rfG8ce4nNh0',
-    courseId: 'course-analyse2',
+    id: 'vid-ipp-exo7',
+    courseId: 'course-analyse',
     conceptId: 'concept-ipp',
-    difficulty: 'Intermédiaire',
-    duration: '11:45',
-    language: 'Français',
-    validated: true,
-    qualityScore: 98,
-    transcript: 'L\'intégration par parties découle directement de la règle de dérivation du produit (u·v)\' = u\'v + uv\'. En intégrant des deux côtés, on obtient l\'aire sous la courbe par compensation géométrique.',
-    checkQuestion: 'D\'où provient mathématiquement la formule de l\'intégration par parties ?',
-    expectedAnswer: 'De la formule de dérivation d\'un produit de deux fonctions d(uv) = u\'v + uv\''
+    chapter: 'Intégration & Primitives',
+    title: 'Intégration par parties - Cours complet et astuces d\'examen',
+    url: 'https://www.youtube.com/watch?v=kY3B9E_VqCg',
+    youtubeId: 'kY3B9E_VqCg',
+    channel: 'Exo7 Mathématiques',
+    duration: '12:45',
+    whyImportant: 'Démonstration géométrique et application systématique de la règle ALPES pour ne jamais hésiter sur le choix de u et v\'.'
   },
   {
-    id: 'vid-algo-dijkstra',
-    title: 'Dijkstra pas à pas avec animation d\'un graphe',
-    channel: 'Algorithmique Visuelle',
-    url: 'https://www.youtube.com/watch?v=bZkzH5x0Ikk',
-    courseId: 'course-algo2',
-    conceptId: 'concept-dijkstra',
-    difficulty: 'Débutant-Intermédiaire',
-    duration: '09:20',
-    language: 'Français',
-    validated: true,
-    qualityScore: 95,
-    transcript: 'Dijkstra maintient un tableau des distances provisoires et une file à priorité. À chaque étape, le sommet non visité avec la plus petite distance estimée est fixé définitivement car les poids sont strictement positifs.',
-    checkQuestion: 'Pourquoi l\'algorithme de Dijkstra ne fonctionne-t-il pas correctement avec des poids d\'arêtes négatifs ?',
-    expectedAnswer: 'Car une fois qu\'un sommet est extrait avec la distance minimale courante, il est considéré comme optimal et ne sera plus mis à jour.'
+    id: 'vid-avl-visual',
+    courseId: 'course-algo',
+    conceptId: 'concept-avl',
+    chapter: 'Arbres AVL & B-Trees',
+    title: 'Arbres AVL : Comprendre les 4 rotations (Gauche, Droite, Doubles)',
+    url: 'https://www.youtube.com/watch?v=FNeL18KsWPc',
+    youtubeId: 'FNeL18KsWPc',
+    channel: 'Algorithmique Interactive',
+    duration: '08:30',
+    whyImportant: 'Animation graphique montrant exactement le réarrangement des pointeurs lors d\'un déséquilibre en zig-zag.'
   },
   {
-    id: 'vid-phys-energie',
-    title: 'Énergie potentielle, travail et oscillateur mécanique',
-    channel: 'Sciences Physiques Universitaires',
-    url: 'https://www.youtube.com/watch?v=Gk7436_d70E',
-    courseId: 'course-meca',
-    conceptId: 'concept-energie-meca',
-    difficulty: 'Intermédiaire',
-    duration: '14:10',
-    language: 'Français',
-    validated: true,
-    qualityScore: 92,
-    transcript: 'Le travail d\'une force conservative dérive d\'une énergie potentielle : W = -ΔEp. Si aucune force dissipative n\'agit, l\'énergie mécanique Em = Ec + Ep demeure strictement constante.',
-    checkQuestion: 'Quel est le lien entre le travail d\'une force conservative et la variation d\'énergie potentielle ?',
-    expectedAnswer: 'Le travail d\'une force conservative est égal à l\'opposé de la variation de l\'énergie potentielle : W = -ΔEp.'
+    id: 'vid-pfd-newton',
+    courseId: 'course-physique',
+    conceptId: 'concept-newton',
+    chapter: 'Lois de Newton & PFD',
+    title: 'Deuxième Loi de Newton & PFD : Méthode de projection sans erreur',
+    url: 'https://www.youtube.com/watch?v=vVj4Zqj7b0c',
+    youtubeId: 'vVj4Zqj7b0c',
+    channel: 'Physique Universitaire',
+    duration: '10:15',
+    whyImportant: 'Schéma vectoriel étape par étape pour projeter les forces sur le repère cartésien et maîtriser les signes.'
+  },
+  {
+    id: 'vid-diag-algebre',
+    courseId: 'course-algebre',
+    conceptId: 'concept-diagonalisation',
+    chapter: 'Matrices & Diagonalisation',
+    title: 'Diagonalisation et valeurs propres : L\'essence géométrique',
+    url: 'https://www.youtube.com/watch?v=PFDu9oVAE-g',
+    youtubeId: 'PFDu9oVAE-g',
+    channel: '3Blue1Brown FR',
+    duration: '14:20',
+    whyImportant: 'Visualisation intuitive pour comprendre ce que signifie réellement un changement de base dans l\'espace.'
+  },
+  {
+    id: 'vid-rlc-elec',
+    courseId: 'course-elec',
+    conceptId: 'concept-rlc',
+    chapter: 'Circuits RLC & Régime Transitoire',
+    title: 'Circuit RLC série : Régimes apériodique, critique et pseudo-périodique',
+    url: 'https://www.youtube.com/watch?v=x_6Xb4V2a9o',
+    youtubeId: 'x_6Xb4V2a9o',
+    channel: 'Génie Électrique & Physique',
+    duration: '11:00',
+    whyImportant: 'Courbes réelles de décharge du condensateur pour comprendre physiquement l\'amortissement.'
   }
 ];
+const SEED_PROMOTIONS = [];
+const SEED_COURSES = [];
+const SEED_CONCEPTS = [];
+const SEED_RESOURCES = [];
 
-const SEED_RESOURCES = [
-  {
-    id: 'res-exam-math-2025',
-    title: 'Examen Final - Session Principale 2025 : Calcul Intégral & Systèmes Différentiels',
-    type: 'Examen',
-    format: 'pdf',
-    courseId: 'course-analyse2',
-    promotionId: 'l1-mi',
-    academicYear: '2024-2025',
-    session: 'Session Principale (Janvier 2025)',
-    semester: 'Semestre 1',
-    professor: 'Prof. Éléonore Vasseur',
-    chapter: 'Primitives, Intégrales Définies et Équations Différentielles',
-    status: 'published',
-    validationStatus: 'approved',
-    confidenceScore: 0.99,
-    correctionId: 'res-corr-math-2025',
-    hasCorrection: true,
-    fileSize: '412 Ko',
-    fileName: 'Examen_Final_Analyse2_Janvier_2025.pdf',
-    checksum: 'a8b3f17c490218de45bc38290f84a1e94819448bf823812048cd31726a8d9102',
-    publishedAt: '2025-01-20T10:00:00Z',
-    content: `UNIVERSITÉ DES SCIENCES ET TECHNIQUES — DÉPARTEMENT DE MATHÉMATIQUES
-Épreuve : Analyse II (MATH102) — Durée : 2h00 — Calculatrices interdites.
-Responsable : Prof. Éléonore Vasseur — Session Principale 2024-2025
-
-EXERCICE 1 (6 points) — Calculs d'intégrales définies et méthodes d'intégration
-1. Calculer l'intégrale I = ∫ (de 0 à 1) x * e^(2x) dx en détaillant explicitement l'intégration par parties (choix de u et v').
-2. Calculer J = ∫ (de 0 à π/4) tan(x) / (cos^2(x)) dx à l'aide d'un changement de variable approprié en posant t = tan(x).
-3. Déterminer une primitive sur ]0, +∞[ de f(x) = ln(x) / x^2.
-
-EXERCICE 2 (7 points) — Équation différentielle du second ordre avec second membre
-On considère l'équation différentielle (E) : y''(x) - 3y'(x) + 2y(x) = 4e^(3x).
-1. Déterminer l'équation caractéristique associée à l'équation homogène (E0) : r^2 - 3r + 2 = 0, et donner la solution générale de (E0).
-2. Trouver une solution particulière yp(x) de (E) sous la forme yp(x) = A * e^(3x).
-3. En déduire la solution générale de l'équation complète (E).
-4. Déterminer l'unique solution vérifiant les conditions initiales y(0) = 1 et y'(0) = 0.
-
-EXERCICE 3 (7 points) — Sommes de Riemann et limite d'une suite
-Soit Sn = ∑ (k=1 à n) [ n / (n^2 + k^2) ].
-1. Réécrire Sn sous la forme (1/n) * ∑ f(k/n) pour une fonction f que l'on précisera sur l'intervalle [0, 1].
-2. Justifier que f est continue sur [0, 1] et en déduire la limite de Sn lorsque n tend vers +∞ en calculant l'intégrale ∫ (de 0 à 1) dx / (1 + x^2).`
-  },
-  {
-    id: 'res-corr-math-2025',
-    title: 'Corrigé Officiel Détaillé — Examen Final Analyse II 2025',
-    type: 'Corrigé',
-    format: 'pdf',
-    courseId: 'course-analyse2',
-    promotionId: 'l1-mi',
-    academicYear: '2024-2025',
-    session: 'Session Principale (Janvier 2025)',
-    semester: 'Semestre 1',
-    professor: 'Prof. Éléonore Vasseur',
-    chapter: 'Corrigé Type Examen 2025',
-    status: 'published',
-    validationStatus: 'approved',
-    confidenceScore: 1.0,
-    hasCorrection: false,
-    fileSize: '380 Ko',
-    fileName: 'Corrige_Officiel_Analyse2_Janvier_2025.pdf',
-    checksum: 'b49204cd198a2fe7382103728491820491028475920381029482019485720194',
-    publishedAt: '2025-01-22T14:00:00Z',
-    content: `CORRIGÉ TYPE OFFICIEL — EXAMEN ANALYSE II (MATH102) - JANVIER 2025
-Rédigé par Prof. Éléonore Vasseur
-
-SOLUTION EXERCICE 1 :
-1. Calcul de I = ∫ (de 0 à 1) x * e^(2x) dx :
-   Posons u(x) = x => u'(x) = 1.
-   Posons v'(x) = e^(2x) => v(x) = (1/2) * e^(2x).
-   Par la formule d'intégration par parties :
-   I = [ (x/2) * e^(2x) ]_0^1 - ∫_0^1 (1/2) * e^(2x) dx
-   I = (1/2 * e^2 - 0) - [ (1/4) * e^(2x) ]_0^1
-   I = (1/2)e^2 - (1/4)e^2 + 1/4 = (1/4)e^2 + 1/4 = (e^2 + 1) / 4.
-
-2. Calcul de J = ∫ (de 0 à π/4) tan(x) / (cos^2(x)) dx :
-   On remarque que (tan(x))' = 1 / (cos^2(x)).
-   Posons t = tan(x). Quand x=0, t=0 ; quand x=π/4, t=1. dt = dx / cos^2(x).
-   J = ∫_0^1 t dt = [ t^2 / 2 ]_0^1 = 1/2.
-
-3. Primitive de ln(x)/x^2 :
-   Par IPP : u = ln(x) => u' = 1/x ; v' = 1/x^2 => v = -1/x.
-   ∫ ln(x)/x^2 dx = -ln(x)/x - ∫ (-1/x^2) dx = -ln(x)/x - 1/x + C = -(ln(x) + 1)/x + C.
-
-SOLUTION EXERCICE 2 :
-1. Équation caractéristique : r^2 - 3r + 2 = 0 => (r - 1)(r - 2) = 0 => racines r1=1, r2=2.
-   Solution homogène yh(x) = C1 * e^x + C2 * e^(2x).
-2. Pour yp(x) = A * e^(3x) : yp' = 3A*e^(3x), yp'' = 9A*e^(3x).
-   9A - 9A + 2A = 4 => 2A = 4 => A = 2. Donc yp(x) = 2*e^(3x).
-3. Solution générale : y(x) = C1 * e^x + C2 * e^(2x) + 2*e^(3x).
-4. Avec y(0)=1 et y'(0)=0 :
-   y(0) = C1 + C2 + 2 = 1 => C1 + C2 = -1.
-   y'(x) = C1*e^x + 2*C2*e^(2x) + 6*e^(3x).
-   y'(0) = C1 + 2*C2 + 6 = 0 => C1 + 2*C2 = -6.
-   Par soustraction : C2 = -5, d'où C1 = 4.
-   Solution unique : y(x) = 4*e^x - 5*e^(2x) + 2*e^(3x).`
-  },
-  {
-    id: 'res-tp-algo-avl',
-    title: 'TP n°3 : Implémentation et Équilibrage d\'un Arbre AVL en C++',
-    type: 'TP',
-    format: 'code',
-    courseId: 'course-algo2',
-    promotionId: 'l2-info',
-    academicYear: '2024-2025',
-    session: 'TP Noté Semestre 1',
-    semester: 'Semestre 1',
-    professor: 'Prof. Laurent Mercier',
-    chapter: 'Arbres Binaires de Recherche (ABR) et Équilibrage AVL',
-    status: 'published',
-    validationStatus: 'approved',
-    confidenceScore: 0.98,
-    hasCorrection: true,
-    fileSize: '15 Ko',
-    fileName: 'tp3_arbres_avl.cpp',
-    checksum: 'c901847192847291038471902847190283748291048291048291048291048291',
-    publishedAt: '2024-11-15T08:30:00Z',
-    content: `// TP3 : Arbres AVL - Algorithmique et Structures de Données (INFO201)
-// Faculté d'Informatique - Prof. Laurent Mercier
-#include <iostream>
-#include <algorithm>
-
-struct Node {
-    int key;
-    Node* left;
-    Node* right;
-    int height;
-    Node(int k) : key(k), left(nullptr), right(nullptr), height(1) {}
-};
-
-int getHeight(Node* n) {
-    return n ? n->height : 0;
-}
-
-int getBalanceFactor(Node* n) {
-    return n ? getHeight(n->left) - getHeight(n->right) : 0;
-}
-
-Node* rotateRight(Node* y) {
-    Node* x = y->left;
-    Node* T2 = x->right;
-    x->right = y;
-    y->left = T2;
-    y->height = std::max(getHeight(y->left), getHeight(y->right)) + 1;
-    x->height = std::max(getHeight(x->left), getHeight(x->right)) + 1;
-    return x;
-}
-
-Node* rotateLeft(Node* x) {
-    Node* y = x->right;
-    Node* T2 = y->left;
-    y->left = x;
-    x->right = T2;
-    x->height = std::max(getHeight(x->left), getHeight(x->right)) + 1;
-    y->height = std::max(getHeight(y->left), getHeight(y->right)) + 1;
-    return y;
-}
-
-Node* insertAVL(Node* node, int key) {
-    if (!node) return new Node(key);
-    if (key < node->key) node->left = insertAVL(node->left, key);
-    else if (key > node->key) node->right = insertAVL(node->right, key);
-    else return node;
-
-    node->height = 1 + std::max(getHeight(node->left), getHeight(node->right));
-    int balance = getBalanceFactor(node);
-
-    // Cas Gauche-Gauche
-    if (balance > 1 && key < node->left->key) return rotateRight(node);
-    // Cas Droite-Droite
-    if (balance < -1 && key > node->right->key) return rotateLeft(node);
-    // Cas Gauche-Droite
-    if (balance > 1 && key > node->left->key) {
-        node->left = rotateLeft(node->left);
-        return rotateRight(node);
-    }
-    // Cas Droite-Gauche
-    if (balance < -1 && key < node->right->key) {
-        node->right = rotateRight(node->right);
-        return rotateLeft(node);
-    }
-    return node;
-}
-
-int main() {
-    Node* root = nullptr;
-    int keys[] = {10, 20, 30, 40, 50, 25};
-    for (int k : keys) root = insertAVL(root, k);
-    std::cout << "Arbre AVL construit avec succès. Hauteur racine = " << root->height << std::endl;
-    return 0;
-}`
-  },
-  {
-    id: 'res-interro-meca-2024',
-    title: 'Interrogation Écrite n°2 : Énergie Mécanique & Oscillateur Harmonique',
-    type: 'Interrogation',
-    format: 'pdf',
-    courseId: 'course-meca',
-    promotionId: 'l2-phys',
-    academicYear: '2024-2025',
-    session: 'Contrôle Continu',
-    semester: 'Semestre 1',
-    professor: 'Dr. Marc Beauchamp',
-    chapter: 'Théorème de l\'Énergie Cinétique et Oscillateurs',
-    status: 'published',
-    validationStatus: 'approved',
-    confidenceScore: 0.97,
-    hasCorrection: true,
-    fileSize: '290 Ko',
-    fileName: 'Interro2_Mecanique_Novembre_2024.pdf',
-    checksum: 'd198273918204918203918471920481920384719203847192038471920384719',
-    publishedAt: '2024-11-28T11:00:00Z',
-    content: `UNIVERSITÉ DE PHYSIQUE APPLIQUÉE
-Interrogation de Contrôle Continu n°2 — Durée : 45 minutes
-Matière : Mécanique du Point (PHYS101) — Enseignant : Dr. Marc Beauchamp
-
-ÉNONCÉ :
-Un solide ponctuel de masse m = 0.5 kg est attaché à un ressort horizontal de raideur k = 50 N/m.
-Le solide peut glisser sur un plan horizontal avec ou sans frottement.
-À l'instant t = 0, on écarte le solide de sa position d'équilibre x0 = 0.10 m (vers la droite) et on le lâche sans vitesse initiale (v0 = 0).
-
-Partie A — Cas sans frottement
-1. Établir l'équation différentielle du mouvement en appliquant la deuxième loi de Newton.
-2. Définir et calculer la pulsation propre ω0 ainsi que la période T0 des oscillations.
-3. Exprimer la position x(t) et la vitesse v(t) du solide à tout instant t.
-4. Calculer l'énergie mécanique totale Em du système. Montrer qu'elle est constante au cours du temps.
-
-Partie B — Cas avec force de frottement fluide
-On applique désormais une force de frottement f = -λ * v avec λ = 0.2 kg/s.
-1. Réécrire l'équation différentielle du mouvement sous la forme x'' + 2γx' + ω0^2 x = 0.
-2. Identifier le régime d'oscillation (apériodique, critique ou pseudo-périodique) en calculant le discriminant caractéristique.`
-  },
-  {
-    id: 'res-cours-cours-bd',
-    title: 'Syllabus & Notes de Cours : Formes Normales et Conception Relationnelle',
-    type: 'Supports de Cours',
-    format: 'office',
-    courseId: 'course-bd',
-    promotionId: 'l2-info',
-    academicYear: '2024-2025',
-    session: 'Cours Magistral',
-    semester: 'Semestre 1',
-    professor: 'Prof. Amine Benali',
-    chapter: 'Normalisation et Dépendances Fonctionnelles',
-    status: 'published',
-    validationStatus: 'approved',
-    confidenceScore: 0.99,
-    hasCorrection: false,
-    fileSize: '840 Ko',
-    fileName: 'Cours_Complet_Normalisation_BCNF_2025.docx',
-    checksum: 'e201948291048291048291048291048291048291048291048291048291048291',
-    publishedAt: '2024-10-05T09:00:00Z',
-    content: `SYLLABUS DU COURS : BASES DE DONNÉES RELATIONNELLES (INFO202)
-Professeur Amine Benali — Chapitre 2 : La Normalisation Relationnelle
-
-1. POURQUOI NORMALISER ?
-La normalisation est un processus formel qui décompose les relations pour éliminer les redondances d'information et prévenir les anomalies de mise à jour (insert, delete, update).
-
-2. LES DÉPENDANCES FONCTIONNELLES (DF)
-Soit R(A1, ..., An) un schéma de relation, et X, Y deux sous-ensembles d'attributs de R.
-On dit que X détermine fonctionnellement Y (noté X -> Y) si pour tous tuples t1, t2 de toute instance valide de R, t1[X] = t2[X] implique t1[Y] = t2[Y].
-Les axiomes d'Armstrong (Réflexivité, Augmentation, Transitivité) permettent de calculer la fermeture d'un ensemble de dépendances F+.
-
-3. PREMIÈRE FORME NORMALE (1FN)
-Une relation est en 1FN si tous ses attributs sont atomiques (pas de listes, ni de structures imbriquées).
-
-4. DEUXIÈME FORME NORMALE (2FN)
-Une relation est en 2FN si elle est en 1FN et tout attribut non-clé dépend pleinement de la clé primaire entière (pas de dépendance partielle sur une sous-clé).
-
-5. TROISIÈME FORME NORMALE (3FN)
-Une relation est en 3FN si elle est en 2FN et aucun attribut non-clé ne dépend transitivement de la clé primaire (pas de X -> Y -> Z où Y n'est pas clé).
-
-6. FORME NORMALE DE BOYCE-CODD (BCNF)
-Une relation est en BCNF si pour toute dépendance fonctionnelle X -> Y non-triviale (Y non inclus dans X), X est une super-clé de R.
-Toute relation en BCNF est strictement en 3FN.`
-  },
-  {
-    id: 'res-exercices-algo-dijkstra',
-    title: 'Fiche d\'Exercices Dirigés : Algorithmes de Dijkstra et Bellman-Ford',
-    type: 'Exercices',
-    format: 'pdf',
-    courseId: 'course-algo2',
-    promotionId: 'l2-info',
-    academicYear: '2024-2025',
-    session: 'Travaux Dirigés',
-    semester: 'Semestre 1',
-    professor: 'Prof. Laurent Mercier',
-    chapter: 'Parcours et Plus Courts Chemins dans les Graphes',
-    status: 'published',
-    validationStatus: 'approved',
-    confidenceScore: 0.99,
-    hasCorrection: true,
-    fileSize: '310 Ko',
-    fileName: 'TD4_Dijkstra_BellmanFord_Exercices.pdf',
-    checksum: 'f928401928471920384719203847192038471920384719203847192038471920',
-    publishedAt: '2024-11-02T14:00:00Z',
-    content: `DÉPARTEMENT D'INFORMATIQUE — TD n°4 (INFO201)
-Thème : Plus Courts Chemins (Algorithme de Dijkstra)
-Enseignant : Prof. Laurent Mercier
-
-EXERCICE 1 — Trace manuelle de l'algorithme de Dijkstra
-Soit le graphe orienté pondéré G = (V, E) avec V = {A, B, C, D, E, F} et les arêtes suivantes :
-(A, B, 4), (A, C, 2), (B, C, 1), (B, D, 5), (C, D, 8), (C, E, 10), (D, E, 2), (D, F, 6), (E, F, 3).
-1. Construire le tableau d'exécution de l'algorithme de Dijkstra en prenant le sommet A comme source.
-2. Pour chaque itération, indiquer le sommet sélectionné, la distance minimale retenue et les mises à jour de distances pour les voisins.
-3. Reconstruire le chemin optimal de A vers F ainsi que sa longueur totale.
-
-EXERCICE 2 — Complexité temporelle
-Comparer la complexité de Dijkstra selon l'implémentation de la file de priorité :
-a) Avec un tableau simple non trié.
-b) Avec un tas binaire (Binary Heap).
-c) Avec un tas de Fibonacci (Fibonacci Heap).`
-  }
-];
-
-// 3 Admin Agents configuration as described in Page 10/80 & specifications
+// 3 Admin Agents configuration as described in specifications
 const INITIAL_ADMIN_AGENTS = [
   {
     id: 'agent-1',
     name: 'Agent Alpha (Cours & Ingestion)',
     specialty: 'Supports de cours, syllabus & TPs',
-    status: 'idle', // idle, processing, error
+    status: 'idle',
     apiKeyStatus: 'active (System Fallback Relay)',
-    preferredModel: 'gemini-3.8-flash',
-    jobsProcessed: 14,
+    preferredModel: 'gemini-3.6-flash',
+    jobsProcessed: 0,
     currentJobId: null,
     lastHeartbeat: new Date().toISOString(),
     lastError: null
@@ -471,8 +96,8 @@ const INITIAL_ADMIN_AGENTS = [
     specialty: 'Examens, Interrogations & Corrigés',
     status: 'idle',
     apiKeyStatus: 'active (System Fallback Relay)',
-    preferredModel: 'gemini-3.8-flash',
-    jobsProcessed: 22,
+    preferredModel: 'gemini-3.6-flash',
+    jobsProcessed: 0,
     currentJobId: null,
     lastHeartbeat: new Date().toISOString(),
     lastError: null
@@ -483,8 +108,8 @@ const INITIAL_ADMIN_AGENTS = [
     specialty: 'Classification, Déduplication & Tâches Ad-Hoc',
     status: 'idle',
     apiKeyStatus: 'active (System Fallback Relay)',
-    preferredModel: 'gemini-3.1-flash-lite',
-    jobsProcessed: 19,
+    preferredModel: 'gemini-3.6-flash',
+    jobsProcessed: 0,
     currentJobId: null,
     lastHeartbeat: new Date().toISOString(),
     lastError: null
@@ -502,7 +127,7 @@ class AcademicDatabase {
       adminAgents: INITIAL_ADMIN_AGENTS,
       jobs: [],
       studentProfiles: {},
-      chapterSessions: {},
+      learningSessions: {},
       favorites: [],
       history: [],
       auditLogs: []
@@ -515,7 +140,20 @@ class AcademicDatabase {
       if (fs.existsSync(DATA_FILE)) {
         const raw = fs.readFileSync(DATA_FILE, 'utf-8');
         const parsed = JSON.parse(raw);
-        this.data = { ...this.data, ...parsed };
+        this.data = {
+          promotions: parsed.promotions || [],
+          courses: parsed.courses || [],
+          concepts: parsed.concepts || [],
+          videos: (parsed.videos && parsed.videos.length > 0) ? parsed.videos : SEED_VIDEOS,
+          resources: parsed.resources || [],
+          adminAgents: parsed.adminAgents && parsed.adminAgents.length > 0 ? parsed.adminAgents : INITIAL_ADMIN_AGENTS,
+          jobs: parsed.jobs || [],
+          studentProfiles: parsed.studentProfiles || {},
+          learningSessions: parsed.learningSessions || {},
+          favorites: parsed.favorites || [],
+          history: parsed.history || [],
+          auditLogs: parsed.auditLogs || []
+        };
       } else {
         this.saveToDisk();
       }
@@ -534,12 +172,102 @@ class AcademicDatabase {
   }
 
   computeHash(content) {
-    return crypto.createHash('sha256').update(content).digest('hex');
+    return crypto.createHash('sha256').update(content || '').digest('hex');
   }
 
-  // Resources query with filters
+  // --- PROMOTIONS (Filières / Pôles) ---
+  getPromotions() {
+    return this.data.promotions || [];
+  }
+
+  addPromotion(promo) {
+    const id = promo.id || `promo-${Date.now()}-${Math.random().toString(36).substring(2, 6)}`;
+    const newPromo = {
+      id,
+      name: promo.name || 'Nouvelle Filière',
+      cycle: promo.cycle || 'Licence',
+      faculty: promo.faculty || 'Faculté des Sciences'
+    };
+    if (!this.data.promotions) this.data.promotions = [];
+    this.data.promotions.push(newPromo);
+    this.logAudit({ action: 'PROMOTION_CREATED', promotionId: id, name: newPromo.name });
+    this.saveToDisk();
+    return newPromo;
+  }
+
+  deletePromotion(id) {
+    const prev = (this.data.promotions || []).length;
+    this.data.promotions = (this.data.promotions || []).filter(p => p.id !== id);
+    if (this.data.promotions.length !== prev) {
+      this.logAudit({ action: 'PROMOTION_DELETED', promotionId: id });
+      this.saveToDisk();
+      return true;
+    }
+    return false;
+  }
+
+  // --- COURSES (Matières & Chapitres) ---
+  getCourses(promotionId = null) {
+    let list = this.data.courses || [];
+    if (promotionId) {
+      list = list.filter(c => c.promotionId === promotionId);
+    }
+    return list;
+  }
+
+  getCourseById(id) {
+    return (this.data.courses || []).find(c => c.id === id) || null;
+  }
+
+  addCourse(course) {
+    const id = course.id || `course-${Date.now()}-${Math.random().toString(36).substring(2, 6)}`;
+    const chapters = Array.isArray(course.chapters) ? course.chapters.map((ch, idx) => ({
+      id: ch.id || `chap-${id}-${idx + 1}`,
+      number: ch.number || idx + 1,
+      title: typeof ch === 'string' ? ch : (ch.title || `Chapitre ${idx + 1}`)
+    })) : [];
+
+    const newCourse = {
+      id,
+      code: course.code || 'COURS',
+      name: course.name || 'Nouveau Cours',
+      promotionId: course.promotionId || '',
+      professor: course.professor || '',
+      description: course.description || '',
+      credits: course.credits || 6,
+      chapters
+    };
+
+    if (!this.data.courses) this.data.courses = [];
+    this.data.courses.push(newCourse);
+    this.logAudit({ action: 'COURSE_CREATED', courseId: id, name: newCourse.name, code: newCourse.code });
+    this.saveToDisk();
+    return newCourse;
+  }
+
+  updateCourse(id, updates) {
+    const idx = (this.data.courses || []).findIndex(c => c.id === id);
+    if (idx === -1) return null;
+    this.data.courses[idx] = { ...this.data.courses[idx], ...updates };
+    this.logAudit({ action: 'COURSE_UPDATED', courseId: id });
+    this.saveToDisk();
+    return this.data.courses[idx];
+  }
+
+  deleteCourse(id) {
+    const prev = (this.data.courses || []).length;
+    this.data.courses = (this.data.courses || []).filter(c => c.id !== id);
+    if (this.data.courses.length !== prev) {
+      this.logAudit({ action: 'COURSE_DELETED', courseId: id });
+      this.saveToDisk();
+      return true;
+    }
+    return false;
+  }
+
+  // --- RESOURCES (Documents, TP, Examens, Corrigés, Supports) ---
   getResources({ courseId, promotionId, type, academicYear, search, hasCorrection } = {}) {
-    let list = this.data.resources;
+    let list = this.data.resources || [];
 
     if (courseId) {
       list = list.filter(r => r.courseId === courseId);
@@ -548,21 +276,21 @@ class AcademicDatabase {
       list = list.filter(r => r.promotionId === promotionId);
     }
     if (type) {
-      list = list.filter(r => r.type.toLowerCase() === type.toLowerCase());
+      list = list.filter(r => r.type && r.type.toLowerCase() === type.toLowerCase());
     }
     if (academicYear) {
       list = list.filter(r => r.academicYear === academicYear);
     }
-    if (hasCorrection !== undefined) {
+    if (hasCorrection !== undefined && hasCorrection !== '') {
       const boolVal = hasCorrection === true || hasCorrection === 'true';
       list = list.filter(r => r.hasCorrection === boolVal);
     }
     if (search) {
       const q = search.toLowerCase();
       list = list.filter(r => 
-        r.title.toLowerCase().includes(q) ||
-        r.professor.toLowerCase().includes(q) ||
-        r.content.toLowerCase().includes(q) ||
+        (r.title && r.title.toLowerCase().includes(q)) ||
+        (r.professor && r.professor.toLowerCase().includes(q)) ||
+        (r.content && r.content.toLowerCase().includes(q)) ||
         (r.chapter && r.chapter.toLowerCase().includes(q))
       );
     }
@@ -571,7 +299,7 @@ class AcademicDatabase {
   }
 
   getResourceById(id) {
-    return this.data.resources.find(r => r.id === id);
+    return (this.data.resources || []).find(r => r.id === id);
   }
 
   getRelatedResources(resourceId) {
@@ -582,24 +310,72 @@ class AcademicDatabase {
     if (res.correctionId) {
       correction = this.getResourceById(res.correctionId);
     } else if (res.type === 'Examen' || res.type === 'Interrogation') {
-      correction = this.data.resources.find(r => r.type === 'Corrigé' && r.courseId === res.courseId);
+      correction = (this.data.resources || []).find(r => r.type === 'Corrigé' && r.courseId === res.courseId);
     }
 
-    const related = this.data.resources.filter(r => 
+    const related = (this.data.resources || []).filter(r => 
       r.id !== res.id && 
       (r.courseId === res.courseId || (r.chapter && r.chapter === res.chapter))
     ).slice(0, 4);
 
-    const videos = this.data.videos.filter(v => v.courseId === res.courseId);
+    const videos = (this.data.videos || []).filter(v => v.courseId === res.courseId);
 
     return { related, correction, videos };
   }
 
-  addResource(resourceData) {
-    const checksum = this.computeHash(resourceData.content || resourceData.title);
+  findVideoForTopic(topic = '', courseId = '') {
+    const list = this.data.videos && this.data.videos.length > 0 ? this.data.videos : SEED_VIDEOS;
+    const t = (topic || '').toLowerCase();
     
-    // Check for duplicate
-    const existing = this.data.resources.find(r => r.checksum === checksum);
+    // Keyword match
+    if (t) {
+      if (t.includes('partie') || t.includes('ipp') || t.includes('intégral') || t.includes('primitive') || t.includes('alpes')) {
+        const found = list.find(v => v.id === 'vid-ipp-exo7');
+        if (found) return found;
+      }
+      if (t.includes('avl') || t.includes('arbre') || t.includes('rotation') || t.includes('abr') || t.includes('équilibre')) {
+        const found = list.find(v => v.id === 'vid-avl-visual');
+        if (found) return found;
+      }
+      if (t.includes('newton') || t.includes('pfd') || t.includes('dynamique') || t.includes('force') || t.includes('accélération')) {
+        const found = list.find(v => v.id === 'vid-pfd-newton');
+        if (found) return found;
+      }
+      if (t.includes('matrice') || t.includes('diag') || t.includes('propre') || t.includes('vecteur propre') || t.includes('valeur propre')) {
+        const found = list.find(v => v.id === 'vid-diag-algebre');
+        if (found) return found;
+      }
+      if (t.includes('rlc') || t.includes('circuit') || t.includes('bobine') || t.includes('condensateur') || t.includes('transitoire')) {
+        const found = list.find(v => v.id === 'vid-rlc-elec');
+        if (found) return found;
+      }
+    }
+
+    if (courseId) {
+      const match = list.find(v => v.courseId === courseId);
+      if (match) return match;
+    }
+
+    return list[0] || null;
+  }
+
+  addResource(resourceData) {
+    const rawContent = (resourceData.content || '').trim();
+    // Prefer provided checksum (from file binary/buffer) if available
+    const checksum = resourceData.checksum || (
+      (resourceData.dataUrl && resourceData.dataUrl.length > 50)
+        ? this.computeHash(resourceData.dataUrl)
+        : (rawContent.length > 100 && !rawContent.startsWith('Document académique :'))
+          ? this.computeHash(rawContent)
+          : this.computeHash(`${resourceData.fileName || resourceData.title || 'doc'}-${resourceData.courseId || ''}-${Date.now()}-${Math.random()}`)
+    );
+    
+    // Check for duplicate only if strict binary or exact title+course+filename matches
+    const existing = (this.data.resources || []).find(r => 
+      r.checksum === checksum && 
+      r.fileName === resourceData.fileName &&
+      r.courseId === resourceData.courseId
+    );
     if (existing) {
       return { duplicate: true, resource: existing };
     }
@@ -608,11 +384,13 @@ class AcademicDatabase {
       id: `res-${Date.now()}-${Math.random().toString(36).substring(2, 7)}`,
       ...resourceData,
       checksum,
-      status: resourceData.status || 'needs_review',
-      validationStatus: resourceData.validationStatus || 'pending',
-      publishedAt: new Date().toISOString()
+      status: resourceData.status || 'published',
+      validationStatus: resourceData.validationStatus || 'approved',
+      confidenceScore: resourceData.confidenceScore || 1.0,
+      publishedAt: resourceData.publishedAt || new Date().toISOString()
     };
 
+    if (!this.data.resources) this.data.resources = [];
     this.data.resources.unshift(newResource);
     this.logAudit({
       action: 'RESOURCE_CREATED',
@@ -626,7 +404,7 @@ class AcademicDatabase {
   }
 
   updateResource(id, updateData) {
-    const index = this.data.resources.findIndex(r => r.id === id);
+    const index = (this.data.resources || []).findIndex(r => r.id === id);
     if (index === -1) return null;
 
     this.data.resources[index] = {
@@ -646,8 +424,8 @@ class AcademicDatabase {
   }
 
   deleteResource(id) {
-    const initialLen = this.data.resources.length;
-    this.data.resources = this.data.resources.filter(r => r.id !== id);
+    const initialLen = (this.data.resources || []).length;
+    this.data.resources = (this.data.resources || []).filter(r => r.id !== id);
     if (this.data.resources.length !== initialLen) {
       this.logAudit({ action: 'RESOURCE_DELETED', resourceId: id });
       this.saveToDisk();
@@ -656,12 +434,13 @@ class AcademicDatabase {
     return false;
   }
 
-  // Favorites & History Management
+  // --- FAVORITES & HISTORY ---
   getFavorites(studentId = 'default-student') {
-    return this.data.favorites.filter(f => f.studentId === studentId);
+    return (this.data.favorites || []).filter(f => f.studentId === studentId);
   }
 
   toggleFavorite(studentId = 'default-student', { resourceId, type, title, courseName, category }) {
+    if (!this.data.favorites) this.data.favorites = [];
     const idx = this.data.favorites.findIndex(f => f.studentId === studentId && f.resourceId === resourceId);
     if (idx !== -1) {
       this.data.favorites.splice(idx, 1);
@@ -685,10 +464,11 @@ class AcademicDatabase {
   }
 
   getHistory(studentId = 'default-student') {
-    return this.data.history.filter(h => h.studentId === studentId);
+    return (this.data.history || []).filter(h => h.studentId === studentId);
   }
 
   recordHistory(studentId = 'default-student', { resourceId, title, courseName, pageNumber = 1, totalPages = 1 }) {
+    if (!this.data.history) this.data.history = [];
     const existingIdx = this.data.history.findIndex(h => h.studentId === studentId && h.resourceId === resourceId);
     const entry = {
       id: `hist-${Date.now()}`,
@@ -712,121 +492,22 @@ class AcademicDatabase {
     return entry;
   }
 
-  getLearningOverview(studentId = 'default-student') {
-    const profile = this.getStudentProfile(studentId);
-    const courses = this.data.courses;
-    const concepts = this.data.concepts;
-
-    // Build active courses progress
-    const activeCourses = courses.map(course => {
-      const courseConcepts = concepts.filter(c => c.courseId === course.id);
-      const scores = courseConcepts.map(c => profile.masteryScores[c.id] || 0.4);
-      const avgScore = scores.length > 0 ? scores.reduce((a, b) => a + b, 0) / scores.length : 0.5;
-      const progressPercent = Math.round(avgScore * 100);
-
-      let status = 'En cours';
-      if (progressPercent >= 80) status = 'Maîtrisé';
-      else if (progressPercent < 45) status = 'À renforcer';
-
-      return {
-        id: course.id,
-        code: course.code,
-        name: course.name,
-        professor: course.professor,
-        progressPercent,
-        status,
-        totalChapters: course.chapters.length,
-        conceptsCount: courseConcepts.length,
-        lastActive: new Date(Date.now() - Math.floor(Math.random() * 86400000 * 3)).toLocaleDateString('fr-FR')
-      };
-    });
-
-    // Build granular concept status
-    const conceptDetails = concepts.map(concept => {
-      const score = profile.masteryScores[concept.id] || 0.45;
-      const course = courses.find(c => c.id === concept.courseId);
-      let levelBadge = 'red'; // red, orange, green
-      let levelLabel = 'Point fragile';
-
-      if (score >= 0.75) {
-        levelBadge = 'green';
-        levelLabel = 'Solide';
-      } else if (score >= 0.55) {
-        levelBadge = 'orange';
-        levelLabel = 'En progression';
-      }
-
-      return {
-        id: concept.id,
-        name: concept.name,
-        courseName: course ? course.name : '',
-        courseCode: course ? course.code : '',
-        score: Math.round(score * 100),
-        levelBadge,
-        levelLabel,
-        prerequisites: concept.prerequisites
-      };
-    });
-
-    const weakPoints = conceptDetails.filter(c => c.levelBadge === 'red' || c.levelBadge === 'orange');
-
-    return {
-      studentId,
-      levelDeclared: profile.levelDeclared,
-      activeGoal: profile.learningStateTree ? profile.learningStateTree.activeGoal : 'Révision générale',
-      activeCourses,
-      weakPoints,
-      allConcepts: conceptDetails,
-      learningStateTree: profile.learningStateTree
-    };
-  }
-
-  // Student Profile & Learning State
+  // --- STUDENT PROFILES & LEARNING OVERVIEW ---
   getStudentProfile(studentId = 'default-student') {
+    if (!this.data.studentProfiles) this.data.studentProfiles = {};
     if (!this.data.studentProfiles[studentId]) {
       this.data.studentProfiles[studentId] = {
         studentId,
         levelDeclared: 5,
-        masteryScores: {
-          'concept-derivation': 0.85,
-          'concept-primitives': 0.60,
-          'concept-ipp': 0.45,
-          'concept-integrale-def': 0.50,
-          'concept-arbre-abr': 0.75,
-          'concept-dijkstra': 0.65,
-          'concept-newton2': 0.80,
-          'concept-energie-meca': 0.55
-        },
+        masteryScores: {},
         learningStateTree: {
-          activeGoal: 'Maîtrise du Calcul Intégral et IPP',
-          activeNodeId: 'node-ipp',
-          nodes: [
-            {
-              id: 'node-ipp',
-              conceptId: 'concept-ipp',
-              title: 'Intégration par Parties',
-              status: 'active',
-              parentNodeId: null,
-              masteryBefore: 0.3,
-              masteryAfter: 0.45,
-              branches: [
-                {
-                  id: 'node-branch-primitives',
-                  conceptId: 'concept-primitives',
-                  title: 'Révision des Primitives Fondamentales',
-                  status: 'completed',
-                  reasonForBranch: 'Hésitation répétée sur ∫ x*e^(2x) dx',
-                  openedAt: new Date(Date.now() - 3600000).toISOString(),
-                  closedAt: new Date(Date.now() - 1800000).toISOString(),
-                  masteryAfter: 0.60
-                }
-              ]
-            }
-          ]
+          activeGoal: 'Apprentissage académique',
+          activeNodeId: null,
+          nodes: []
         },
-        weakConcepts: ['concept-ipp', 'concept-energie-meca'],
-        strongConcepts: ['concept-derivation', 'concept-newton2'],
-        preferredExplanationStyle: 'Exemple guidé pas-à-pas avec analogie visuelle'
+        weakConcepts: [],
+        strongConcepts: [],
+        preferredExplanationStyle: 'Explications claires pas-à-pas avec exemples concrets'
       };
       this.saveToDisk();
     }
@@ -840,43 +521,74 @@ class AcademicDatabase {
     return this.data.studentProfiles[studentId];
   }
 
-  // Dedicated Chapter Learning Sessions (Mode Apprendre - Page 01-80 & Detailed Spec)
-  getChapterSession(sessionId) {
-    if (!this.data.chapterSessions) this.data.chapterSessions = {};
-    return this.data.chapterSessions[sessionId] || null;
+  getLearningOverview(studentId = 'default-student') {
+    const profile = this.getStudentProfile(studentId);
+    const courses = this.data.courses || [];
+    const concepts = this.data.concepts || [];
+
+    const activeCourses = courses.map(course => {
+      const courseConcepts = concepts.filter(c => c.courseId === course.id);
+      const scores = courseConcepts.map(c => profile.masteryScores[c.id] || 0.5);
+      const avgScore = scores.length > 0 ? scores.reduce((a, b) => a + b, 0) / scores.length : 0.5;
+      const progressPercent = Math.round(avgScore * 100);
+
+      return {
+        id: course.id,
+        code: course.code,
+        name: course.name,
+        professor: course.professor,
+        progressPercent,
+        status: progressPercent >= 80 ? 'Maîtrisé' : 'En cours',
+        totalChapters: course.chapters ? course.chapters.length : 0,
+        conceptsCount: courseConcepts.length,
+        lastActive: new Date().toLocaleDateString('fr-FR')
+      };
+    });
+
+    return {
+      studentId,
+      levelDeclared: profile.levelDeclared,
+      activeGoal: profile.learningStateTree ? profile.learningStateTree.activeGoal : 'Apprentissage',
+      activeCourses,
+      weakPoints: [],
+      allConcepts: [],
+      learningStateTree: profile.learningStateTree
+    };
   }
 
-  getStudentActiveChapterSession(studentId = 'default-student', courseId = null, chapterId = null) {
-    if (!this.data.chapterSessions) this.data.chapterSessions = {};
-    const sessions = Object.values(this.data.chapterSessions).filter(s => s.studentId === studentId);
-    if (chapterId && courseId) {
-      return sessions.find(s => s.courseId === courseId && s.chapterId === chapterId) || null;
-    }
-    if (courseId) {
-      return sessions.find(s => s.courseId === courseId && s.status !== 'completed') || null;
-    }
-    // Most recent active session
-    return sessions.sort((a, b) => new Date(b.lastUpdatedAt) - new Date(a.lastUpdatedAt))[0] || null;
+  // --- ADAPTIVE LEARNING SESSIONS ---
+  getLearningSession(sessionId) {
+    if (!this.data.learningSessions) this.data.learningSessions = {};
+    return this.data.learningSessions[sessionId] || null;
   }
 
-  saveChapterSession(session) {
-    if (!this.data.chapterSessions) this.data.chapterSessions = {};
-    session.lastUpdatedAt = new Date().toISOString();
-    this.data.chapterSessions[session.sessionId] = session;
+  saveLearningSession(session) {
+    if (!this.data.learningSessions) this.data.learningSessions = {};
+    this.data.learningSessions[session.id] = session;
     this.saveToDisk();
     return session;
   }
 
-  getAllStudentChapterSessions(studentId = 'default-student') {
-    if (!this.data.chapterSessions) this.data.chapterSessions = {};
-    return Object.values(this.data.chapterSessions)
-      .filter(s => s.studentId === studentId)
-      .sort((a, b) => new Date(b.lastUpdatedAt) - new Date(a.lastUpdatedAt));
+  getActiveSessionForStudent(studentId = 'default-student') {
+    if (!this.data.learningSessions) this.data.learningSessions = {};
+    const list = Object.values(this.data.learningSessions).filter(
+      s => s.studentId === studentId && s.status === 'active'
+    );
+    return list.length > 0 ? list[list.length - 1] : null;
   }
 
-  // Admin Tri-Agents & Jobs
+  deleteLearningSession(sessionId) {
+    if (!this.data.learningSessions) return false;
+    delete this.data.learningSessions[sessionId];
+    this.saveToDisk();
+    return true;
+  }
+
+  // --- ADMIN WORKERS & AUDIT ---
   getAdminAgents() {
-    // update heartbeat
+    if (!this.data.adminAgents || this.data.adminAgents.length === 0) {
+      this.data.adminAgents = INITIAL_ADMIN_AGENTS;
+    }
     this.data.adminAgents.forEach(a => {
       a.lastHeartbeat = new Date().toISOString();
     });
@@ -884,14 +596,15 @@ class AcademicDatabase {
   }
 
   getJobs() {
-    return this.data.jobs;
+    return this.data.jobs || [];
   }
 
   addJob(jobData) {
+    if (!this.data.jobs) this.data.jobs = [];
     const newJob = {
       id: `job-${Date.now()}-${Math.random().toString(36).substring(2, 6)}`,
       createdAt: new Date().toISOString(),
-      status: 'queued', // queued, processing, completed, failed
+      status: 'queued',
       retryCount: 0,
       maxRetries: 3,
       ...jobData
@@ -902,6 +615,7 @@ class AcademicDatabase {
   }
 
   updateJob(id, updates) {
+    if (!this.data.jobs) return null;
     const job = this.data.jobs.find(j => j.id === id);
     if (!job) return null;
     Object.assign(job, updates);
@@ -910,6 +624,7 @@ class AcademicDatabase {
   }
 
   logAudit(entry) {
+    if (!this.data.auditLogs) this.data.auditLogs = [];
     const auditEntry = {
       id: `audit-${Date.now()}`,
       timestamp: new Date().toISOString(),
@@ -922,7 +637,31 @@ class AcademicDatabase {
   }
 
   getAuditLogs() {
-    return this.data.auditLogs;
+    return this.data.auditLogs || [];
+  }
+
+  // Complete reset of corpus
+  clearAllAcademicData() {
+    this.data = {
+      promotions: [],
+      courses: [],
+      concepts: [],
+      videos: [],
+      resources: [],
+      adminAgents: INITIAL_ADMIN_AGENTS,
+      jobs: [],
+      studentProfiles: {},
+      learningSessions: {},
+      favorites: [],
+      history: [],
+      auditLogs: [{
+        id: `audit-${Date.now()}`,
+        timestamp: new Date().toISOString(),
+        action: 'CORPUS_CLEARED',
+        details: 'Tables de cours et documents réinitialisées à vide.'
+      }]
+    };
+    this.saveToDisk();
   }
 }
 

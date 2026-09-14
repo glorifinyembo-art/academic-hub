@@ -1,0 +1,15 @@
+{
+  "name": "academic-hub-student",
+  "version": "1.0.0",
+  "description": "Academic Hub - Espace Étudiant & Tuteur Pédagogique (Site Déployé Séparément)",
+  "main": "server.js",
+  "type": "module",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node server.js"
+  },
+  "dependencies": {
+    "express": "^4.21.2",
+    "dotenv": "^16.4.7"
+  }
+}

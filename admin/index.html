@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="fr" class="h-full bg-slate-50">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Academic Hub — Administration Centrale</title>
+  <meta name="description" content="Portail d'administration du fonds académique et orchestration des agents IA.">
+  <meta property="og:title" content="Academic Hub — Administration Centrale">
+  <meta property="og:description" content="Portail d'administration du fonds académique et orchestration des agents IA.">
+
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            brand: {
+              50: '#f8fafc',
+              100: '#f1f5f9',
+              200: '#e2e8f0',
+              500: '#3b82f6',
+              600: '#2563eb',
+              700: '#1d4ed8',
+              800: '#1e293b',
+              900: '#0f172a'
+            }
+          }
+        }
+      }
+    }
+  </script>
+
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+
+  <style>
+    /* Global Dark AMOLED Theme (Matching Academic Hub / Gemini) */
+    html, body {
+      background-color: #000000 !important;
+      color: #f4f4f5 !important;
+    }
+    .bg-slate-50, .bg-slate-100 {
+      background-color: #121316 !important;
+      color: #f4f4f5 !important;
+    }
+    .bg-white {
+      background-color: #16171a !important;
+      color: #f4f4f5 !important;
+    }
+    .border-slate-100, .border-slate-200, .border-slate-300 {
+      border-color: #27272a !important;
+    }
+    .text-slate-900, .text-slate-800 {
+      color: #fafafa !important;
+    }
+    .text-slate-700, .text-slate-600 {
+      color: #d4d4d8 !important;
+    }
+    .text-slate-500, .text-slate-400 {
+      color: #a1a1aa !important;
+    }
+    .hover\:bg-slate-50:hover, .hover\:bg-slate-100:hover {
+      background-color: #222428 !important;
+    }
+    .hover\:bg-slate-200:hover {
+      background-color: #2a2c32 !important;
+    }
+    input, textarea, select {
+      background-color: #18191c !important;
+      color: #fafafa !important;
+      border-color: #27272a !important;
+    }
+    ::-webkit-scrollbar {
+      width: 5px;
+      height: 5px;
+    }
+    ::-webkit-scrollbar-track {
+      background: transparent;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #27272a;
+      border-radius: 8px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: #3f3f46;
+    }
+  </style>
+</head>
+<body class="h-full flex flex-col text-zinc-100 bg-black antialiased font-sans">
+
+  <!-- Top Global Header -->
+  <header class="sticky top-0 z-30 bg-white border-b border-slate-200 px-4 py-3 sm:px-6">
+    <div class="max-w-6xl mx-auto flex items-center justify-between gap-4">
+      
+      <!-- Brand / Logo -->
+      <div class="flex items-center gap-3">
+        <div class="w-8 h-8 rounded-lg bg-blue-600 text-white font-bold flex items-center justify-center text-xs tracking-wide shadow-2xs">
+          AH
+        </div>
+        <div>
+          <div class="flex items-center gap-2">
+            <span class="font-bold text-slate-900 text-sm sm:text-base">Academic Hub</span>
+            <span class="text-[10px] font-semibold px-2 py-0.5 rounded-lg bg-slate-100 text-slate-700 border border-slate-200">
+              Admin
+            </span>
+          </div>
+          <p class="text-[11px] text-slate-500 hidden sm:block">Portail d'Administration & Gestion du Fonds Académique</p>
+        </div>
+      </div>
+
+      <!-- Actions & External Link to Student App -->
+      <div class="flex items-center gap-2 sm:gap-3">
+        <!-- DB Status Indicator -->
+        <div class="hidden md:flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg bg-slate-50 border border-slate-200 text-[11px] font-medium text-slate-600">
+          <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
+          <span>Base connectée</span>
+        </div>
+
+        <!-- Link to Student App -->
+        <a 
+          href="/student" 
+          target="_blank" 
+          rel="noopener noreferrer" 
+          class="inline-flex items-center gap-1.5 text-xs font-semibold px-3 py-1.5 rounded-lg border border-slate-200 hover:border-blue-600 hover:text-blue-600 bg-white text-slate-700 transition"
+          title="Consulter l'application déployée pour les étudiants"
+        >
+          <i data-lucide="external-link" class="w-3.5 h-3.5 text-blue-600"></i>
+          <span>Site Étudiant</span>
+        </a>
+
+        <!-- Quick Refresh -->
+        <button 
+          onclick="adminApp.refreshData()" 
+          class="p-2 text-slate-600 hover:text-slate-900 transition rounded-lg hover:bg-slate-100 border border-slate-200 bg-white" 
+          title="Actualiser la base"
+          aria-label="Actualiser"
+        >
+          <i data-lucide="refresh-cw" class="w-4 h-4"></i>
+        </button>
+      </div>
+
+    </div>
+  </header>
+
+  <!-- Main Container -->
+  <div class="flex-1 max-w-6xl w-full mx-auto px-4 py-5 sm:px-6 space-y-5">
+
+    <!-- Clean Navigation Tabs (shadcn/ui style, all rounded-lg) -->
+    <div class="flex items-center gap-1.5 overflow-x-auto pb-1 border-b border-slate-200 scrollbar-none">
+      <button 
+        id="tab-btn-overview" 
+        onclick="adminApp.setTab('overview')" 
+        class="px-3.5 py-2 rounded-lg bg-blue-600 text-white font-medium text-xs flex items-center gap-2 transition shadow-2xs shrink-0"
+      >
+        <i data-lucide="layout-dashboard" class="w-4 h-4"></i>
+        <span>Vue d'ensemble</span>
+      </button>
+
+      <button 
+        id="tab-btn-courses" 
+        onclick="adminApp.setTab('courses')" 
+        class="px-3.5 py-2 rounded-lg bg-white hover:bg-slate-100 text-slate-700 font-medium text-xs border border-slate-200 flex items-center gap-2 transition shrink-0"
+      >
+        <i data-lucide="book-open" class="w-4 h-4"></i>
+        <span>Matières & Filières</span>
+      </button>
+
+      <button 
+        id="tab-btn-resources" 
+        onclick="adminApp.setTab('resources')" 
+        class="px-3.5 py-2 rounded-lg bg-white hover:bg-slate-100 text-slate-700 font-medium text-xs border border-slate-200 flex items-center gap-2 transition shrink-0"
+      >
+        <i data-lucide="folder-tree" class="w-4 h-4"></i>
+        <span>Documents du Corpus</span>
+      </button>
+
+      <button 
+        id="tab-btn-upload" 
+        onclick="adminApp.setTab('upload')" 
+        class="px-3.5 py-2 rounded-lg bg-white hover:bg-slate-100 text-slate-700 font-medium text-xs border border-slate-200 flex items-center gap-2 transition shrink-0"
+      >
+        <i data-lucide="upload-cloud" class="w-4 h-4"></i>
+        <span>Ajouter un Document</span>
+      </button>
+
+      <button 
+        id="tab-btn-agents" 
+        onclick="adminApp.setTab('agents')" 
+        class="px-3.5 py-2 rounded-lg bg-white hover:bg-slate-100 text-slate-700 font-medium text-xs border border-slate-200 flex items-center gap-2 transition shrink-0"
+      >
+        <i data-lucide="bot" class="w-4 h-4"></i>
+        <span>Tri-Agents IA</span>
+      </button>
+
+      <button 
+        id="tab-btn-audit" 
+        onclick="adminApp.setTab('audit')" 
+        class="px-3.5 py-2 rounded-lg bg-white hover:bg-slate-100 text-slate-700 font-medium text-xs border border-slate-200 flex items-center gap-2 transition shrink-0"
+      >
+        <i data-lucide="activity" class="w-4 h-4"></i>
+        <span>Journal d'Audit</span>
+      </button>
+    </div>
+
+    <!-- Active Viewport -->
+    <main id="admin-viewport" class="space-y-6">
+      <!-- Injected by adminApp.render() -->
+    </main>
+
+  </div>
+
+  <!-- Document Preview Modal -->
+  <div id="modal-doc-preview" class="fixed inset-0 z-50 bg-slate-900/40 hidden flex items-center justify-center p-4">
+    <div class="bg-white rounded-lg max-w-2xl w-full max-h-[85vh] shadow-xl border border-slate-200 flex flex-col overflow-hidden">
+      <div class="p-4 sm:p-5 border-b border-slate-100 flex items-center justify-between">
+        <div class="flex items-center gap-2.5">
+          <div class="w-8 h-8 rounded-lg bg-blue-50 text-blue-600 flex items-center justify-center font-bold">
+            <i data-lucide="file-text" class="w-4 h-4"></i>
+          </div>
+          <div>
+            <h3 id="doc-preview-title" class="font-bold text-slate-900 text-sm">Aperçu du document</h3>
+            <p class="text-xs text-slate-500">Extrait du contenu archivé</p>
+          </div>
+        </div>
+        <button onclick="adminApp.closePreviewModal()" class="text-slate-400 hover:text-slate-600 p-1.5 rounded-lg hover:bg-slate-100 transition">
+          <i data-lucide="x" class="w-4 h-4"></i>
+        </button>
+      </div>
+
+      <div class="p-5 flex-1 overflow-y-auto bg-slate-50">
+        <pre id="doc-preview-content" class="text-xs text-slate-800 font-mono whitespace-pre-wrap leading-relaxed bg-white p-4 rounded-lg border border-slate-200"></pre>
+      </div>
+
+      <div class="p-3 bg-white border-t border-slate-100 flex justify-end">
+        <button onclick="adminApp.closePreviewModal()" class="bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold px-4 py-2 rounded-lg transition border border-slate-200 text-xs">
+          Fermer
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast Notification Container -->
+  <div id="toast-container" class="fixed bottom-4 right-4 z-50 flex flex-col gap-2 max-w-sm w-full pointer-events-none *:pointer-events-auto"></div>
+
+  <!-- Admin Application Logic -->
+  <script src="./admin.js"></script>
+</body>
+</html>

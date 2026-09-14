@@ -429,9 +429,9 @@ class AcademicHubApp {
           (n === 'profile' && (v === 'settings' || v === 'admin'));
 
         if (isActive) {
-          el.className = 'px-3 py-1.5 rounded-lg transition text-blue-600 bg-blue-50/80 font-semibold border border-blue-200/60 flex items-center gap-1.5';
+          el.className = 'px-3 py-1.5 rounded-lg transition text-white bg-[#18191c] font-semibold border border-zinc-800 flex items-center gap-1.5';
         } else {
-          el.className = 'px-3 py-1.5 rounded-lg transition text-slate-600 hover:text-slate-900 hover:bg-slate-100 flex items-center gap-1.5';
+          el.className = 'px-3 py-1.5 rounded-lg transition text-zinc-400 hover:text-white hover:bg-zinc-800/60 flex items-center gap-1.5';
         }
       }
     });
@@ -446,9 +446,9 @@ class AcademicHubApp {
           (n === 'profile' && (v === 'settings' || v === 'admin'));
 
         if (isActive) {
-          el.className = 'flex flex-col items-center gap-0.5 px-3 py-1 rounded-lg text-blue-600 font-semibold transition';
+          el.className = 'flex flex-col items-center gap-0.5 px-3 py-1 rounded-lg text-white font-semibold transition';
         } else {
-          el.className = 'flex flex-col items-center gap-0.5 px-3 py-1 rounded-lg text-slate-500 hover:text-slate-900 transition';
+          el.className = 'flex flex-col items-center gap-0.5 px-3 py-1 rounded-lg text-zinc-500 hover:text-zinc-300 transition';
         }
       }
     });
@@ -460,11 +460,11 @@ class AcademicHubApp {
       if (drawerItem) {
         const isActive = (dNav === v) || (dNav === 'courses' && (v === 'course-detail' || v === 'documents'));
         if (isActive) {
-          drawerItem.classList.add('bg-blue-50', 'text-blue-700', 'font-semibold');
-          drawerItem.classList.remove('text-slate-700');
+          drawerItem.classList.add('bg-[#18191c]', 'text-white', 'font-semibold', 'border', 'border-zinc-800');
+          drawerItem.classList.remove('text-zinc-400', 'text-slate-700');
         } else {
-          drawerItem.classList.remove('bg-blue-50', 'text-blue-700', 'font-semibold');
-          drawerItem.classList.add('text-slate-700');
+          drawerItem.classList.remove('bg-[#18191c]', 'text-white', 'font-semibold', 'border', 'border-zinc-800', 'bg-blue-50', 'text-blue-700');
+          drawerItem.classList.add('text-zinc-400');
         }
       }
     });
@@ -530,7 +530,7 @@ class AcademicHubApp {
     window.scrollTo(0, 0);
   }
 
-  // Type Badges styling helper (Strict 3-Color Palette & rounded-lg)
+  // Type Badges styling helper (Strict Dark AMOLED & rounded-lg)
   getTypeBadge(type) {
     const map = {
       'Supports de Cours': { icon: 'book-open', label: 'Cours' },
@@ -541,8 +541,8 @@ class AcademicHubApp {
       'Corrigé': { icon: 'check-circle-2', label: 'Corrigé' },
     };
     const conf = map[type] || { icon: 'file-text', label: type };
-    return `<span class="inline-flex items-center gap-1.5 text-[11px] font-medium px-2.5 py-0.5 rounded-lg border bg-slate-50 text-slate-700 border-slate-200">
-      <i data-lucide="${conf.icon}" class="w-3 h-3 text-slate-500"></i>
+    return `<span class="inline-flex items-center gap-1.5 text-[11px] font-medium px-2.5 py-0.5 rounded-lg border bg-[#16171a] text-zinc-300 border-zinc-800">
+      <i data-lucide="${conf.icon}" class="w-3 h-3 text-zinc-400"></i>
       ${conf.label}
     </span>`;
   }
@@ -626,33 +626,33 @@ class AcademicHubApp {
       
       <!-- Top Branding -->
       <div class="text-center space-y-2">
-        <div class="inline-flex items-center gap-1.5 px-3 py-1 rounded-lg bg-blue-50 text-blue-700 font-semibold text-xs border border-blue-200 shadow-2xs">
-          <i data-lucide="sparkles" class="w-3.5 h-3.5 text-blue-600"></i>
+        <div class="inline-flex items-center gap-1.5 px-3 py-1 rounded-lg bg-[#121316] text-blue-400 font-semibold text-xs border border-zinc-800 shadow-2xs">
+          <i data-lucide="sparkles" class="w-3.5 h-3.5 text-blue-400"></i>
           <span>${activePromo ? `Promotion ${this.escapeHtml(activePromo.name)}` : 'Centre Académique Intelligent'}</span>
         </div>
-        <h1 class="text-2xl sm:text-3xl font-bold text-slate-900 tracking-tight">Academic Hub</h1>
-        <p class="text-xs sm:text-sm text-slate-500 max-w-lg mx-auto leading-relaxed">
+        <h1 class="text-2xl sm:text-3xl font-bold text-white tracking-tight">Academic Hub</h1>
+        <p class="text-xs sm:text-sm text-zinc-400 max-w-lg mx-auto leading-relaxed">
           Accédez directement aux cours officiels, annales d'examens avec corrigés et révisions guidées.
         </p>
       </div>
 
       <!-- Large Central Search Bar (shadcn/ui style, rounded-lg) -->
-      <div class="relative max-w-2xl mx-auto bg-white rounded-lg border border-slate-200 hover:border-blue-500 focus-within:border-blue-600 focus-within:ring-1 focus-within:ring-blue-500 transition shadow-2xs flex items-center p-1">
-        <i data-lucide="search" class="w-4 h-4 text-slate-400 ml-3 mr-2 shrink-0 pointer-events-none"></i>
+      <div class="relative max-w-2xl mx-auto bg-[#16171a] rounded-lg border border-zinc-800 hover:border-zinc-700 focus-within:border-blue-500 focus-within:ring-1 focus-within:ring-blue-500 transition shadow-2xs flex items-center p-1">
+        <i data-lucide="search" class="w-4 h-4 text-zinc-500 ml-3 mr-2 shrink-0 pointer-events-none"></i>
         <input 
           type="text" 
           id="main-search-input"
           value="${this.escapeHtml(this.filters.search || '')}"
           placeholder="Rechercher un cours, un examen, un chapitre ou une notion..." 
           oninput="app.onSearchInput(this.value)"
-          class="w-full bg-transparent text-slate-900 text-xs sm:text-sm py-2 px-1 outline-none placeholder:text-slate-400"
+          class="w-full bg-transparent text-white text-xs sm:text-sm py-2 px-1 outline-none placeholder:text-zinc-500"
         >
         ${this.filters.search ? `
-          <button onclick="app.clearSearch()" class="text-slate-400 hover:text-slate-600 p-1.5 rounded-lg transition mr-1" title="Effacer la recherche">
+          <button onclick="app.clearSearch()" class="text-zinc-400 hover:text-white p-1.5 rounded-lg transition mr-1" title="Effacer la recherche">
             <i data-lucide="x" class="w-4 h-4"></i>
           </button>
         ` : ''}
-        <button onclick="app.triggerSearch()" class="bg-blue-600 hover:bg-blue-700 text-white font-semibold text-xs px-4 py-2 rounded-lg transition shrink-0 shadow-2xs">
+        <button onclick="app.triggerSearch()" class="bg-blue-600 hover:bg-blue-500 text-white font-semibold text-xs px-4 py-2 rounded-lg transition shrink-0 shadow-2xs">
           Chercher
         </button>
       </div>
@@ -661,33 +661,33 @@ class AcademicHubApp {
       <div class="flex items-center justify-center gap-2 flex-wrap text-xs">
         <button 
           onclick="app.quickFilterSearch('exam')" 
-          class="px-3 py-1.5 rounded-lg border transition flex items-center gap-1.5 ${pill === 'exam' ? 'bg-blue-600 text-white border-blue-600 font-semibold shadow-2xs' : 'bg-white text-slate-700 border-slate-200 hover:border-blue-500 hover:text-blue-600'}"
+          class="px-3 py-1.5 rounded-lg border transition flex items-center gap-1.5 ${pill === 'exam' ? 'bg-blue-600 text-white border-blue-600 font-semibold shadow-2xs' : 'bg-[#16171a] text-zinc-300 border-zinc-800 hover:border-zinc-700 hover:text-white'}"
         >
-          <i data-lucide="award" class="w-3.5 h-3.5 ${pill === 'exam' ? 'text-white' : 'text-slate-500'}"></i>
+          <i data-lucide="award" class="w-3.5 h-3.5 ${pill === 'exam' ? 'text-white' : 'text-zinc-400'}"></i>
           <span>Examens récents</span>
         </button>
 
         <button 
           onclick="app.quickFilterSearch('correction')" 
-          class="px-3 py-1.5 rounded-lg border transition flex items-center gap-1.5 ${pill === 'correction' ? 'bg-blue-600 text-white border-blue-600 font-semibold shadow-2xs' : 'bg-white text-slate-700 border-slate-200 hover:border-blue-500 hover:text-blue-600'}"
+          class="px-3 py-1.5 rounded-lg border transition flex items-center gap-1.5 ${pill === 'correction' ? 'bg-blue-600 text-white border-blue-600 font-semibold shadow-2xs' : 'bg-[#16171a] text-zinc-300 border-zinc-800 hover:border-zinc-700 hover:text-white'}"
         >
-          <i data-lucide="check-circle-2" class="w-3.5 h-3.5 ${pill === 'correction' ? 'text-white' : 'text-slate-500'}"></i>
+          <i data-lucide="check-circle-2" class="w-3.5 h-3.5 ${pill === 'correction' ? 'text-white' : 'text-zinc-400'}"></i>
           <span>Exercices corrigés</span>
         </button>
 
         <button 
           onclick="app.quickFilterSearch('cours')" 
-          class="px-3 py-1.5 rounded-lg border transition flex items-center gap-1.5 ${pill === 'cours' ? 'bg-blue-600 text-white border-blue-600 font-semibold shadow-2xs' : 'bg-white text-slate-700 border-slate-200 hover:border-blue-500 hover:text-blue-600'}"
+          class="px-3 py-1.5 rounded-lg border transition flex items-center gap-1.5 ${pill === 'cours' ? 'bg-blue-600 text-white border-blue-600 font-semibold shadow-2xs' : 'bg-[#16171a] text-zinc-300 border-zinc-800 hover:border-zinc-700 hover:text-white'}"
         >
-          <i data-lucide="book-open" class="w-3.5 h-3.5 ${pill === 'cours' ? 'text-white' : 'text-slate-500'}"></i>
+          <i data-lucide="book-open" class="w-3.5 h-3.5 ${pill === 'cours' ? 'text-white' : 'text-zinc-400'}"></i>
           <span>Supports de cours</span>
         </button>
 
         <button 
           onclick="app.navigate('tutor')" 
-          class="px-3 py-1.5 rounded-lg border border-slate-200 bg-white hover:border-blue-500 hover:text-blue-600 text-slate-700 font-medium transition flex items-center gap-1.5"
+          class="px-3 py-1.5 rounded-lg border border-zinc-800 bg-[#16171a] hover:border-zinc-700 hover:text-white text-zinc-300 font-medium transition flex items-center gap-1.5"
         >
-          <i data-lucide="sparkles" class="w-3.5 h-3.5 text-blue-600"></i>
+          <i data-lucide="sparkles" class="w-3.5 h-3.5 text-blue-400"></i>
           <span>Poser une question</span>
         </button>
       </div>
@@ -696,9 +696,9 @@ class AcademicHubApp {
       ${isFilterActive ? `
         <!-- Filter Results List -->
         <div class="space-y-3 pt-2">
-          <div class="flex items-center justify-between text-xs text-slate-600 border-b border-slate-200 pb-2">
-            <span class="font-semibold">${searchResults.length} document${searchResults.length > 1 ? 's' : ''} trouvé${searchResults.length > 1 ? 's' : ''}</span>
-            <button onclick="app.resetSearchFilters()" class="text-blue-600 hover:underline font-medium">
+          <div class="flex items-center justify-between text-xs text-zinc-400 border-b border-zinc-800 pb-2">
+            <span class="font-semibold text-zinc-300">${searchResults.length} document${searchResults.length > 1 ? 's' : ''} trouvé${searchResults.length > 1 ? 's' : ''}</span>
+            <button onclick="app.resetSearchFilters()" class="text-blue-400 hover:underline font-medium">
               Réinitialiser les filtres
             </button>
           </div>
@@ -708,11 +708,11 @@ class AcademicHubApp {
               ${searchResults.map(r => this.renderSearchDocCard(r)).join('')}
             </div>
           ` : `
-            <div class="bg-white rounded-lg border border-slate-200 p-8 text-center space-y-2">
-              <i data-lucide="file-x" class="w-8 h-8 text-slate-300 mx-auto"></i>
-              <p class="text-xs font-semibold text-slate-700">Aucun document ne correspond à votre recherche.</p>
-              <p class="text-[11px] text-slate-400">Essayez un autre mot-clé ou demandez de l'aide au Tuteur IA.</p>
-              <button onclick="app.navigate('tutor')" class="mt-2 text-xs bg-blue-600 hover:bg-blue-700 text-white font-semibold py-1.5 px-3 rounded-lg transition inline-flex items-center gap-1.5">
+            <div class="bg-[#16171a] rounded-lg border border-zinc-800 p-8 text-center space-y-2">
+              <i data-lucide="file-x" class="w-8 h-8 text-zinc-600 mx-auto"></i>
+              <p class="text-xs font-semibold text-zinc-300">Aucun document ne correspond à votre recherche.</p>
+              <p class="text-[11px] text-zinc-500">Essayez un autre mot-clé ou demandez de l'aide au Tuteur IA.</p>
+              <button onclick="app.navigate('tutor')" class="mt-2 text-xs bg-blue-600 hover:bg-blue-500 text-white font-semibold py-1.5 px-3 rounded-lg transition inline-flex items-center gap-1.5">
                 <i data-lucide="sparkles" class="w-3 h-3"></i>
                 <span>Demander au Tuteur IA</span>
               </button>
@@ -726,11 +726,11 @@ class AcademicHubApp {
           <!-- Recent Documents Section -->
           <div class="space-y-3">
             <div class="flex items-center justify-between">
-              <h2 class="font-bold text-slate-900 text-sm flex items-center gap-2">
-                <i data-lucide="clock" class="w-4 h-4 text-slate-500"></i>
+              <h2 class="font-bold text-white text-sm flex items-center gap-2">
+                <i data-lucide="clock" class="w-4 h-4 text-zinc-400"></i>
                 <span>Derniers documents du fonds académique</span>
               </h2>
-              <button onclick="app.navigate('courses')" class="text-xs text-blue-600 hover:underline font-medium">
+              <button onclick="app.navigate('courses')" class="text-xs text-blue-400 hover:underline font-medium">
                 Voir toutes les matières →
               </button>
             </div>
@@ -742,8 +742,8 @@ class AcademicHubApp {
 
           <!-- Courses Quick Access Grid -->
           <div class="space-y-3 pt-2">
-            <h2 class="font-bold text-slate-900 text-sm flex items-center gap-2">
-              <i data-lucide="book-open" class="w-4 h-4 text-slate-500"></i>
+            <h2 class="font-bold text-white text-sm flex items-center gap-2">
+              <i data-lucide="book-open" class="w-4 h-4 text-zinc-400"></i>
               <span>Banque de matières universitaires</span>
             </h2>
 
@@ -751,15 +751,15 @@ class AcademicHubApp {
               ${this.courses.slice(0, 3).map(c => {
                 const count = this.resources.filter(r => r.courseId === c.id).length;
                 return `
-                <div onclick="app.openCourseDetail('${c.id}')" class="bg-white rounded-lg border border-slate-200 hover:border-blue-600 p-3.5 transition cursor-pointer group shadow-2xs space-y-2">
+                <div onclick="app.openCourseDetail('${c.id}')" class="bg-[#16171a] rounded-lg border border-zinc-800 hover:border-zinc-700 p-3.5 transition cursor-pointer group shadow-2xs space-y-2">
                   <div class="flex items-center justify-between">
-                    <span class="text-[11px] font-bold px-2 py-0.5 rounded-lg bg-blue-50 text-blue-700 border border-blue-200">${this.escapeHtml(c.code)}</span>
-                    <span class="text-[11px] text-slate-400">${count} doc${count > 1 ? 's' : ''}</span>
+                    <span class="text-[11px] font-bold px-2 py-0.5 rounded-lg bg-[#121316] text-blue-400 border border-zinc-800">${this.escapeHtml(c.code)}</span>
+                    <span class="text-[11px] text-zinc-500">${count} doc${count > 1 ? 's' : ''}</span>
                   </div>
-                  <h3 class="font-bold text-xs text-slate-900 group-hover:text-blue-600 transition truncate" title="${this.escapeHtml(c.name)}">
+                  <h3 class="font-bold text-xs text-white group-hover:text-blue-400 transition truncate" title="${this.escapeHtml(c.name)}">
                     ${this.escapeHtml(c.name)}
                   </h3>
-                  <div class="text-[11px] text-slate-500 truncate">${this.escapeHtml(c.professor || 'Département académique')}</div>
+                  <div class="text-[11px] text-zinc-400 truncate">${this.escapeHtml(c.professor || 'Département académique')}</div>
                 </div>
                 `;
               }).join('')}
@@ -777,30 +777,30 @@ class AcademicHubApp {
   renderSearchDocCard(r) {
     const course = this.courses.find(c => c.id === r.courseId);
     return `
-    <div onclick="app.openDocument('${r.id}')" class="bg-white rounded-lg border border-slate-200 hover:border-blue-600 p-3.5 transition text-left cursor-pointer group shadow-2xs space-y-2.5 flex flex-col justify-between">
+    <div onclick="app.openDocument('${r.id}')" class="bg-[#16171a] rounded-lg border border-zinc-800 hover:border-zinc-700 p-3.5 transition text-left cursor-pointer group shadow-2xs space-y-2.5 flex flex-col justify-between">
       <div class="space-y-1.5">
         <div class="flex items-center justify-between gap-1 flex-wrap">
           ${this.getTypeBadge(r.type)}
           ${r.hasCorrection ? `
-            <span class="text-[10px] font-bold px-2 py-0.5 rounded-lg bg-emerald-50 text-emerald-700 border border-emerald-200">Corrigé inclus</span>
+            <span class="text-[10px] font-bold px-2 py-0.5 rounded-lg bg-[#062817] text-emerald-400 border border-emerald-900/60">Corrigé inclus</span>
           ` : ''}
-          <span class="text-[10px] font-medium text-slate-400">${this.escapeHtml(r.academicYear || '2025-2026')}</span>
+          <span class="text-[10px] font-medium text-zinc-500">${this.escapeHtml(r.academicYear || '2025-2026')}</span>
         </div>
-        <h3 class="font-bold text-xs sm:text-sm text-slate-900 group-hover:text-blue-600 transition line-clamp-2 leading-snug">
+        <h3 class="font-bold text-xs sm:text-sm text-white group-hover:text-blue-400 transition line-clamp-2 leading-snug">
           ${this.escapeHtml(r.title)}
         </h3>
-        <div class="text-[11px] text-slate-500 truncate">
-          ${course ? `<span class="font-medium text-slate-700">${this.escapeHtml(course.name)}</span> • ` : ''}${this.escapeHtml(r.professor || 'Faculté')}
+        <div class="text-[11px] text-zinc-400 truncate">
+          ${course ? `<span class="font-medium text-zinc-300">${this.escapeHtml(course.name)}</span> • ` : ''}${this.escapeHtml(r.professor || 'Faculté')}
         </div>
       </div>
 
-      <div class="pt-2 border-t border-slate-100 flex items-center justify-between text-xs">
-        <span class="text-blue-600 font-semibold group-hover:underline flex items-center gap-1">
+      <div class="pt-2 border-t border-zinc-800/80 flex items-center justify-between text-xs">
+        <span class="text-blue-400 font-semibold group-hover:underline flex items-center gap-1">
           <span>Consulter</span>
           <i data-lucide="arrow-right" class="w-3.5 h-3.5"></i>
         </span>
         ${r.hasCorrection ? `
-          <button onclick="event.stopPropagation(); app.openCorrection('${r.id}')" class="text-[11px] font-semibold text-emerald-700 hover:text-emerald-800 bg-emerald-50 hover:bg-emerald-100 border border-emerald-200 px-2 py-1 rounded-lg transition">
+          <button onclick="event.stopPropagation(); app.openCorrection('${r.id}')" class="text-[11px] font-semibold text-emerald-400 hover:text-emerald-300 bg-[#062817] hover:bg-[#083520] border border-emerald-900/60 px-2 py-1 rounded-lg transition">
             Voir corrigé
           </button>
         ` : ''}
@@ -857,31 +857,31 @@ class AcademicHubApp {
     <div class="max-w-4xl mx-auto px-4 py-4 sm:px-6 space-y-4">
       
       <!-- Top Title & Subtitle -->
-      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-2 border-b border-slate-200">
+      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-2 border-b border-zinc-800">
         <div>
-          <h1 class="font-bold text-slate-900 text-lg sm:text-xl">Mes Matières</h1>
-          <p class="text-xs text-slate-500">
+          <h1 class="font-bold text-white text-lg sm:text-xl">Mes Matières</h1>
+          <p class="text-xs text-zinc-400">
             ${activePromo ? `Promotion ${this.escapeHtml(activePromo.name)} — ` : ''}Banque de cours universitaires, examens et travaux dirigés
           </p>
         </div>
 
         <!-- Semester Filter Tabs -->
-        <div class="flex items-center gap-1 bg-slate-100 p-1 rounded-lg text-xs font-medium self-start sm:self-auto">
+        <div class="flex items-center gap-1 bg-[#16171a] p-1 rounded-lg text-xs font-medium self-start sm:self-auto border border-zinc-800">
           <button 
             onclick="app.setSemesterFilter('')" 
-            class="px-2.5 py-1 rounded-lg transition ${!this.selectedSemester ? 'bg-white text-slate-900 font-semibold shadow-2xs' : 'text-slate-600 hover:text-slate-900'}"
+            class="px-2.5 py-1 rounded-lg transition ${!this.selectedSemester ? 'bg-zinc-800 text-white font-semibold shadow-2xs' : 'text-zinc-400 hover:text-white'}"
           >
             Tous
           </button>
           <button 
             onclick="app.setSemesterFilter('S1')" 
-            class="px-2.5 py-1 rounded-lg transition ${this.selectedSemester === 'S1' ? 'bg-white text-slate-900 font-semibold shadow-2xs' : 'text-slate-600 hover:text-slate-900'}"
+            class="px-2.5 py-1 rounded-lg transition ${this.selectedSemester === 'S1' ? 'bg-zinc-800 text-white font-semibold shadow-2xs' : 'text-zinc-400 hover:text-white'}"
           >
             Semestre 1
           </button>
           <button 
             onclick="app.setSemesterFilter('S2')" 
-            class="px-2.5 py-1 rounded-lg transition ${this.selectedSemester === 'S2' ? 'bg-white text-slate-900 font-semibold shadow-2xs' : 'text-slate-600 hover:text-slate-900'}"
+            class="px-2.5 py-1 rounded-lg transition ${this.selectedSemester === 'S2' ? 'bg-zinc-800 text-white font-semibold shadow-2xs' : 'text-zinc-400 hover:text-white'}"
           >
             Semestre 2
           </button>
@@ -896,35 +896,35 @@ class AcademicHubApp {
           const hasCorrections = docs.filter(r => r.hasCorrection || r.type === 'Corrigé').length;
 
           return `
-          <div onclick="app.openCourseDetail('${c.id}')" class="bg-white rounded-lg border border-slate-200 hover:border-blue-600 p-4 transition text-left cursor-pointer group shadow-2xs space-y-3 flex flex-col justify-between">
+          <div onclick="app.openCourseDetail('${c.id}')" class="bg-[#16171a] rounded-lg border border-zinc-800 hover:border-zinc-700 p-4 transition text-left cursor-pointer group shadow-2xs space-y-3 flex flex-col justify-between">
             <div class="space-y-2">
               <div class="flex items-center justify-between">
-                <span class="text-xs font-bold px-2 py-0.5 rounded-lg bg-blue-50 text-blue-700 border border-blue-200">
+                <span class="text-xs font-bold px-2 py-0.5 rounded-lg bg-[#121316] text-blue-400 border border-zinc-800">
                   ${this.escapeHtml(c.code)}
                 </span>
-                ${c.semester ? `<span class="text-[11px] font-semibold text-slate-400 bg-slate-50 px-2 py-0.5 rounded-lg border border-slate-200">${this.escapeHtml(c.semester)}</span>` : ''}
+                ${c.semester ? `<span class="text-[11px] font-semibold text-zinc-400 bg-[#121316] px-2 py-0.5 rounded-lg border border-zinc-800">${this.escapeHtml(c.semester)}</span>` : ''}
               </div>
 
-              <h2 class="font-bold text-sm text-slate-900 group-hover:text-blue-600 transition leading-snug">
+              <h2 class="font-bold text-sm text-white group-hover:text-blue-400 transition leading-snug">
                 ${this.escapeHtml(c.name)}
               </h2>
 
-              <p class="text-xs text-slate-500 truncate">
+              <p class="text-xs text-zinc-400 truncate">
                 ${this.escapeHtml(c.professor || 'Enseignant responsable')}
               </p>
             </div>
 
-            <div class="space-y-2 pt-2 border-t border-slate-100 text-xs">
-              <div class="flex items-center justify-between text-slate-500 text-[11px]">
+            <div class="space-y-2 pt-2 border-t border-zinc-800/80 text-xs">
+              <div class="flex items-center justify-between text-zinc-500 text-[11px]">
                 <span>${docs.length} document${docs.length > 1 ? 's' : ''}</span>
                 <span>${exams.length} examen${exams.length > 1 ? 's' : ''} (${hasCorrections} corrigé${hasCorrections > 1 ? 's' : ''})</span>
               </div>
 
               <div class="flex items-center gap-2 pt-1">
-                <button onclick="event.stopPropagation(); app.openCourseDetail('${c.id}')" class="flex-1 bg-slate-100 hover:bg-blue-50 hover:text-blue-700 text-slate-700 font-semibold py-1.5 px-3 rounded-lg transition border border-slate-200 text-center">
+                <button onclick="event.stopPropagation(); app.openCourseDetail('${c.id}')" class="flex-1 bg-[#121316] hover:bg-zinc-800 text-zinc-300 hover:text-white font-semibold py-1.5 px-3 rounded-lg transition border border-zinc-800 text-center">
                   Explorer
                 </button>
-                <button onclick="event.stopPropagation(); app.startCourseRevision('${c.id}')" class="p-1.5 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition shrink-0 shadow-2xs" title="Réviser avec le Tuteur IA">
+                <button onclick="event.stopPropagation(); app.startCourseRevision('${c.id}')" class="p-1.5 bg-blue-600 hover:bg-blue-500 text-white rounded-lg transition shrink-0 shadow-2xs" title="Réviser avec le Tuteur IA">
                   <i data-lucide="sparkles" class="w-4 h-4"></i>
                 </button>
               </div>
@@ -957,8 +957,8 @@ class AcademicHubApp {
     if (!course) {
       return `
       <div class="max-w-4xl mx-auto p-8 text-center space-y-3">
-        <p class="text-sm font-semibold text-slate-700">Matière introuvable.</p>
-        <button onclick="app.navigate('courses')" class="bg-blue-600 text-white text-xs px-4 py-2 rounded-lg font-semibold">
+        <p class="text-sm font-semibold text-zinc-300">Matière introuvable.</p>
+        <button onclick="app.navigate('courses')" class="bg-blue-600 hover:bg-blue-500 text-white text-xs px-4 py-2 rounded-lg font-semibold">
           Retour aux matières
         </button>
       </div>
@@ -988,32 +988,32 @@ class AcademicHubApp {
       
       <!-- Top Return Bar -->
       <div class="flex items-center gap-2">
-        <button onclick="app.navigate('courses')" class="text-xs font-semibold text-slate-600 hover:text-slate-900 flex items-center gap-1.5 transition">
+        <button onclick="app.navigate('courses')" class="text-xs font-semibold text-zinc-400 hover:text-white flex items-center gap-1.5 transition">
           <i data-lucide="chevron-left" class="w-4 h-4"></i>
           <span>Retour à la liste des matières</span>
         </button>
       </div>
 
       <!-- Course Header Card -->
-      <div class="bg-white rounded-lg border border-slate-200 p-4 sm:p-5 shadow-2xs flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+      <div class="bg-[#16171a] rounded-lg border border-zinc-800 p-4 sm:p-5 shadow-2xs flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div class="space-y-1">
           <div class="flex items-center gap-2">
-            <span class="text-xs font-bold px-2.5 py-0.5 rounded-lg bg-blue-50 text-blue-700 border border-blue-200">
+            <span class="text-xs font-bold px-2.5 py-0.5 rounded-lg bg-[#121316] text-blue-400 border border-zinc-800">
               ${this.escapeHtml(course.code)}
             </span>
-            <span class="text-xs text-slate-500 font-medium">${this.escapeHtml(course.professor || 'Enseignant responsable')}</span>
+            <span class="text-xs text-zinc-400 font-medium">${this.escapeHtml(course.professor || 'Enseignant responsable')}</span>
           </div>
-          <h1 class="text-lg sm:text-xl font-bold text-slate-900">${this.escapeHtml(course.name)}</h1>
+          <h1 class="text-lg sm:text-xl font-bold text-white">${this.escapeHtml(course.name)}</h1>
         </div>
 
         <!-- Action Buttons: Gemini Blue "Réviser avec l'IA" & "Mode Apprendre" -->
         <div class="flex items-center gap-2 shrink-0 flex-wrap">
-          <button onclick="app.startCourseLearning('${course.id}')" class="bg-blue-50 hover:bg-blue-100 text-blue-700 font-semibold text-xs px-3.5 py-2 rounded-lg border border-blue-200 transition flex items-center gap-1.5">
-            <i data-lucide="graduation-cap" class="w-3.5 h-3.5 text-blue-600"></i>
+          <button onclick="app.startCourseLearning('${course.id}')" class="bg-[#121316] hover:bg-zinc-800 text-blue-400 font-semibold text-xs px-3.5 py-2 rounded-lg border border-zinc-800 transition flex items-center gap-1.5">
+            <i data-lucide="graduation-cap" class="w-3.5 h-3.5 text-blue-400"></i>
             <span>Mode Apprendre ce cours</span>
           </button>
 
-          <button onclick="app.startCourseRevision('${course.id}')" class="bg-blue-600 hover:bg-blue-700 text-white font-semibold text-xs px-3.5 py-2 rounded-lg transition flex items-center gap-1.5 shadow-2xs">
+          <button onclick="app.startCourseRevision('${course.id}')" class="bg-blue-600 hover:bg-blue-500 text-white font-semibold text-xs px-3.5 py-2 rounded-lg transition flex items-center gap-1.5 shadow-2xs">
             <i data-lucide="sparkles" class="w-3.5 h-3.5"></i>
             <span>Réviser cette matière avec l'IA</span>
           </button>
@@ -1024,25 +1024,25 @@ class AcademicHubApp {
       <div class="flex items-center gap-1.5 overflow-x-auto pb-1 text-xs no-scrollbar">
         <button 
           onclick="app.setCourseDetailTab('all')" 
-          class="px-3 py-1.5 rounded-lg font-medium transition border ${this.courseDetailTab === 'all' ? 'bg-blue-600 text-white border-blue-600 font-semibold' : 'bg-white text-slate-700 border-slate-200 hover:border-blue-500'}"
+          class="px-3 py-1.5 rounded-lg font-medium transition border ${this.courseDetailTab === 'all' ? 'bg-blue-600 text-white border-blue-600 font-semibold' : 'bg-[#16171a] text-zinc-300 border-zinc-800 hover:border-zinc-700 hover:text-white'}"
         >
           Tous
         </button>
         <button 
           onclick="app.setCourseDetailTab('exams')" 
-          class="px-3 py-1.5 rounded-lg font-medium transition border ${this.courseDetailTab === 'exams' ? 'bg-blue-600 text-white border-blue-600 font-semibold' : 'bg-white text-slate-700 border-slate-200 hover:border-blue-500'}"
+          class="px-3 py-1.5 rounded-lg font-medium transition border ${this.courseDetailTab === 'exams' ? 'bg-blue-600 text-white border-blue-600 font-semibold' : 'bg-[#16171a] text-zinc-300 border-zinc-800 hover:border-zinc-700 hover:text-white'}"
         >
           Examens & Interros
         </button>
         <button 
           onclick="app.setCourseDetailTab('exercises')" 
-          class="px-3 py-1.5 rounded-lg font-medium transition border ${this.courseDetailTab === 'exercises' ? 'bg-blue-600 text-white border-blue-600 font-semibold' : 'bg-white text-slate-700 border-slate-200 hover:border-blue-500'}"
+          class="px-3 py-1.5 rounded-lg font-medium transition border ${this.courseDetailTab === 'exercises' ? 'bg-blue-600 text-white border-blue-600 font-semibold' : 'bg-[#16171a] text-zinc-300 border-zinc-800 hover:border-zinc-700 hover:text-white'}"
         >
           Exercices & TD
         </button>
         <button 
           onclick="app.setCourseDetailTab('lectures')" 
-          class="px-3 py-1.5 rounded-lg font-medium transition border ${this.courseDetailTab === 'lectures' ? 'bg-blue-600 text-white border-blue-600 font-semibold' : 'bg-white text-slate-700 border-slate-200 hover:border-blue-500'}"
+          class="px-3 py-1.5 rounded-lg font-medium transition border ${this.courseDetailTab === 'lectures' ? 'bg-blue-600 text-white border-blue-600 font-semibold' : 'bg-[#16171a] text-zinc-300 border-zinc-800 hover:border-zinc-700 hover:text-white'}"
         >
           Fiches de Cours
         </button>
@@ -1051,38 +1051,38 @@ class AcademicHubApp {
       <!-- Documents Grouped By Chapter -->
       <div class="space-y-4">
         ${Object.keys(chaptersMap).length > 0 ? Object.entries(chaptersMap).map(([chapter, chapterDocs]) => `
-          <div class="bg-white rounded-lg border border-slate-200 overflow-hidden shadow-2xs">
-            <div class="bg-slate-50/80 px-4 py-2.5 border-b border-slate-200 flex items-center justify-between">
-              <span class="font-bold text-xs sm:text-sm text-slate-800 flex items-center gap-2">
-                <i data-lucide="folder" class="w-4 h-4 text-blue-600"></i>
+          <div class="bg-[#16171a] rounded-lg border border-zinc-800 overflow-hidden shadow-2xs">
+            <div class="bg-[#121316] px-4 py-2.5 border-b border-zinc-800 flex items-center justify-between">
+              <span class="font-bold text-xs sm:text-sm text-white flex items-center gap-2">
+                <i data-lucide="folder" class="w-4 h-4 text-blue-400"></i>
                 <span>${this.escapeHtml(chapter)}</span>
               </span>
-              <span class="text-[11px] text-slate-400 font-medium">${chapterDocs.length} ressource${chapterDocs.length > 1 ? 's' : ''}</span>
+              <span class="text-[11px] text-zinc-500 font-medium">${chapterDocs.length} ressource${chapterDocs.length > 1 ? 's' : ''}</span>
             </div>
 
-            <div class="divide-y divide-slate-100">
+            <div class="divide-y divide-zinc-800">
               ${chapterDocs.map(doc => `
-                <div onclick="app.openDocument('${doc.id}')" class="p-3.5 hover:bg-slate-50 transition cursor-pointer flex items-center justify-between gap-3 group">
+                <div onclick="app.openDocument('${doc.id}')" class="p-3.5 hover:bg-[#1f2024] transition cursor-pointer flex items-center justify-between gap-3 group">
                   <div class="space-y-1 min-w-0">
                     <div class="flex items-center gap-2 flex-wrap">
                       ${this.getTypeBadge(doc.type)}
                       ${doc.hasCorrection ? `
-                        <span class="text-[10px] font-bold px-2 py-0.5 rounded-lg bg-emerald-50 text-emerald-700 border border-emerald-200">Corrigé disponible</span>
+                        <span class="text-[10px] font-bold px-2 py-0.5 rounded-lg bg-[#062817] text-emerald-400 border border-emerald-900/60">Corrigé disponible</span>
                       ` : ''}
-                      <span class="text-[11px] text-slate-400">${this.escapeHtml(doc.academicYear || '2025-2026')}</span>
+                      <span class="text-[11px] text-zinc-500">${this.escapeHtml(doc.academicYear || '2025-2026')}</span>
                     </div>
-                    <div class="font-bold text-xs sm:text-sm text-slate-900 group-hover:text-blue-600 transition truncate">
+                    <div class="font-bold text-xs sm:text-sm text-white group-hover:text-blue-400 transition truncate">
                       ${this.escapeHtml(doc.title)}
                     </div>
                   </div>
 
                   <div class="flex items-center gap-2 shrink-0">
                     ${doc.hasCorrection ? `
-                      <button onclick="event.stopPropagation(); app.openCorrection('${doc.id}')" class="text-xs font-semibold bg-emerald-50 hover:bg-emerald-100 text-emerald-700 border border-emerald-200 px-3 py-1.5 rounded-lg transition">
+                      <button onclick="event.stopPropagation(); app.openCorrection('${doc.id}')" class="text-xs font-semibold bg-[#062817] hover:bg-[#083520] text-emerald-400 border border-emerald-900/60 px-3 py-1.5 rounded-lg transition">
                         Voir le corrigé
                       </button>
                     ` : ''}
-                    <button onclick="app.openDocument('${doc.id}')" class="text-xs font-semibold bg-slate-100 hover:bg-blue-600 hover:text-white text-slate-700 px-3 py-1.5 rounded-lg transition border border-slate-200">
+                    <button onclick="app.openDocument('${doc.id}')" class="text-xs font-semibold bg-[#121316] hover:bg-zinc-800 text-zinc-300 hover:text-white px-3 py-1.5 rounded-lg transition border border-zinc-800">
                       Consulter
                     </button>
                   </div>
@@ -1091,7 +1091,7 @@ class AcademicHubApp {
             </div>
           </div>
         `).join('') : `
-          <div class="bg-white rounded-lg border border-slate-200 p-8 text-center text-xs text-slate-500">
+          <div class="bg-[#16171a] rounded-lg border border-zinc-800 p-8 text-center text-xs text-zinc-500">
             Aucun document dans cette catégorie pour le moment.
           </div>
         `}
@@ -1154,32 +1154,32 @@ class AcademicHubApp {
     <div class="max-w-3xl mx-auto px-4 py-6 sm:py-8 space-y-6">
       
       <!-- Student Identity Header -->
-      <div class="bg-white rounded-lg border border-slate-200 p-5 shadow-2xs flex items-center justify-between gap-4">
+      <div class="bg-[#16171a] rounded-lg border border-zinc-800 p-5 shadow-2xs flex items-center justify-between gap-4">
         <div class="flex items-center gap-3.5">
-          <div class="w-12 h-12 rounded-lg bg-blue-50 text-blue-700 flex items-center justify-center font-bold text-base border border-blue-200">
+          <div class="w-12 h-12 rounded-lg bg-[#121316] text-blue-400 flex items-center justify-center font-bold text-base border border-zinc-800">
             <i data-lucide="user" class="w-6 h-6"></i>
           </div>
           <div>
-            <h1 class="font-bold text-base sm:text-lg text-slate-900">${this.escapeHtml(this.studentProfile.name || 'Étudiant Universitaire')}</h1>
-            <p class="text-xs text-slate-500">
+            <h1 class="font-bold text-base sm:text-lg text-white">${this.escapeHtml(this.studentProfile.name || 'Étudiant Universitaire')}</h1>
+            <p class="text-xs text-zinc-400">
               ${activePromo ? `Promotion : ${this.escapeHtml(activePromo.name)}` : (this.studentProfile.filiere || 'Licence 2 — Sciences & Technologies')}
             </p>
           </div>
         </div>
-        <button onclick="app.openApiKeyModal()" class="text-xs font-semibold bg-slate-100 hover:bg-slate-200 text-slate-700 px-3 py-2 rounded-lg border border-slate-200 transition flex items-center gap-1.5">
-          <i data-lucide="key" class="w-3.5 h-3.5 text-blue-600"></i>
+        <button onclick="app.openApiKeyModal()" class="text-xs font-semibold bg-[#121316] hover:bg-zinc-800 text-zinc-300 hover:text-white px-3 py-2 rounded-lg border border-zinc-800 transition flex items-center gap-1.5">
+          <i data-lucide="key" class="w-3.5 h-3.5 text-blue-400"></i>
           <span>Clé API</span>
         </button>
       </div>
 
       <!-- Section: Jauges de Maîtrise Douces par Matière -->
-      <div class="bg-white rounded-lg border border-slate-200 p-5 shadow-2xs space-y-4">
-        <div class="flex items-center justify-between border-b border-slate-100 pb-3">
+      <div class="bg-[#16171a] rounded-lg border border-zinc-800 p-5 shadow-2xs space-y-4">
+        <div class="flex items-center justify-between border-b border-zinc-800/80 pb-3">
           <div>
-            <h2 class="font-bold text-sm text-slate-900">Maîtrise estimée par matière</h2>
-            <p class="text-xs text-slate-500">Indicateur continu calculé lors de vos exercices et révisions</p>
+            <h2 class="font-bold text-sm text-white">Maîtrise estimée par matière</h2>
+            <p class="text-xs text-zinc-400">Indicateur continu calculé lors de vos exercices et révisions</p>
           </div>
-          <span class="text-xs font-semibold px-2.5 py-1 rounded-lg bg-blue-50 text-blue-700 border border-blue-200">
+          <span class="text-xs font-semibold px-2.5 py-1 rounded-lg bg-[#121316] text-blue-400 border border-zinc-800">
             Sans stress d'évaluation
           </span>
         </div>
@@ -1188,10 +1188,10 @@ class AcademicHubApp {
           ${masteryData.map(m => `
             <div class="space-y-1.5">
               <div class="flex items-center justify-between text-xs">
-                <span class="font-bold text-slate-800">${this.escapeHtml(m.code)} — ${this.escapeHtml(m.name)}</span>
-                <span class="font-semibold text-slate-600">${m.masteryPct}% (${m.status})</span>
+                <span class="font-bold text-zinc-200">${this.escapeHtml(m.code)} — ${this.escapeHtml(m.name)}</span>
+                <span class="font-semibold text-zinc-400">${m.masteryPct}% (${m.status})</span>
               </div>
-              <div class="w-full bg-slate-100 rounded-lg h-2.5 overflow-hidden">
+              <div class="w-full bg-[#121316] rounded-lg h-2.5 overflow-hidden border border-zinc-800">
                 <div class="${m.color} h-full rounded-lg transition-all duration-500" style="width: ${m.masteryPct}%;"></div>
               </div>
             </div>
@@ -1200,20 +1200,20 @@ class AcademicHubApp {
       </div>
 
       <!-- Section: Sujets à revoir en priorité -->
-      <div class="bg-white rounded-lg border border-slate-200 p-5 shadow-2xs space-y-3">
+      <div class="bg-[#16171a] rounded-lg border border-zinc-800 p-5 shadow-2xs space-y-3">
         <div>
-          <h2 class="font-bold text-sm text-slate-900">Sujets à revoir en priorité</h2>
-          <p class="text-xs text-slate-500">Notions ciblées pour lesquelles une séance guidée vous fera progresser rapidement</p>
+          <h2 class="font-bold text-sm text-white">Sujets à revoir en priorité</h2>
+          <p class="text-xs text-zinc-400">Notions ciblées pour lesquelles une séance guidée vous fera progresser rapidement</p>
         </div>
 
         <div class="space-y-2 pt-1">
           ${weakTopics.map(w => `
-            <div class="bg-slate-50 border border-slate-200 rounded-lg p-3 flex items-center justify-between gap-3 text-xs">
+            <div class="bg-[#121316] border border-zinc-800 rounded-lg p-3 flex items-center justify-between gap-3 text-xs">
               <div class="space-y-0.5">
-                <span class="font-bold text-slate-800">${this.escapeHtml(w.concept)}</span>
-                <div class="text-[11px] text-slate-500">${this.escapeHtml(w.courseCode)}</div>
+                <span class="font-bold text-zinc-200">${this.escapeHtml(w.concept)}</span>
+                <div class="text-[11px] text-zinc-400">${this.escapeHtml(w.courseCode)}</div>
               </div>
-              <button onclick="app.startCatchupSession('${w.courseId}', '${this.escapeHtml(w.concept)}')" class="bg-blue-600 hover:bg-blue-700 text-white font-semibold text-xs px-3 py-1.5 rounded-lg transition shrink-0 flex items-center gap-1 shadow-2xs">
+              <button onclick="app.startCatchupSession('${w.courseId}', '${this.escapeHtml(w.concept)}')" class="bg-blue-600 hover:bg-blue-500 text-white font-semibold text-xs px-3 py-1.5 rounded-lg transition shrink-0 flex items-center gap-1 shadow-2xs">
                 <i data-lucide="sparkles" class="w-3.5 h-3.5"></i>
                 <span>Lancer rattrapage</span>
               </button>
@@ -1223,16 +1223,16 @@ class AcademicHubApp {
       </div>
 
       <!-- Section: Configuration Clé API Gemini (Page 11) -->
-      <div class="bg-white rounded-lg border border-slate-200 p-5 shadow-2xs space-y-3">
+      <div class="bg-[#16171a] rounded-lg border border-zinc-800 p-5 shadow-2xs space-y-3">
         <div class="flex items-center gap-2">
-          <i data-lucide="key" class="w-4 h-4 text-blue-600"></i>
-          <h2 class="font-bold text-sm text-slate-900">Configuration de votre Clé API Gemini</h2>
+          <i data-lucide="key" class="w-4 h-4 text-blue-400"></i>
+          <h2 class="font-bold text-sm text-white">Configuration de votre Clé API Gemini</h2>
         </div>
-        <p class="text-xs text-slate-500 leading-relaxed">
+        <p class="text-xs text-zinc-400 leading-relaxed">
           Configurez votre clé personnelle pour un usage illimité de l'assistant IA en 3 étapes simples :
         </p>
 
-        <ol class="text-xs text-slate-700 space-y-1.5 list-decimal list-inside bg-slate-50 p-3 rounded-lg border border-slate-200">
+        <ol class="text-xs text-zinc-300 space-y-1.5 list-decimal list-inside bg-[#121316] p-3 rounded-lg border border-zinc-800">
           <li>Accédez à votre compte Google AI Studio</li>
           <li>Créez une clé d'API gratuite</li>
           <li>Collez-la ci-dessous et enregistrez</li>
@@ -1244,21 +1244,21 @@ class AcademicHubApp {
             id="profile-api-key-input" 
             placeholder="AIzaSy..." 
             value="${this.escapeHtml(this.userApiKey || '')}"
-            class="flex-1 text-xs px-3 py-2 rounded-lg border border-slate-200 focus:border-blue-600 outline-none font-mono"
+            class="flex-1 text-xs px-3 py-2 rounded-lg border border-zinc-800 bg-[#121316] text-white focus:border-blue-500 outline-none font-mono"
           >
-          <button onclick="app.saveApiKeyFromProfile()" class="bg-blue-600 hover:bg-blue-700 text-white font-semibold text-xs px-3.5 py-2 rounded-lg transition shrink-0 shadow-2xs">
+          <button onclick="app.saveApiKeyFromProfile()" class="bg-blue-600 hover:bg-blue-500 text-white font-semibold text-xs px-3.5 py-2 rounded-lg transition shrink-0 shadow-2xs">
             Enregistrer
           </button>
         </div>
       </div>
 
       <!-- Section: Accès Administration (Page 12) -->
-      <div class="bg-white rounded-lg border border-slate-200 p-5 shadow-2xs flex items-center justify-between gap-4">
+      <div class="bg-[#16171a] rounded-lg border border-zinc-800 p-5 shadow-2xs flex items-center justify-between gap-4">
         <div class="space-y-0.5">
-          <h3 class="font-bold text-xs sm:text-sm text-slate-900">Administration Centrale</h3>
-          <p class="text-xs text-slate-500">Gestion des cours, documents et orchestration des agents</p>
+          <h3 class="font-bold text-xs sm:text-sm text-white">Administration Centrale</h3>
+          <p class="text-xs text-zinc-400">Gestion des cours, documents et orchestration des agents</p>
         </div>
-        <a href="/admin" target="_blank" class="bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold text-xs px-3.5 py-2 rounded-lg border border-slate-200 transition inline-flex items-center gap-1.5">
+        <a href="/admin" target="_blank" class="bg-[#121316] hover:bg-zinc-800 text-zinc-300 hover:text-white font-semibold text-xs px-3.5 py-2 rounded-lg border border-zinc-800 transition inline-flex items-center gap-1.5">
           <span>Ouvrir l'administration</span>
           <i data-lucide="external-link" class="w-3.5 h-3.5"></i>
         </a>
@@ -1291,31 +1291,31 @@ class AcademicHubApp {
     const vids = this.videos || [];
     return `
     <div class="max-w-4xl mx-auto px-4 py-4 sm:px-6 space-y-4">
-      <div class="pb-2 border-b border-slate-200">
-        <h1 class="font-bold text-slate-900 text-lg sm:text-xl">Vidéos Pédagogiques Validées</h1>
-        <p class="text-xs text-slate-500">Catalogue de cours vidéo et démonstrations recommandées par les enseignants</p>
+      <div class="pb-2 border-b border-zinc-800">
+        <h1 class="font-bold text-white text-lg sm:text-xl">Vidéos Pédagogiques Validées</h1>
+        <p class="text-xs text-zinc-400">Catalogue de cours vidéo et démonstrations recommandées par les enseignants</p>
       </div>
 
       <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3.5">
         ${vids.map(v => `
-          <div onclick="app.openVideo('${v.id || v.youtubeId}')" class="bg-white rounded-lg border border-slate-200 hover:border-blue-600 overflow-hidden transition cursor-pointer group shadow-2xs flex flex-col justify-between">
-            <div class="aspect-video bg-slate-900 text-white flex items-center justify-center relative">
+          <div onclick="app.openVideo('${v.id || v.youtubeId}')" class="bg-[#16171a] rounded-lg border border-zinc-800 hover:border-zinc-700 overflow-hidden transition cursor-pointer group shadow-2xs flex flex-col justify-between">
+            <div class="aspect-video bg-black text-white flex items-center justify-center relative">
               <i data-lucide="play-circle" class="w-10 h-10 text-white/80 group-hover:scale-110 group-hover:text-white transition transform"></i>
-              ${v.duration ? `<span class="absolute bottom-2 right-2 bg-black/80 text-white text-[10px] font-bold px-1.5 py-0.5 rounded">${this.escapeHtml(v.duration)}</span>` : ''}
+              ${v.duration ? `<span class="absolute bottom-2 right-2 bg-black/80 text-white text-[10px] font-bold px-1.5 py-0.5 rounded-lg">${this.escapeHtml(v.duration)}</span>` : ''}
             </div>
 
             <div class="p-3.5 space-y-2">
-              <h3 class="font-bold text-xs sm:text-sm text-slate-900 group-hover:text-blue-600 transition line-clamp-2">
+              <h3 class="font-bold text-xs sm:text-sm text-white group-hover:text-blue-400 transition line-clamp-2">
                 ${this.escapeHtml(v.title)}
               </h3>
-              <div class="text-[11px] text-slate-500 truncate">
+              <div class="text-[11px] text-zinc-400 truncate">
                 ${this.escapeHtml(v.concept || v.courseName || 'Cours vidéo')}
               </div>
             </div>
 
-            <div class="p-3 bg-slate-50 border-t border-slate-100 flex items-center justify-between text-xs">
-              <span class="text-blue-600 font-semibold group-hover:underline">Regarder</span>
-              <i data-lucide="arrow-right" class="w-3.5 h-3.5 text-blue-600"></i>
+            <div class="p-3 bg-[#121316] border-t border-zinc-800 flex items-center justify-between text-xs">
+              <span class="text-blue-400 font-semibold group-hover:underline">Regarder</span>
+              <i data-lucide="arrow-right" class="w-3.5 h-3.5 text-blue-400"></i>
             </div>
           </div>
         `).join('')}
@@ -1377,32 +1377,32 @@ class AcademicHubApp {
         const expl = data.data;
         contentEl.innerHTML = `
           <div class="space-y-3.5">
-            <div class="bg-blue-50/70 p-3 rounded-lg border border-blue-200">
-              <h4 class="font-bold text-blue-900 text-xs flex items-center gap-1.5">
-                <i data-lucide="lightbulb" class="w-4 h-4 text-blue-600"></i>
+            <div class="bg-blue-950/40 p-3 rounded-lg border border-blue-800/60">
+              <h4 class="font-bold text-blue-300 text-xs flex items-center gap-1.5">
+                <i data-lucide="lightbulb" class="w-4 h-4 text-blue-400"></i>
                 <span>Notion principale</span>
               </h4>
-              <p class="text-xs text-blue-800 mt-1 leading-relaxed">${this.escapeHtml(expl.concept || 'Analyse de la page')}</p>
+              <p class="text-xs text-blue-200 mt-1 leading-relaxed">${this.escapeHtml(expl.concept || 'Analyse de la page')}</p>
             </div>
 
             <div class="space-y-1">
-              <h5 class="font-bold text-slate-800 text-xs">Explication pas à pas :</h5>
-              <div class="text-xs text-slate-700 leading-relaxed bg-slate-50 p-3 rounded-lg border border-slate-200 whitespace-pre-wrap">${this.escapeHtml(expl.explanation || expl.content || 'Consultez la transcription de cette page.')}</div>
+              <h5 class="font-bold text-white text-xs">Explication pas à pas :</h5>
+              <div class="text-xs text-zinc-300 leading-relaxed bg-[#121316] p-3 rounded-lg border border-zinc-800 whitespace-pre-wrap">${this.escapeHtml(expl.explanation || expl.content || 'Consultez la transcription de cette page.')}</div>
             </div>
 
             ${expl.keyFormulas && expl.keyFormulas.length > 0 ? `
               <div class="space-y-1">
-                <h5 class="font-bold text-slate-800 text-xs">Formules et Définitions à retenir :</h5>
-                <ul class="text-xs text-slate-700 list-disc list-inside space-y-1 bg-white p-2.5 rounded-lg border border-slate-200">
+                <h5 class="font-bold text-white text-xs">Formules et Définitions à retenir :</h5>
+                <ul class="text-xs text-zinc-300 list-disc list-inside space-y-1 bg-[#121316] p-2.5 rounded-lg border border-zinc-800">
                   ${expl.keyFormulas.map(f => `<li>${this.escapeHtml(f)}</li>`).join('')}
                 </ul>
               </div>
             ` : ''}
 
             ${expl.examTraps ? `
-              <div class="bg-amber-50 p-3 rounded-lg border border-amber-200 text-xs text-amber-900 space-y-0.5">
-                <span class="font-bold flex items-center gap-1">
-                  <i data-lucide="alert-triangle" class="w-3.5 h-3.5 text-amber-600"></i>
+              <div class="bg-amber-950/40 p-3 rounded-lg border border-amber-850/60 text-xs text-amber-200 space-y-0.5">
+                <span class="font-bold flex items-center gap-1 text-amber-300">
+                  <i data-lucide="alert-triangle" class="w-3.5 h-3.5 text-amber-400"></i>
                   Piège fréquent en examen :
                 </span>
                 <p>${this.escapeHtml(expl.examTraps)}</p>
@@ -1410,7 +1410,7 @@ class AcademicHubApp {
             ` : ''}
 
             <div class="pt-2 flex justify-end">
-              <button onclick="app.askAboutCurrentDoc('Peux-tu m\\'expliquer plus en détail la page ${page} ?'); app.closePageExplanationModal();" class="bg-blue-600 hover:bg-blue-700 text-white font-semibold text-xs px-3.5 py-2 rounded-lg transition flex items-center gap-1.5 shadow-2xs">
+              <button onclick="app.askAboutCurrentDoc('Peux-tu m\\'expliquer plus en détail la page ${page} ?'); app.closePageExplanationModal();" class="bg-blue-600 hover:bg-blue-500 text-white font-semibold text-xs px-3.5 py-2 rounded-lg transition flex items-center gap-1.5">
                 <i data-lucide="sparkles" class="w-3.5 h-3.5"></i>
                 <span>Approfondir avec le Tuteur IA</span>
               </button>
@@ -1418,10 +1418,10 @@ class AcademicHubApp {
           </div>
         `;
       } else {
-        contentEl.innerHTML = `<p class="text-xs text-slate-500">Aucune explication spécifique trouvée pour cette page. Vous pouvez poser une question directement au Tuteur IA.</p>`;
+        contentEl.innerHTML = `<p class="text-xs text-zinc-500">Aucune explication spécifique trouvée pour cette page. Vous pouvez poser une question directement au Tuteur IA.</p>`;
       }
     } catch (err) {
-      contentEl.innerHTML = `<p class="text-xs text-red-600">Erreur lors de la génération de l'explication : ${this.escapeHtml(err.message)}</p>`;
+      contentEl.innerHTML = `<p class="text-xs text-red-400">Erreur lors de la génération de l'explication : ${this.escapeHtml(err.message)}</p>`;
     }
     if (window.lucide) window.lucide.createIcons();
   }
@@ -1505,21 +1505,21 @@ class AcademicHubApp {
       
       <!-- Top Search Bar (Exact Panel 3 Style) -->
       <div class="relative flex items-center">
-        <i data-lucide="search" class="w-4 h-4 text-slate-400 absolute left-3.5 pointer-events-none"></i>
+        <i data-lucide="search" class="w-4 h-4 text-zinc-400 absolute left-3.5 pointer-events-none"></i>
         <input 
           type="text" 
           id="search-input"
           value="${this.filters.search}" 
           placeholder="Search..." 
           oninput="app.onSearchInput(this.value)"
-          class="w-full bg-white text-slate-900 pl-10 pr-20 py-2.5 rounded-lg border border-slate-200 focus:border-blue-600 focus:ring-1 focus:ring-blue-600 outline-none text-xs sm:text-sm transition placeholder:text-slate-400 font-normal"
+          class="w-full bg-[#16171a] text-white pl-10 pr-20 py-2.5 rounded-lg border border-zinc-800 focus:border-blue-500 outline-none text-xs sm:text-sm transition placeholder:text-zinc-500 font-normal"
         >
         ${this.filters.search ? `
-          <button onclick="app.clearSearch()" class="absolute right-10 text-slate-400 hover:text-slate-600 p-1">
+          <button onclick="app.clearSearch()" class="absolute right-10 text-zinc-400 hover:text-white p-1">
             <i data-lucide="x" class="w-4 h-4"></i>
           </button>
         ` : ''}
-        <button onclick="app.triggerSearch()" class="absolute right-1.5 bg-blue-600 hover:bg-blue-700 text-white font-medium text-[11px] px-3 py-1.5 rounded-lg transition">
+        <button onclick="app.triggerSearch()" class="absolute right-1.5 bg-blue-600 hover:bg-blue-500 text-white font-medium text-[11px] px-3 py-1.5 rounded-lg transition">
           Chercher
         </button>
       </div>
@@ -1529,7 +1529,7 @@ class AcademicHubApp {
         <!-- All Pill -->
         <button 
           onclick="app.setFilter('type', '')" 
-          class="px-3 py-1.5 rounded-lg font-medium whitespace-nowrap transition border ${!this.filters.type ? 'bg-blue-600 text-white border-blue-600 font-semibold' : 'bg-white text-slate-600 border-slate-200 hover:border-slate-300'}"
+          class="px-3 py-1.5 rounded-lg font-medium whitespace-nowrap transition border ${!this.filters.type ? 'bg-blue-600 text-white border-blue-600 font-semibold' : 'bg-[#16171a] text-zinc-300 border-zinc-800 hover:border-zinc-700 hover:text-white'}"
         >
           Tous
         </button>
@@ -1537,7 +1537,7 @@ class AcademicHubApp {
         <!-- Supports de Cours Pill -->
         <button 
           onclick="app.setFilter('type', 'Supports de Cours')" 
-          class="px-3 py-1.5 rounded-lg font-medium whitespace-nowrap transition border ${this.filters.type === 'Supports de Cours' ? 'bg-blue-600 text-white border-blue-600 font-semibold' : 'bg-white text-slate-600 border-slate-200 hover:border-slate-300'}"
+          class="px-3 py-1.5 rounded-lg font-medium whitespace-nowrap transition border ${this.filters.type === 'Supports de Cours' ? 'bg-blue-600 text-white border-blue-600 font-semibold' : 'bg-[#16171a] text-zinc-300 border-zinc-800 hover:border-zinc-700 hover:text-white'}"
         >
           Cours
         </button>
@@ -1545,7 +1545,7 @@ class AcademicHubApp {
         <!-- Exercices / TD Pill -->
         <button 
           onclick="app.setFilter('type', 'Exercices')" 
-          class="px-3 py-1.5 rounded-lg font-medium whitespace-nowrap transition border ${this.filters.type === 'Exercices' ? 'bg-blue-600 text-white border-blue-600 font-semibold' : 'bg-white text-slate-600 border-slate-200 hover:border-slate-300'}"
+          class="px-3 py-1.5 rounded-lg font-medium whitespace-nowrap transition border ${this.filters.type === 'Exercices' ? 'bg-blue-600 text-white border-blue-600 font-semibold' : 'bg-[#16171a] text-zinc-300 border-zinc-800 hover:border-zinc-700 hover:text-white'}"
         >
           TD / Exercices
         </button>
@@ -1553,7 +1553,7 @@ class AcademicHubApp {
         <!-- Examens Pill -->
         <button 
           onclick="app.setFilter('type', 'Examen')" 
-          class="px-3 py-1.5 rounded-lg font-medium whitespace-nowrap transition border ${this.filters.type === 'Examen' ? 'bg-blue-600 text-white border-blue-600 font-semibold' : 'bg-white text-slate-600 border-slate-200 hover:border-slate-300'}"
+          class="px-3 py-1.5 rounded-lg font-medium whitespace-nowrap transition border ${this.filters.type === 'Examen' ? 'bg-blue-600 text-white border-blue-600 font-semibold' : 'bg-[#16171a] text-zinc-300 border-zinc-800 hover:border-zinc-700 hover:text-white'}"
         >
           Examens
         </button>
@@ -1561,7 +1561,7 @@ class AcademicHubApp {
         <!-- Interrogations Pill -->
         <button 
           onclick="app.setFilter('type', 'Interrogation')" 
-          class="px-3 py-1.5 rounded-lg font-medium whitespace-nowrap transition border ${this.filters.type === 'Interrogation' ? 'bg-blue-600 text-white border-blue-600 font-semibold' : 'bg-white text-slate-600 border-slate-200 hover:border-slate-300'}"
+          class="px-3 py-1.5 rounded-lg font-medium whitespace-nowrap transition border ${this.filters.type === 'Interrogation' ? 'bg-blue-600 text-white border-blue-600 font-semibold' : 'bg-[#16171a] text-zinc-300 border-zinc-800 hover:border-zinc-700 hover:text-white'}"
         >
           Interrogations
         </button>
@@ -1569,7 +1569,7 @@ class AcademicHubApp {
         <!-- TP Pill -->
         <button 
           onclick="app.setFilter('type', 'TP')" 
-          class="px-3 py-1.5 rounded-lg font-medium whitespace-nowrap transition border ${this.filters.type === 'TP' ? 'bg-blue-600 text-white border-blue-600 font-semibold' : 'bg-white text-slate-600 border-slate-200 hover:border-slate-300'}"
+          class="px-3 py-1.5 rounded-lg font-medium whitespace-nowrap transition border ${this.filters.type === 'TP' ? 'bg-blue-600 text-white border-blue-600 font-semibold' : 'bg-[#16171a] text-zinc-300 border-zinc-800 hover:border-zinc-700 hover:text-white'}"
         >
           TPs
         </button>
@@ -1577,43 +1577,43 @@ class AcademicHubApp {
         <!-- Corrigés Pill -->
         <button 
           onclick="app.setFilter('type', 'Corrigé')" 
-          class="px-3 py-1.5 rounded-lg font-medium whitespace-nowrap transition border ${this.filters.type === 'Corrigé' ? 'bg-blue-600 text-white border-blue-600 font-semibold' : 'bg-white text-slate-600 border-slate-200 hover:border-slate-300'}"
+          class="px-3 py-1.5 rounded-lg font-medium whitespace-nowrap transition border ${this.filters.type === 'Corrigé' ? 'bg-blue-600 text-white border-blue-600 font-semibold' : 'bg-[#16171a] text-zinc-300 border-zinc-800 hover:border-zinc-700 hover:text-white'}"
         >
           Corrigés
         </button>
 
         <!-- View Mode Toggle -->
-        <div class="ml-auto flex items-center bg-slate-100 p-0.5 rounded-lg border border-slate-200 shrink-0">
-          <button onclick="app.setDocViewMode('tree')" class="px-2 py-1 rounded-md text-[11px] font-medium transition ${this.libraryViewMode === 'tree' ? 'bg-white text-slate-900 font-semibold shadow-2xs' : 'text-slate-500 hover:text-slate-900'} flex items-center gap-1">
+        <div class="ml-auto flex items-center bg-[#16171a] p-0.5 rounded-lg border border-zinc-800 shrink-0">
+          <button onclick="app.setDocViewMode('tree')" class="px-2 py-1 rounded-md text-[11px] font-medium transition ${this.libraryViewMode === 'tree' ? 'bg-zinc-800 text-white font-semibold shadow-2xs' : 'text-zinc-400 hover:text-white'} flex items-center gap-1">
             <i data-lucide="folder" class="w-3 h-3"></i> Dossiers
           </button>
-          <button onclick="app.setDocViewMode('list')" class="px-2 py-1 rounded-md text-[11px] font-medium transition ${this.libraryViewMode === 'list' ? 'bg-white text-slate-900 font-semibold shadow-2xs' : 'text-slate-500 hover:text-slate-900'} flex items-center gap-1">
+          <button onclick="app.setDocViewMode('list')" class="px-2 py-1 rounded-md text-[11px] font-medium transition ${this.libraryViewMode === 'list' ? 'bg-zinc-800 text-white font-semibold shadow-2xs' : 'text-zinc-400 hover:text-white'} flex items-center gap-1">
             <i data-lucide="list" class="w-3 h-3"></i> Liste
           </button>
         </div>
 
         ${(this.filters.search || activeFilterCount > 0) ? `
-          <button onclick="app.resetFilters()" class="text-xs text-slate-500 hover:text-slate-800 font-medium px-2 py-1 flex items-center gap-1 shrink-0">
+          <button onclick="app.resetFilters()" class="text-xs text-zinc-400 hover:text-white font-medium px-2 py-1 flex items-center gap-1 shrink-0">
             <i data-lucide="rotate-ccw" class="w-3 h-3"></i> Effacer
           </button>
         ` : ''}
       </div>
 
       <!-- Document List Header -->
-      <div class="flex items-center justify-between text-xs text-slate-500 pt-1">
+      <div class="flex items-center justify-between text-xs text-zinc-400 pt-1">
         <span>${filtered.length} document${filtered.length > 1 ? 's' : ''} disponible${filtered.length > 1 ? 's' : ''}</span>
-        <span class="text-[11px] text-slate-400">Classés par matière & année</span>
+        <span class="text-[11px] text-zinc-500">Classés par matière & année</span>
       </div>
 
       <!-- Content Area -->
       ${filtered.length === 0 ? `
-        <div class="bg-white border border-slate-200 rounded-lg p-8 text-center max-w-sm mx-auto space-y-3 my-6">
-          <div class="w-10 h-10 rounded-lg bg-slate-100 text-slate-400 flex items-center justify-center mx-auto">
+        <div class="bg-[#16171a] border border-zinc-800 rounded-lg p-8 text-center max-w-sm mx-auto space-y-3 my-6">
+          <div class="w-10 h-10 rounded-lg bg-[#121316] text-zinc-400 flex items-center justify-center mx-auto border border-zinc-800">
             <i data-lucide="search-x" class="w-5 h-5"></i>
           </div>
-          <div class="font-semibold text-slate-800 text-sm">Aucun document trouvé</div>
-          <p class="text-xs text-slate-500">Modifiez votre recherche ou réinitialisez les filtres.</p>
-          <button onclick="app.resetFilters()" class="text-xs bg-slate-100 hover:bg-slate-200 font-medium px-3 py-1.5 rounded-lg text-slate-700 transition">
+          <div class="font-semibold text-white text-sm">Aucun document trouvé</div>
+          <p class="text-xs text-zinc-400">Modifiez votre recherche ou réinitialisez les filtres.</p>
+          <button onclick="app.resetFilters()" class="text-xs bg-[#121316] hover:bg-zinc-800 font-medium px-3 py-1.5 rounded-lg text-zinc-300 hover:text-white transition border border-zinc-800">
             Réinitialiser
           </button>
         </div>
@@ -1623,31 +1623,31 @@ class AcademicHubApp {
           ${Object.entries(groupedCourses).map(([courseName, docs], idx) => {
             const isExpanded = this.expandedCourses.has(`course-group-${idx}`) || this.expandedCourses.size === 0 || this.filters.search;
             return `
-            <div class="bg-white rounded-lg border border-slate-200 overflow-hidden transition">
+            <div class="bg-[#16171a] rounded-lg border border-zinc-800 overflow-hidden transition">
               <button 
                 onclick="app.toggleCourseGroupAccordion('course-group-${idx}')" 
-                class="w-full flex items-center justify-between p-3.5 bg-slate-50/70 hover:bg-slate-100/70 transition text-left border-b border-slate-100"
+                class="w-full flex items-center justify-between p-3.5 bg-[#121316] hover:bg-[#1f2024] transition text-left border-b border-zinc-800"
               >
                 <div class="flex items-center gap-2.5 min-w-0">
-                  <i data-lucide="folder" class="w-4 h-4 text-blue-600 shrink-0"></i>
-                  <span class="font-semibold text-slate-900 text-xs sm:text-sm truncate">${courseName}</span>
-                  <span class="text-[11px] text-slate-500 bg-slate-200/70 px-2 py-0.5 rounded-md font-medium shrink-0">${docs.length}</span>
+                  <i data-lucide="folder" class="w-4 h-4 text-blue-400 shrink-0"></i>
+                  <span class="font-semibold text-white text-xs sm:text-sm truncate">${courseName}</span>
+                  <span class="text-[11px] text-zinc-400 bg-zinc-800 px-2 py-0.5 rounded-md font-medium shrink-0 border border-zinc-700">${docs.length}</span>
                 </div>
-                <i data-lucide="${isExpanded ? 'chevron-down' : 'chevron-right'}" class="w-4 h-4 text-slate-400 shrink-0"></i>
+                <i data-lucide="${isExpanded ? 'chevron-down' : 'chevron-right'}" class="w-4 h-4 text-zinc-500 shrink-0"></i>
               </button>
 
               ${isExpanded ? `
-                <div class="divide-y divide-slate-100">
+                <div class="divide-y divide-zinc-800">
                   ${docs.map(doc => `
-                    <div onclick="app.openDocument('${doc.id}')" class="flex items-center justify-between p-3 hover:bg-slate-50/80 cursor-pointer transition group">
+                    <div onclick="app.openDocument('${doc.id}')" class="flex items-center justify-between p-3 hover:bg-[#1f2024] cursor-pointer transition group">
                       <div class="flex items-center gap-2.5 min-w-0 pr-2">
-                        <i data-lucide="file-text" class="w-4 h-4 text-slate-400 group-hover:text-blue-600 shrink-0"></i>
-                        <span class="text-xs font-medium text-slate-800 group-hover:text-blue-600 truncate transition">${doc.title}</span>
+                        <i data-lucide="file-text" class="w-4 h-4 text-zinc-500 group-hover:text-blue-400 shrink-0"></i>
+                        <span class="text-xs font-medium text-zinc-200 group-hover:text-blue-400 truncate transition">${doc.title}</span>
                       </div>
                       <div class="flex items-center gap-2 shrink-0">
                         ${this.getTypeBadge(doc.type)}
-                        <span class="text-[11px] text-slate-400">${doc.academicYear || '2024'}</span>
-                        <i data-lucide="chevron-right" class="w-3.5 h-3.5 text-slate-300 group-hover:text-blue-600 transition"></i>
+                        <span class="text-[11px] text-zinc-500">${doc.academicYear || '2024'}</span>
+                        <i data-lucide="chevron-right" class="w-3.5 h-3.5 text-zinc-600 group-hover:text-blue-400 transition"></i>
                       </div>
                     </div>
                   `).join('')}
@@ -1688,41 +1688,41 @@ class AcademicHubApp {
     const promo = this.promotions.find(p => p.id === res.promotionId);
 
     return `
-    <div onclick="app.openDocument('${res.id}')" class="bg-white rounded-lg border border-slate-200 hover:border-blue-600 transition p-3.5 space-y-2 cursor-pointer group">
+    <div onclick="app.openDocument('${res.id}')" class="bg-[#16171a] rounded-lg border border-zinc-800 hover:border-zinc-700 transition p-3.5 space-y-2 cursor-pointer group">
       
       <!-- Top Row: Type Badge + Year -->
       <div class="flex items-center justify-between gap-2">
         ${this.getTypeBadge(res.type)}
-        <span class="text-[11px] font-medium text-slate-500 bg-slate-100 px-2 py-0.5 rounded-md">
+        <span class="text-[11px] font-medium text-zinc-400 bg-[#121316] border border-zinc-800 px-2 py-0.5 rounded-lg">
           ${res.academicYear || '2024-2025'}
         </span>
       </div>
 
       <!-- Document Title -->
       <div>
-        <h3 class="font-semibold text-slate-900 text-xs sm:text-sm leading-snug group-hover:text-blue-600 transition line-clamp-2">
+        <h3 class="font-semibold text-white text-xs sm:text-sm leading-snug group-hover:text-blue-400 transition line-clamp-2">
           ${res.title}
         </h3>
-        <p class="text-xs text-slate-500 mt-0.5 line-clamp-1">
+        <p class="text-xs text-zinc-400 mt-0.5 line-clamp-1">
           ${course ? `${course.code} — ${course.name}` : 'Matière universitaire'}
         </p>
       </div>
 
       <!-- Metadata & Badges Footer -->
-      <div class="pt-2 border-t border-slate-100 flex items-center justify-between text-[11px] text-slate-600">
+      <div class="pt-2 border-t border-zinc-800 flex items-center justify-between text-[11px] text-zinc-400">
         <div class="flex items-center gap-2.5 truncate">
-          <span class="flex items-center gap-1"><i data-lucide="user-check" class="w-3.5 h-3.5 text-slate-400"></i>${res.professor || 'Département'}</span>
-          <span class="text-slate-300">•</span>
+          <span class="flex items-center gap-1"><i data-lucide="user-check" class="w-3.5 h-3.5 text-zinc-500"></i>${res.professor || 'Département'}</span>
+          <span class="text-zinc-600">•</span>
           <span class="truncate">${promo ? promo.cycle : 'Licence'}</span>
         </div>
 
         <div class="flex items-center gap-2 shrink-0">
           ${res.hasCorrection ? `
-            <span class="inline-flex items-center gap-1 text-blue-700 font-medium bg-blue-50 px-2 py-0.5 rounded-md border border-blue-200 text-[10px]">
-              <i data-lucide="check" class="w-3 h-3 text-blue-600"></i> Corrigé
+            <span class="inline-flex items-center gap-1 text-emerald-400 font-medium bg-[#062817] px-2 py-0.5 rounded-lg border border-emerald-900/60 text-[10px]">
+              <i data-lucide="check" class="w-3 h-3 text-emerald-400"></i> Corrigé
             </span>
           ` : ''}
-          <span class="text-slate-400 group-hover:text-blue-600 transition">
+          <span class="text-zinc-500 group-hover:text-blue-400 transition">
             <i data-lucide="chevron-right" class="w-3.5 h-3.5"></i>
           </span>
         </div>
@@ -1786,40 +1786,40 @@ class AcademicHubApp {
     <div class="max-w-5xl mx-auto px-4 py-4 sm:px-6 space-y-4 animate-in fade-in duration-150">
       
       <!-- Top Sticky Action Bar -->
-      <div class="bg-white rounded-lg border border-slate-200 p-3.5 flex flex-wrap items-center justify-between gap-3">
+      <div class="bg-[#16171a] rounded-lg border border-zinc-800 p-3.5 flex flex-wrap items-center justify-between gap-3">
         <div class="flex items-center gap-3 min-w-0">
-          <button onclick="app.navigate('documents')" class="p-2 rounded-lg text-slate-600 hover:bg-slate-100 transition border border-slate-200 shrink-0" title="Retour à la bibliothèque">
+          <button onclick="app.navigate('documents')" class="p-2 rounded-lg text-zinc-400 hover:text-white hover:bg-zinc-800 transition border border-zinc-800 shrink-0" title="Retour à la bibliothèque">
             <i data-lucide="arrow-left" class="w-4 h-4"></i>
           </button>
           <div class="truncate">
             <div class="flex items-center gap-2 flex-wrap">
               ${this.getTypeBadge(res.type)}
-              <span class="text-xs font-semibold text-slate-500">${res.academicYear || '2025-2026'}</span>
-              <span class="text-xs text-slate-400">•</span>
-              <span class="text-xs text-slate-600 font-medium truncate">${course ? course.name : 'Matière'}</span>
-              ${res.fileSize ? `<span class="text-[11px] text-slate-400 bg-slate-100 px-1.5 py-0.5 rounded font-mono">${res.fileSize}</span>` : ''}
+              <span class="text-xs font-semibold text-zinc-400">${res.academicYear || '2025-2026'}</span>
+              <span class="text-xs text-zinc-600">•</span>
+              <span class="text-xs text-zinc-300 font-medium truncate">${course ? course.name : 'Matière'}</span>
+              ${res.fileSize ? `<span class="text-[11px] text-zinc-400 bg-zinc-800/80 px-1.5 py-0.5 rounded font-mono border border-zinc-700/50">${res.fileSize}</span>` : ''}
             </div>
-            <h1 class="font-bold text-slate-900 text-sm truncate mt-0.5" title="${this.escapeHtml(res.title)}">${this.escapeHtml(res.title)}</h1>
+            <h1 class="font-bold text-white text-sm truncate mt-0.5" title="${this.escapeHtml(res.title)}">${this.escapeHtml(res.title)}</h1>
           </div>
         </div>
 
         <div class="flex items-center gap-2 shrink-0 flex-wrap">
-          <button onclick="document.getElementById('pdf-top-file-input').click()" class="bg-blue-50 hover:bg-blue-100 text-blue-700 font-semibold text-xs px-3 py-2 rounded-lg transition flex items-center gap-1.5 border border-blue-200 cursor-pointer" title="Déposer ou ouvrir un fichier PDF">
-            <i data-lucide="upload" class="w-3.5 h-3.5 text-blue-600"></i>
+          <button onclick="document.getElementById('pdf-top-file-input').click()" class="bg-blue-600/10 hover:bg-blue-600/20 text-blue-400 font-semibold text-xs px-3 py-2 rounded-lg transition flex items-center gap-1.5 border border-blue-500/30 cursor-pointer" title="Déposer ou ouvrir un fichier PDF">
+            <i data-lucide="upload" class="w-3.5 h-3.5 text-blue-400"></i>
             <span>Déposer un PDF</span>
           </button>
           <input type="file" id="pdf-top-file-input" accept=".pdf,application/pdf" onchange="app.handleDirectPdfSelect(event)" class="hidden">
 
-          <button onclick="app.toggleFavorite('${res.id}')" class="p-2 rounded-lg text-slate-600 hover:text-blue-600 hover:bg-slate-50 transition border border-slate-200 shrink-0" title="Ajouter aux favoris">
+          <button onclick="app.toggleFavorite('${res.id}')" class="p-2 rounded-lg text-zinc-400 hover:text-blue-400 hover:bg-zinc-800 transition border border-zinc-800 shrink-0" title="Ajouter aux favoris">
             <i data-lucide="star" class="w-4 h-4"></i>
           </button>
 
-          <button onclick="app.downloadFile('${res.id}')" class="bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold text-xs px-3 py-2 rounded-lg transition flex items-center gap-1.5 border border-slate-200">
+          <button onclick="app.downloadFile('${res.id}')" class="bg-[#121316] hover:bg-zinc-800 text-zinc-300 font-semibold text-xs px-3 py-2 rounded-lg transition flex items-center gap-1.5 border border-zinc-800">
             <i data-lucide="download" class="w-3.5 h-3.5"></i>
             <span class="hidden sm:inline">Télécharger</span>
           </button>
 
-          <button onclick="app.startTutorOnResource('${res.id}')" class="bg-blue-600 hover:bg-blue-700 text-white font-semibold text-xs px-3.5 py-2 rounded-lg transition flex items-center gap-1.5">
+          <button onclick="app.startTutorOnResource('${res.id}')" class="bg-blue-600 hover:bg-blue-500 text-white font-semibold text-xs px-3.5 py-2 rounded-lg transition flex items-center gap-1.5">
             <i data-lucide="sparkles" class="w-3.5 h-3.5"></i>
             <span>Réviser avec l'IA</span>
           </button>
@@ -1852,36 +1852,36 @@ class AcademicHubApp {
     }
 
     return `
-    <div class="bg-white rounded-lg border border-slate-200 overflow-hidden">
+    <div class="bg-[#16171a] rounded-lg border border-zinc-800 overflow-hidden">
       
       <!-- Toolbar: Clean, Sober & Functional -->
-      <div class="bg-slate-50 border-b border-slate-200 px-3.5 py-2.5 flex flex-wrap items-center justify-between gap-2.5 text-xs text-slate-700">
+      <div class="bg-[#121316] border-b border-zinc-800 px-3.5 py-2.5 flex flex-wrap items-center justify-between gap-2.5 text-xs text-zinc-300">
         
         <!-- Document Name -->
         <div class="flex items-center gap-2 min-w-0">
-          <div class="w-6 h-6 rounded-lg bg-blue-50 text-blue-600 flex items-center justify-center shrink-0 font-bold">
+          <div class="w-6 h-6 rounded-lg bg-zinc-800 text-blue-400 flex items-center justify-center shrink-0 font-bold border border-zinc-700/50">
             <i data-lucide="file-text" class="w-3.5 h-3.5"></i>
           </div>
-          <span class="truncate max-w-[160px] sm:max-w-xs font-semibold text-slate-800 text-xs" title="${this.escapeHtml(res.fileName || res.title || 'document.pdf')}">
+          <span class="truncate max-w-[160px] sm:max-w-xs font-semibold text-zinc-200 text-xs" title="${this.escapeHtml(res.fileName || res.title || 'document.pdf')}">
             ${this.escapeHtml(res.fileName || res.title || 'document.pdf')}
           </span>
         </div>
 
         <!-- Center: Simple & Clear Page Navigation Controls (Précédent / Page X sur Y / Suivant) -->
-        <div class="flex items-center gap-1.5 bg-white border border-slate-200 rounded-lg p-1">
+        <div class="flex items-center gap-1.5 bg-[#18191c] border border-zinc-800 rounded-lg p-1">
           <button 
             id="pdf-btn-prev" 
             onclick="app.prevPdfPage()" 
             ${currentPage <= 1 ? 'disabled' : ''} 
-            class="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg hover:bg-slate-100 text-slate-700 font-medium text-xs disabled:opacity-30 disabled:pointer-events-none transition cursor-pointer" 
+            class="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg hover:bg-zinc-800 text-zinc-300 font-medium text-xs disabled:opacity-30 disabled:pointer-events-none transition cursor-pointer" 
             title="Page précédente (Flèche gauche ou PageUp)"
           >
             <i data-lucide="chevron-left" class="w-3.5 h-3.5"></i>
             <span class="hidden sm:inline">Précédent</span>
           </button>
 
-          <div class="flex items-center gap-1 px-1.5 py-0.5 border-x border-slate-100 text-xs font-medium text-slate-700">
-            <span class="text-slate-500">Page</span>
+          <div class="flex items-center gap-1 px-1.5 py-0.5 border-x border-zinc-800 text-xs font-medium text-zinc-300">
+            <span class="text-zinc-500">Page</span>
             <input 
               type="number" 
               id="pdf-page-input" 
@@ -1890,17 +1890,17 @@ class AcademicHubApp {
               value="${currentPage}" 
               onchange="app.onPdfPageInputChange(this.value)" 
               onkeydown="if(event.key==='Enter') app.onPdfPageInputChange(this.value)"
-              class="w-12 text-center py-0.5 px-1 bg-slate-50 border border-slate-200 rounded text-xs font-semibold text-slate-800 outline-none focus:border-blue-600 focus:bg-white"
+              class="w-12 text-center py-0.5 px-1 bg-[#121316] border border-zinc-700 rounded text-xs font-semibold text-zinc-200 outline-none focus:border-blue-500 focus:bg-[#18191c]"
               title="Entrez un numéro de page puis appuyez sur Entrée"
             >
-            <span id="pdf-total-pages-label" class="text-slate-500 font-medium">/ ${totalPages}</span>
+            <span id="pdf-total-pages-label" class="text-zinc-400 font-medium">/ ${totalPages}</span>
           </div>
 
           <button 
             id="pdf-btn-next" 
             onclick="app.nextPdfPage()" 
             ${currentPage >= totalPages ? 'disabled' : ''} 
-            class="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg hover:bg-slate-100 text-slate-700 font-medium text-xs disabled:opacity-30 disabled:pointer-events-none transition cursor-pointer" 
+            class="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg hover:bg-zinc-800 text-zinc-300 font-medium text-xs disabled:opacity-30 disabled:pointer-events-none transition cursor-pointer" 
             title="Page suivante (Flèche droite ou PageDown)"
           >
             <span class="hidden sm:inline">Suivant</span>
@@ -1911,20 +1911,20 @@ class AcademicHubApp {
         <!-- Controls: Zoom, View Toggle & Direct Upload -->
         <div class="flex items-center gap-1.5 flex-wrap">
           ${!isTextMode ? `
-          <div class="flex items-center bg-white border border-slate-200/90 rounded-lg p-0.5 text-xs shadow-2xs">
-            <button onclick="app.changeZoom(-10)" class="w-6 h-6 flex items-center justify-center hover:bg-slate-100 rounded font-bold text-slate-600 transition" title="Zoom arrière (-)">−</button>
-            <span id="pdf-zoom-val" class="px-1.5 font-medium text-[11px] text-slate-700 font-mono">${this.currentDocZoom || 100}%</span>
-            <button onclick="app.changeZoom(10)" class="w-6 h-6 flex items-center justify-center hover:bg-slate-100 rounded font-bold text-slate-600 transition" title="Zoom avant (+)">+</button>
-            <button onclick="app.resetZoom()" class="px-1.5 py-0.5 hover:bg-slate-100 rounded text-[10px] text-slate-500 font-medium ml-0.5 border-l border-slate-100" title="Ajuster la largeur">Ajuster</button>
+          <div class="flex items-center bg-[#18191c] border border-zinc-800 rounded-lg p-0.5 text-xs shadow-2xs">
+            <button onclick="app.changeZoom(-10)" class="w-6 h-6 flex items-center justify-center hover:bg-zinc-800 rounded font-bold text-zinc-300 transition" title="Zoom arrière (-)">−</button>
+            <span id="pdf-zoom-val" class="px-1.5 font-medium text-[11px] text-zinc-300 font-mono">${this.currentDocZoom || 100}%</span>
+            <button onclick="app.changeZoom(10)" class="w-6 h-6 flex items-center justify-center hover:bg-zinc-800 rounded font-bold text-zinc-300 transition" title="Zoom avant (+)">+</button>
+            <button onclick="app.resetZoom()" class="px-1.5 py-0.5 hover:bg-zinc-800 rounded text-[10px] text-zinc-400 font-medium ml-0.5 border-l border-zinc-800" title="Ajuster la largeur">Ajuster</button>
           </div>
           ` : ''}
 
-          <button onclick="app.togglePdfViewMode()" class="px-2.5 py-1 rounded-lg border border-slate-200 bg-white hover:bg-slate-100 text-slate-700 flex items-center gap-1 text-xs transition shadow-2xs font-medium" title="Basculer entre le PDF graphique et la transcription texte">
-            <i data-lucide="${isTextMode ? 'file-text' : 'align-left'}" class="w-3.5 h-3.5 text-slate-500"></i>
+          <button onclick="app.togglePdfViewMode()" class="px-2.5 py-1 rounded-lg border border-zinc-800 bg-[#18191c] hover:bg-zinc-800 text-zinc-300 flex items-center gap-1 text-xs transition shadow-2xs font-medium" title="Basculer entre le PDF graphique et la transcription texte">
+            <i data-lucide="${isTextMode ? 'file-text' : 'align-left'}" class="w-3.5 h-3.5 text-zinc-400"></i>
             <span>${isTextMode ? 'Afficher le PDF' : 'Texte seul'}</span>
           </button>
 
-          <button onclick="app.downloadFile('${res.id}')" class="px-2.5 py-1 rounded-lg bg-slate-900 text-white hover:bg-slate-800 flex items-center gap-1 text-xs font-medium transition" title="Télécharger le fichier">
+          <button onclick="app.downloadFile('${res.id}')" class="px-2.5 py-1 rounded-lg bg-zinc-800 text-zinc-200 hover:bg-zinc-700 hover:text-white flex items-center gap-1 text-xs font-medium transition border border-zinc-700" title="Télécharger le fichier">
             <i data-lucide="download" class="w-3.5 h-3.5"></i>
             <span class="hidden sm:inline">Télécharger</span>
           </button>
@@ -1936,48 +1936,48 @@ class AcademicHubApp {
       ${!isTextMode ? `
         <div 
           id="pdf-canvas-container" 
-          ondragover="event.preventDefault(); this.classList.add('ring-2', 'ring-blue-500', 'bg-blue-50/20')"
-          ondragleave="this.classList.remove('ring-2', 'ring-blue-500', 'bg-blue-50/20')"
+          ondragover="event.preventDefault(); this.classList.add('ring-2', 'ring-blue-500', 'bg-blue-950/20')"
+          ondragleave="this.classList.remove('ring-2', 'ring-blue-500', 'bg-blue-950/20')"
           ondrop="app.handleViewerDrop(event)"
-          class="bg-slate-100/70 p-3 sm:p-6 flex flex-col items-center justify-start min-h-[550px] overflow-auto transition-colors"
+          class="bg-black/80 p-3 sm:p-6 flex flex-col items-center justify-start min-h-[550px] overflow-auto transition-colors"
         >
           
           <!-- Drop info banner -->
-          <div class="w-full max-w-2xl mb-3 flex items-center justify-between text-[11px] text-slate-400 px-1">
+          <div class="w-full max-w-2xl mb-3 flex items-center justify-between text-[11px] text-zinc-400 px-1">
             <span class="flex items-center gap-1">
-              <i data-lucide="info" class="w-3 h-3 text-slate-400"></i>
+              <i data-lucide="info" class="w-3 h-3 text-zinc-400"></i>
               <span>Glissez-déposez n'importe quel PDF ici pour le lire instantanément</span>
             </span>
-            <span class="hidden sm:inline text-slate-400">Raccourcis : touches ← et → pour naviguer</span>
+            <span class="hidden sm:inline text-zinc-500">Raccourcis : touches ← et → pour naviguer</span>
           </div>
 
           <!-- Loading Indicator -->
-          <div id="pdf-loading-indicator" class="py-16 flex flex-col items-center justify-center gap-2.5 text-slate-500 text-xs">
-            <div class="w-6 h-6 border-2 border-slate-300 border-t-blue-600 rounded-full animate-spin"></div>
+          <div id="pdf-loading-indicator" class="py-16 flex flex-col items-center justify-center gap-2.5 text-zinc-400 text-xs">
+            <div class="w-6 h-6 border-2 border-zinc-700 border-t-blue-500 rounded-full animate-spin"></div>
             <span class="font-medium">Chargement de la page...</span>
           </div>
           
           <!-- PDF Canvas -->
-          <canvas id="pdf-render-canvas" class="hidden shadow-sm rounded border border-slate-200/90 bg-white max-w-full block"></canvas>
+          <canvas id="pdf-render-canvas" class="hidden shadow-sm rounded border border-zinc-800 bg-white max-w-full block"></canvas>
 
           <!-- Fallback when canvas render fails -->
-          <div id="pdf-error-container" class="hidden text-center max-w-md p-6 bg-white rounded-lg border border-slate-200 space-y-3 my-auto">
-            <div class="w-10 h-10 rounded-full bg-slate-100 text-slate-600 flex items-center justify-center mx-auto">
+          <div id="pdf-error-container" class="hidden text-center max-w-md p-6 bg-[#16171a] rounded-lg border border-zinc-800 space-y-3 my-auto">
+            <div class="w-10 h-10 rounded-full bg-zinc-800 text-zinc-400 flex items-center justify-center mx-auto border border-zinc-700">
               <i data-lucide="file-text" class="w-5 h-5"></i>
             </div>
-            <p class="text-sm font-semibold text-slate-800">Aperçu direct du document</p>
-            <p class="text-xs text-slate-500 leading-relaxed">
+            <p class="text-sm font-semibold text-zinc-100">Aperçu direct du document</p>
+            <p class="text-xs text-zinc-400 leading-relaxed">
               Le document PDF est prêt. Vous pouvez le télécharger directement ou consulter la transcription texte.
             </p>
             <div class="flex items-center justify-center gap-2 pt-1 flex-wrap">
-              <button onclick="app.downloadFile('${res.id}')" class="inline-flex items-center gap-1.5 px-3.5 py-2 bg-blue-600 text-white rounded-lg text-xs font-semibold hover:bg-blue-700 transition">
+              <button onclick="app.downloadFile('${res.id}')" class="inline-flex items-center gap-1.5 px-3.5 py-2 bg-blue-600 text-white rounded-lg text-xs font-semibold hover:bg-blue-500 transition">
                 <i data-lucide="download" class="w-3.5 h-3.5"></i>
                 <span>Télécharger le PDF</span>
               </button>
-              <button onclick="app.togglePdfViewMode()" class="inline-flex items-center gap-1.5 px-3 py-2 bg-slate-100 text-slate-700 rounded-lg text-xs font-semibold hover:bg-slate-200 border border-slate-200 transition">
+              <button onclick="app.togglePdfViewMode()" class="inline-flex items-center gap-1.5 px-3 py-2 bg-zinc-800 text-zinc-200 rounded-lg text-xs font-semibold hover:bg-zinc-700 border border-zinc-700 transition">
                 <span>Lire la transcription</span>
               </button>
-              <button onclick="document.getElementById('pdf-top-file-input').click()" class="inline-flex items-center gap-1.5 px-3 py-2 bg-white text-slate-700 rounded-lg text-xs font-semibold hover:bg-slate-50 border border-slate-200 transition">
+              <button onclick="document.getElementById('pdf-top-file-input').click()" class="inline-flex items-center gap-1.5 px-3 py-2 bg-[#121316] text-zinc-300 rounded-lg text-xs font-semibold hover:bg-zinc-800 border border-zinc-700 transition">
                 <i data-lucide="upload" class="w-3.5 h-3.5"></i>
                 <span>Ouvrir un autre PDF</span>
               </button>
@@ -1985,24 +1985,24 @@ class AcademicHubApp {
           </div>
 
           <!-- Bottom Navigation Controls (Repeating Prev / Next for reading comfort on tall pages) -->
-          <div id="pdf-bottom-controls" class="mt-5 flex items-center justify-between gap-3 w-full max-w-2xl px-3 py-2 bg-white rounded-lg border border-slate-200 text-xs text-slate-700">
+          <div id="pdf-bottom-controls" class="mt-5 flex items-center justify-between gap-3 w-full max-w-2xl px-3 py-2 bg-[#16171a] rounded-lg border border-zinc-800 text-xs text-zinc-300">
             <button 
               id="pdf-btn-prev-bottom" 
               onclick="app.prevPdfPage()" 
               ${currentPage <= 1 ? 'disabled' : ''} 
-              class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-slate-200 bg-white hover:bg-slate-100 text-slate-700 font-medium text-xs disabled:opacity-30 disabled:pointer-events-none transition cursor-pointer shadow-2xs"
+              class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-zinc-800 bg-[#121316] hover:bg-zinc-800 text-zinc-300 font-medium text-xs disabled:opacity-30 disabled:pointer-events-none transition cursor-pointer shadow-2xs"
             >
               <i data-lucide="chevron-left" class="w-3.5 h-3.5"></i>
               <span>Page précédente</span>
             </button>
 
-            <span id="pdf-page-counter-bottom" class="text-xs font-semibold text-slate-700">Page ${currentPage} sur ${totalPages}</span>
+            <span id="pdf-page-counter-bottom" class="text-xs font-semibold text-zinc-300">Page ${currentPage} sur ${totalPages}</span>
 
             <button 
               id="pdf-btn-next-bottom" 
               onclick="app.nextPdfPage()" 
               ${currentPage >= totalPages ? 'disabled' : ''} 
-              class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-slate-200 bg-white hover:bg-slate-100 text-slate-700 font-medium text-xs disabled:opacity-30 disabled:pointer-events-none transition cursor-pointer shadow-2xs"
+              class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-zinc-800 bg-[#121316] hover:bg-zinc-800 text-zinc-300 font-medium text-xs disabled:opacity-30 disabled:pointer-events-none transition cursor-pointer shadow-2xs"
             >
               <span>Page suivante</span>
               <i data-lucide="chevron-right" class="w-3.5 h-3.5"></i>
@@ -2011,21 +2011,21 @@ class AcademicHubApp {
 
         </div>
       ` : `
-        <div class="p-6 bg-white min-h-[400px]">
+        <div class="p-6 bg-[#16171a] min-h-[400px]">
           <div class="max-w-3xl mx-auto space-y-4">
-            <div class="text-xs text-slate-500 border-b border-slate-100 pb-2 flex items-center justify-between">
+            <div class="text-xs text-zinc-400 border-b border-zinc-800 pb-2 flex items-center justify-between">
               <span>Transcription de cours</span>
               <span id="pdf-text-page-counter">Page ${currentPage} / ${totalPages}</span>
             </div>
-            <div class="text-xs sm:text-sm text-slate-800 leading-relaxed font-serif whitespace-pre-wrap">
+            <div class="text-xs sm:text-sm text-zinc-200 leading-relaxed font-serif whitespace-pre-wrap">
               ${this.escapeHtml(activePageContent)}
             </div>
-            <div class="flex items-center justify-between pt-4 border-t border-slate-100">
-              <button onclick="app.prevPdfPage()" ${currentPage <= 1 ? 'disabled' : ''} class="px-3 py-1.5 rounded-lg border border-slate-200 text-xs font-medium hover:bg-slate-50 disabled:opacity-30">
+            <div class="flex items-center justify-between pt-4 border-t border-zinc-800">
+              <button onclick="app.prevPdfPage()" ${currentPage <= 1 ? 'disabled' : ''} class="px-3 py-1.5 rounded-lg border border-zinc-800 text-xs font-medium text-zinc-300 hover:bg-zinc-800 disabled:opacity-30">
                 Précédent
               </button>
-              <span class="text-xs text-slate-500">Page ${currentPage} sur ${totalPages}</span>
-              <button onclick="app.nextPdfPage()" ${currentPage >= totalPages ? 'disabled' : ''} class="px-3 py-1.5 rounded-lg border border-slate-200 text-xs font-medium hover:bg-slate-50 disabled:opacity-30">
+              <span class="text-xs text-zinc-400">Page ${currentPage} sur ${totalPages}</span>
+              <button onclick="app.nextPdfPage()" ${currentPage >= totalPages ? 'disabled' : ''} class="px-3 py-1.5 rounded-lg border border-zinc-800 text-xs font-medium text-zinc-300 hover:bg-zinc-800 disabled:opacity-30">
                 Suivant
               </button>
             </div>
@@ -2114,47 +2114,47 @@ class AcademicHubApp {
     const activeSection = Math.max(0, Math.min(sections.length - 1, this.docWordActiveSection || 0));
 
     return `
-    <div class="bg-white rounded-lg border border-slate-200 overflow-hidden">
+    <div class="bg-[#16171a] rounded-lg border border-zinc-800 overflow-hidden">
       
       <!-- Word Toolbar -->
-      <div class="bg-slate-900 text-white px-4 py-3 flex flex-wrap items-center justify-between gap-3 text-xs">
+      <div class="bg-[#121316] text-white px-4 py-3 flex flex-wrap items-center justify-between gap-3 text-xs border-b border-zinc-800">
         <div class="flex items-center gap-2">
           <i data-lucide="file-text" class="w-4 h-4 text-blue-400"></i>
           <span class="font-bold tracking-wide">${res.fileName || 'Document_Officiel.docx'}</span>
-          <span class="px-2 py-0.5 rounded bg-slate-800 text-[10px] text-slate-300">Word / Syllabus</span>
+          <span class="px-2 py-0.5 rounded bg-zinc-800 text-[10px] text-zinc-300 border border-zinc-700/50">Word / Syllabus</span>
         </div>
 
         <div class="flex items-center gap-2 text-xs">
-          <span class="text-slate-300 text-[11px]">Lecture estimée : ~3 min</span>
-          <div class="flex items-center bg-slate-800 rounded-lg p-0.5">
-            <button onclick="app.changeZoom(-10)" class="px-2 py-0.5 hover:bg-slate-700 rounded text-slate-300">-</button>
-            <span class="px-2 font-mono text-[11px]">${this.currentDocZoom}%</span>
-            <button onclick="app.changeZoom(10)" class="px-2 py-0.5 hover:bg-slate-700 rounded text-slate-300">+</button>
+          <span class="text-zinc-400 text-[11px]">Lecture estimée : ~3 min</span>
+          <div class="flex items-center bg-[#18191c] border border-zinc-800 rounded-lg p-0.5">
+            <button onclick="app.changeZoom(-10)" class="px-2 py-0.5 hover:bg-zinc-800 rounded text-zinc-300">-</button>
+            <span class="px-2 font-mono text-[11px] text-zinc-300">${this.currentDocZoom}%</span>
+            <button onclick="app.changeZoom(10)" class="px-2 py-0.5 hover:bg-zinc-800 rounded text-zinc-300">+</button>
           </div>
         </div>
       </div>
 
       <!-- Section Tabs Navigation (Sommaire interactif) -->
-      <div class="bg-slate-50 border-b border-slate-200 px-4 py-2 flex items-center gap-1.5 overflow-x-auto no-scrollbar text-xs">
-        <span class="text-slate-500 font-semibold shrink-0 mr-1 flex items-center gap-1">
-          <i data-lucide="list" class="w-3.5 h-3.5 text-blue-600"></i> Sommaire :
+      <div class="bg-[#121316] border-b border-zinc-800 px-4 py-2 flex items-center gap-1.5 overflow-x-auto no-scrollbar text-xs">
+        <span class="text-zinc-400 font-semibold shrink-0 mr-1 flex items-center gap-1">
+          <i data-lucide="list" class="w-3.5 h-3.5 text-blue-400"></i> Sommaire :
         </span>
         ${sections.map((sec, idx) => `
-          <button onclick="app.setWordSection(${idx})" class="px-3 py-1 rounded-lg shrink-0 font-medium transition ${activeSection === idx ? 'bg-blue-600 text-white font-semibold' : 'bg-white border border-slate-200 text-slate-700 hover:bg-slate-100'}">
+          <button onclick="app.setWordSection(${idx})" class="px-3 py-1 rounded-lg shrink-0 font-medium transition ${activeSection === idx ? 'bg-blue-600 text-white font-semibold' : 'bg-[#18191c] border border-zinc-800 text-zinc-300 hover:bg-zinc-800'}">
             ${sec.title}
           </button>
         `).join('')}
       </div>
 
       <!-- Document Content Body -->
-      <div class="p-6 sm:p-10 bg-slate-50 min-h-[450px]">
-        <div style="font-size: ${this.currentDocZoom}%;" class="max-w-3xl mx-auto bg-white p-6 sm:p-10 rounded-lg border border-slate-200 space-y-6">
-          <div class="border-b border-slate-200 pb-4">
-            <span class="text-xs font-bold text-blue-600 uppercase tracking-wider">Section ${activeSection + 1} sur ${sections.length}</span>
-            <h2 class="text-lg sm:text-xl font-extrabold text-slate-900 mt-1">${sections[activeSection].title}</h2>
+      <div class="p-6 sm:p-10 bg-black/80 min-h-[450px]">
+        <div style="font-size: ${this.currentDocZoom}%;" class="max-w-3xl mx-auto bg-[#16171a] p-6 sm:p-10 rounded-lg border border-zinc-800 space-y-6">
+          <div class="border-b border-zinc-800 pb-4">
+            <span class="text-xs font-bold text-blue-400 uppercase tracking-wider">Section ${activeSection + 1} sur ${sections.length}</span>
+            <h2 class="text-lg sm:text-xl font-extrabold text-white mt-1">${sections[activeSection].title}</h2>
           </div>
 
-          <div class="prose prose-slate max-w-none text-xs sm:text-sm whitespace-pre-wrap leading-relaxed">
+          <div class="prose prose-invert max-w-none text-xs sm:text-sm whitespace-pre-wrap leading-relaxed text-zinc-200">
             ${this.formatMarkdown(sections[activeSection].content)}
           </div>
         </div>
@@ -2171,14 +2171,14 @@ class AcademicHubApp {
     const activeTab = this.docSheetActiveTab || 0;
 
     return `
-    <div class="bg-white rounded-lg border border-slate-200 overflow-hidden">
+    <div class="bg-[#16171a] rounded-lg border border-zinc-800 overflow-hidden">
       
       <!-- Excel Header -->
-      <div class="bg-slate-900 text-white px-4 py-3 flex flex-wrap items-center justify-between gap-3 text-xs">
+      <div class="bg-[#121316] text-white px-4 py-3 flex flex-wrap items-center justify-between gap-3 text-xs border-b border-zinc-800">
         <div class="flex items-center gap-2">
           <i data-lucide="table" class="w-4 h-4 text-blue-400"></i>
           <span class="font-bold tracking-wide">${res.fileName || 'Classeur_Labo.xlsx'}</span>
-          <span class="px-2 py-0.5 rounded bg-slate-800 text-[10px] text-slate-300">Excel / Tableur</span>
+          <span class="px-2 py-0.5 rounded bg-zinc-800 text-[10px] text-zinc-300 border border-zinc-700/50">Excel / Tableur</span>
         </div>
 
         <div class="flex items-center gap-2">
@@ -2187,36 +2187,36 @@ class AcademicHubApp {
             placeholder="Filtrer les lignes..." 
             value="${this.escapeHtml(this.docSheetFilter || '')}"
             oninput="app.setSheetFilter(this.value)"
-            class="bg-slate-800 text-white placeholder:text-slate-400 border border-slate-700 rounded-lg px-2.5 py-1 text-xs outline-none"
+            class="bg-[#18191c] text-white placeholder:text-zinc-500 border border-zinc-700 rounded-lg px-2.5 py-1 text-xs outline-none focus:border-blue-500"
           />
-          <div class="flex items-center bg-slate-800 rounded-lg p-0.5 text-xs font-mono">
-            <button onclick="app.changeZoom(-10)" class="px-2 py-0.5 hover:bg-slate-700 rounded text-slate-300">-</button>
-            <span class="px-2">${this.currentDocZoom}%</span>
-            <button onclick="app.changeZoom(10)" class="px-2 py-0.5 hover:bg-slate-700 rounded text-slate-300">+</button>
+          <div class="flex items-center bg-[#18191c] border border-zinc-800 rounded-lg p-0.5 text-xs font-mono">
+            <button onclick="app.changeZoom(-10)" class="px-2 py-0.5 hover:bg-zinc-800 rounded text-zinc-300">-</button>
+            <span class="px-2 text-zinc-300">${this.currentDocZoom}%</span>
+            <button onclick="app.changeZoom(10)" class="px-2 py-0.5 hover:bg-zinc-800 rounded text-zinc-300">+</button>
           </div>
         </div>
       </div>
 
       <!-- Formula Bar (Barre de formules Excel) -->
-      <div class="bg-slate-100 border-b border-slate-200 px-4 py-2 flex items-center gap-3 text-xs font-mono">
-        <div class="bg-white border border-slate-300 px-2 py-1 rounded font-bold text-slate-800 w-16 text-center">
+      <div class="bg-[#121316] border-b border-zinc-800 px-4 py-2 flex items-center gap-3 text-xs font-mono">
+        <div class="bg-[#18191c] border border-zinc-700 px-2 py-1 rounded font-bold text-zinc-200 w-16 text-center">
           ${this.docSheetSelectedCell || 'B2'}
         </div>
-        <div class="text-slate-400 font-bold">fx</div>
-        <div class="flex-1 bg-white border border-slate-300 px-3 py-1 rounded text-slate-800 truncate">
+        <div class="text-zinc-500 font-bold">fx</div>
+        <div class="flex-1 bg-[#18191c] border border-zinc-700 px-3 py-1 rounded text-zinc-200 truncate">
           ${this.getFormulaForCell(this.docSheetSelectedCell || 'B2', tableData)}
         </div>
       </div>
 
       <!-- Interactive Spreadsheet Grid -->
-      <div style="font-size: ${this.currentDocZoom}%;" class="overflow-x-auto max-h-[500px] overflow-y-auto no-scrollbar">
+      <div style="font-size: ${this.currentDocZoom}%;" class="overflow-x-auto max-h-[500px] overflow-y-auto no-scrollbar bg-black/70">
         <table class="w-full border-collapse text-xs text-left">
           <thead>
-            <tr class="bg-slate-200 text-slate-700 font-semibold border-b border-slate-300">
-              <th class="p-2 border-r border-slate-300 text-center w-12 bg-slate-300 font-mono text-[11px]">#</th>
+            <tr class="bg-[#18191c] text-zinc-300 font-semibold border-b border-zinc-800">
+              <th class="p-2 border-r border-zinc-800 text-center w-12 bg-[#121316] font-mono text-[11px] text-zinc-500">#</th>
               ${tableData.headers.map((h, idx) => `
-                <th class="p-2.5 border-r border-slate-300 font-bold whitespace-nowrap">
-                  <div class="text-[10px] text-slate-500 font-mono">${String.fromCharCode(65 + idx)}</div>
+                <th class="p-2.5 border-r border-zinc-800 font-bold whitespace-nowrap">
+                  <div class="text-[10px] text-zinc-500 font-mono">${String.fromCharCode(65 + idx)}</div>
                   <div>${h}</div>
                 </th>
               `).join('')}
@@ -2226,13 +2226,13 @@ class AcademicHubApp {
             ${tableData.rows
               .filter(row => !this.docSheetFilter || row.some(cell => String(cell).toLowerCase().includes(this.docSheetFilter.toLowerCase())))
               .map((row, rIdx) => `
-                <tr class="hover:bg-slate-50 border-b border-slate-200 transition">
-                  <td class="p-2 border-r border-slate-300 text-center font-mono text-slate-500 bg-slate-100 font-medium">${rIdx + 1}</td>
+                <tr class="hover:bg-zinc-900/60 border-b border-zinc-800/80 transition">
+                  <td class="p-2 border-r border-zinc-800 text-center font-mono text-zinc-500 bg-[#121316] font-medium">${rIdx + 1}</td>
                   ${row.map((cell, cIdx) => {
                     const cellKey = `${String.fromCharCode(65 + cIdx)}${rIdx + 1}`;
                     const isSelected = this.docSheetSelectedCell === cellKey;
                     return `
-                      <td onclick="app.selectSheetCell('${cellKey}', '${this.escapeHtml(String(cell))}')" class="p-2.5 border-r border-slate-200 font-mono cursor-pointer ${isSelected ? 'bg-blue-50 border-2 border-blue-600 font-bold text-blue-900' : 'text-slate-800'}">
+                      <td onclick="app.selectSheetCell('${cellKey}', '${this.escapeHtml(String(cell))}')" class="p-2.5 border-r border-zinc-800 font-mono cursor-pointer ${isSelected ? 'bg-blue-900/40 border-2 border-blue-500 font-bold text-white' : 'text-zinc-200'}">
                         ${cell}
                       </td>
                     `;
@@ -2244,15 +2244,15 @@ class AcademicHubApp {
       </div>
 
       <!-- Excel Footer Tabs (Feuilles) -->
-      <div class="bg-slate-100 border-t border-slate-200 px-4 py-2 flex items-center justify-between text-xs">
+      <div class="bg-[#121316] border-t border-zinc-800 px-4 py-2 flex items-center justify-between text-xs">
         <div class="flex items-center gap-1">
           ${tabs.map((tabName, idx) => `
-            <button onclick="app.setSheetTab(${idx})" class="px-3 py-1 rounded-t-lg font-medium transition ${activeTab === idx ? 'bg-white border-t-2 border-blue-600 text-blue-900 font-bold' : 'text-slate-600 hover:bg-slate-200'}">
+            <button onclick="app.setSheetTab(${idx})" class="px-3 py-1 rounded-t-lg font-medium transition ${activeTab === idx ? 'bg-[#18191c] border-t-2 border-blue-500 text-white font-bold' : 'text-zinc-400 hover:bg-zinc-800'}">
               ${tabName}
             </button>
           `).join('')}
         </div>
-        <div class="text-[11px] text-slate-500 font-mono hidden sm:inline">
+        <div class="text-[11px] text-zinc-500 font-mono hidden sm:inline">
           ${tableData.rows.length} lignes enregistrées • Somme auto calculée
         </div>
       </div>
@@ -2269,48 +2269,48 @@ class AcademicHubApp {
     const currentSlide = slides[activeIndex];
 
     return `
-    <div class="bg-white rounded-lg border border-slate-200 overflow-hidden">
+    <div class="bg-[#16171a] rounded-lg border border-zinc-800 overflow-hidden">
       
       <!-- Slide Presentation Toolbar -->
-      <div class="bg-slate-900 text-white px-4 py-3 flex flex-wrap items-center justify-between gap-3 text-xs">
+      <div class="bg-[#121316] text-white px-4 py-3 flex flex-wrap items-center justify-between gap-3 text-xs border-b border-zinc-800">
         <div class="flex items-center gap-2">
           <i data-lucide="presentation" class="w-4 h-4 text-blue-400"></i>
           <span class="font-bold tracking-wide">${res.fileName || 'Diapositives.pptx'}</span>
-          <span class="px-2 py-0.5 rounded bg-slate-800 text-[10px] text-slate-300">Présentation / Diapo</span>
+          <span class="px-2 py-0.5 rounded bg-zinc-800 text-[10px] text-zinc-300 border border-zinc-700/50">Présentation / Diapo</span>
         </div>
 
         <div class="flex items-center gap-2">
-          <button onclick="app.toggleSlideNotes()" class="px-2.5 py-1 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs flex items-center gap-1 border border-slate-700">
+          <button onclick="app.toggleSlideNotes()" class="px-2.5 py-1 rounded-lg bg-[#18191c] hover:bg-zinc-800 text-zinc-300 text-xs flex items-center gap-1 border border-zinc-800">
             <i data-lucide="file-text" class="w-3.5 h-3.5"></i>
             <span>${this.docSlideShowNotes ? 'Masquer les notes' : 'Notes du cours'}</span>
           </button>
-          <div class="flex items-center bg-slate-800 rounded-lg p-0.5">
-            <button onclick="app.prevSlide()" ${activeIndex <= 0 ? 'disabled' : ''} class="px-2 py-0.5 hover:bg-slate-700 rounded disabled:opacity-40"><i data-lucide="chevron-left" class="w-3.5 h-3.5"></i></button>
-            <span class="px-2 font-mono text-[11px] font-bold">${activeIndex + 1} / ${totalSlides}</span>
-            <button onclick="app.nextSlide()" ${activeIndex >= totalSlides - 1 ? 'disabled' : ''} class="px-2 py-0.5 hover:bg-slate-700 rounded disabled:opacity-40"><i data-lucide="chevron-right" class="w-3.5 h-3.5"></i></button>
+          <div class="flex items-center bg-[#18191c] border border-zinc-800 rounded-lg p-0.5">
+            <button onclick="app.prevSlide()" ${activeIndex <= 0 ? 'disabled' : ''} class="px-2 py-0.5 hover:bg-zinc-800 rounded text-zinc-300 disabled:opacity-40"><i data-lucide="chevron-left" class="w-3.5 h-3.5"></i></button>
+            <span class="px-2 font-mono text-[11px] font-bold text-zinc-200">${activeIndex + 1} / ${totalSlides}</span>
+            <button onclick="app.nextSlide()" ${activeIndex >= totalSlides - 1 ? 'disabled' : ''} class="px-2 py-0.5 hover:bg-zinc-800 rounded text-zinc-300 disabled:opacity-40"><i data-lucide="chevron-right" class="w-3.5 h-3.5"></i></button>
           </div>
         </div>
       </div>
 
       <!-- Slide Main Stage (16:9 Aspect Frame) -->
-      <div class="p-6 sm:p-10 bg-slate-900 flex items-center justify-center min-h-[420px]">
-        <div class="w-full max-w-2xl aspect-[16/9] bg-white rounded-lg p-6 sm:p-8 flex flex-col justify-between border border-slate-700 text-slate-900">
+      <div class="p-6 sm:p-10 bg-black/80 flex items-center justify-center min-h-[420px]">
+        <div class="w-full max-w-2xl aspect-[16/9] bg-[#121316] rounded-lg p-6 sm:p-8 flex flex-col justify-between border border-zinc-800 text-white">
           <div>
-            <div class="flex items-center justify-between text-[11px] font-bold text-blue-700 uppercase tracking-widest border-b pb-2">
+            <div class="flex items-center justify-between text-[11px] font-bold text-blue-400 uppercase tracking-widest border-b border-zinc-800 pb-2">
               <span>${course ? course.name : 'COURS MAGISTRAL'}</span>
               <span>DIAPOSITIVE ${activeIndex + 1}</span>
             </div>
-            <h2 class="text-base sm:text-xl font-extrabold text-slate-900 mt-4 leading-tight">${currentSlide.title}</h2>
-            <ul class="mt-4 space-y-2.5 text-xs sm:text-sm text-slate-700">
+            <h2 class="text-base sm:text-xl font-extrabold text-white mt-4 leading-tight">${currentSlide.title}</h2>
+            <ul class="mt-4 space-y-2.5 text-xs sm:text-sm text-zinc-300">
               ${currentSlide.points.map(pt => `
                 <li class="flex items-start gap-2">
-                  <span class="text-blue-600 font-bold mt-0.5 shrink-0">✦</span>
+                  <span class="text-blue-400 font-bold mt-0.5 shrink-0">✦</span>
                   <span>${pt}</span>
                 </li>
               `).join('')}
             </ul>
           </div>
-          <div class="text-[10px] text-slate-400 flex items-center justify-between pt-4 border-t">
+          <div class="text-[10px] text-zinc-500 flex items-center justify-between pt-4 border-t border-zinc-800">
             <span>Academic Hub Slide Viewer</span>
             <span>${promo ? promo.name : 'Tronc Commun'}</span>
           </div>
@@ -2319,22 +2319,22 @@ class AcademicHubApp {
 
       <!-- Presenter Notes (If toggled) -->
       ${this.docSlideShowNotes ? `
-        <div class="bg-slate-50 border-t border-slate-200 p-4 text-xs text-slate-800 space-y-1">
-          <div class="font-bold flex items-center gap-1.5 text-slate-900">
-            <i data-lucide="info" class="w-3.5 h-3.5 text-blue-600"></i> Notes pédagogiques & Conseils d'examen :
+        <div class="bg-[#121316] border-t border-zinc-800 p-4 text-xs text-zinc-300 space-y-1">
+          <div class="font-bold flex items-center gap-1.5 text-white">
+            <i data-lucide="info" class="w-3.5 h-3.5 text-blue-400"></i> Notes pédagogiques & Conseils d'examen :
           </div>
-          <p class="text-slate-700 text-xs leading-relaxed">
+          <p class="text-zinc-400 text-xs leading-relaxed">
             ${currentSlide.notes || "Insister particulièrement sur la formulation du principe fondamental et les conditions d'application des théorèmes énergétiques."}
           </p>
         </div>
       ` : ''}
 
       <!-- Thumbnails Carousel Ribbon -->
-      <div class="bg-slate-100 border-t border-slate-200 p-3 flex items-center gap-3 overflow-x-auto no-scrollbar">
+      <div class="bg-[#121316] border-t border-zinc-800 p-3 flex items-center gap-3 overflow-x-auto no-scrollbar">
         ${slides.map((s, idx) => `
-          <button onclick="app.setSlideIndex(${idx})" class="shrink-0 w-28 aspect-[16/9] rounded-lg border p-1.5 text-left text-[9px] flex flex-col justify-between transition ${activeIndex === idx ? 'border-blue-600 bg-white font-bold' : 'border-slate-300 bg-slate-50 hover:bg-white text-slate-600'}">
-            <div class="truncate text-slate-800 font-bold">#${idx + 1} ${s.title}</div>
-            <div class="text-slate-400 text-[8px] text-right">Diapo ${idx + 1}</div>
+          <button onclick="app.setSlideIndex(${idx})" class="shrink-0 w-28 aspect-[16/9] rounded-lg border p-1.5 text-left text-[9px] flex flex-col justify-between transition ${activeIndex === idx ? 'border-blue-500 bg-[#18191c] font-bold text-white' : 'border-zinc-800 bg-[#16171a] hover:bg-zinc-800 text-zinc-400'}">
+            <div class="truncate text-zinc-200 font-bold">#${idx + 1} ${s.title}</div>
+            <div class="text-zinc-500 text-[8px] text-right">Diapo ${idx + 1}</div>
           </button>
         `).join('')}
       </div>
@@ -2453,29 +2453,29 @@ class AcademicHubApp {
     ];
 
     return `
-    <div class="bg-white rounded-lg border border-slate-200 overflow-hidden">
+    <div class="bg-[#16171a] rounded-lg border border-zinc-800 overflow-hidden">
       
       <!-- Audio Player Main Card -->
-      <div class="bg-slate-900 text-white p-6 sm:p-8 space-y-6">
+      <div class="bg-[#121316] text-white p-6 sm:p-8 space-y-6 border-b border-zinc-800">
         
         <div class="flex items-center justify-between">
           <div class="flex items-center gap-2 text-blue-400 text-xs font-semibold uppercase tracking-wider">
             <i data-lucide="headphones" class="w-4 h-4"></i>
             <span>Podcast Académique • Capsule Audio</span>
           </div>
-          <span class="px-2 py-0.5 rounded bg-slate-800 border border-slate-700 text-xs font-mono text-slate-300">${res.fileSize || '4.2 Mo'}</span>
+          <span class="px-2 py-0.5 rounded bg-zinc-800 border border-zinc-700/50 text-xs font-mono text-zinc-300">${res.fileSize || '4.2 Mo'}</span>
         </div>
 
         <div>
           <h2 class="text-lg sm:text-xl font-extrabold text-white">${res.title}</h2>
-          <p class="text-xs text-slate-300 mt-1">${res.professor || 'Enseignant référent'} • ${course ? course.name : 'Matière'}</p>
+          <p class="text-xs text-zinc-400 mt-1">${res.professor || 'Enseignant référent'} • ${course ? course.name : 'Matière'}</p>
         </div>
 
         <!-- Animated Wave Equalizer Simulation -->
         <div class="flex items-end justify-center gap-1.5 h-14 py-2">
           ${Array.from({ length: 24 }).map((_, i) => {
             const h = isPlaying ? (20 + ((i * 17) % 60)) : 12;
-            return `<div class="w-1.5 bg-blue-400 rounded-full transition-all duration-150" style="height: ${h}px;"></div>`;
+            return `<div class="w-1.5 bg-blue-500 rounded-full transition-all duration-150" style="height: ${h}px;"></div>`;
           }).join('')}
         </div>
 
@@ -2487,9 +2487,9 @@ class AcademicHubApp {
             max="${duration}" 
             value="${curTime}" 
             onchange="app.setAudioTime(parseInt(this.value, 10))"
-            class="w-full accent-blue-500 cursor-pointer h-1.5 bg-slate-800 rounded-lg"
+            class="w-full accent-blue-500 cursor-pointer h-1.5 bg-zinc-800 rounded-lg"
           />
-          <div class="flex justify-between text-[11px] font-mono text-slate-400">
+          <div class="flex justify-between text-[11px] font-mono text-zinc-400">
             <span>${this.formatTime(curTime)}</span>
             <span>${this.formatTime(duration)}</span>
           </div>
@@ -2498,26 +2498,26 @@ class AcademicHubApp {
         <!-- Player Controls -->
         <div class="flex items-center justify-between pt-2">
           <!-- Speed control -->
-          <div class="flex items-center bg-slate-800 border border-slate-700 rounded-lg p-0.5 text-xs font-mono">
-            <button onclick="app.changeAudioSpeed(0.75)" class="px-2 py-0.5 rounded ${speed === 0.75 ? 'bg-blue-600 font-bold' : 'text-slate-300'}">0.75x</button>
-            <button onclick="app.changeAudioSpeed(1.0)" class="px-2 py-0.5 rounded ${speed === 1.0 ? 'bg-blue-600 font-bold' : 'text-slate-300'}">1x</button>
-            <button onclick="app.changeAudioSpeed(1.5)" class="px-2 py-0.5 rounded ${speed === 1.5 ? 'bg-blue-600 font-bold' : 'text-slate-300'}">1.5x</button>
+          <div class="flex items-center bg-[#18191c] border border-zinc-800 rounded-lg p-0.5 text-xs font-mono">
+            <button onclick="app.changeAudioSpeed(0.75)" class="px-2 py-0.5 rounded ${speed === 0.75 ? 'bg-blue-600 font-bold text-white' : 'text-zinc-400'}">0.75x</button>
+            <button onclick="app.changeAudioSpeed(1.0)" class="px-2 py-0.5 rounded ${speed === 1.0 ? 'bg-blue-600 font-bold text-white' : 'text-zinc-400'}">1x</button>
+            <button onclick="app.changeAudioSpeed(1.5)" class="px-2 py-0.5 rounded ${speed === 1.5 ? 'bg-blue-600 font-bold text-white' : 'text-zinc-400'}">1.5x</button>
           </div>
 
           <!-- Main Play Controls -->
           <div class="flex items-center gap-3">
-            <button onclick="app.setAudioTime(Math.max(0, ${curTime} - 10))" class="p-2 text-slate-400 hover:text-white" title="-10s">
+            <button onclick="app.setAudioTime(Math.max(0, ${curTime} - 10))" class="p-2 text-zinc-400 hover:text-white" title="-10s">
               <i data-lucide="rotate-ccw" class="w-4 h-4"></i>
             </button>
-            <button onclick="app.toggleAudioPlay()" class="w-12 h-12 rounded-full bg-blue-600 text-white flex items-center justify-center font-bold hover:bg-blue-700 transition">
+            <button onclick="app.toggleAudioPlay()" class="w-12 h-12 rounded-full bg-blue-600 text-white flex items-center justify-center font-bold hover:bg-blue-500 transition">
               <i data-lucide="${isPlaying ? 'pause' : 'play'}" class="w-5 h-5 fill-current"></i>
             </button>
-            <button onclick="app.setAudioTime(Math.min(${duration}, ${curTime} + 10))" class="p-2 text-slate-400 hover:text-white" title="+10s">
+            <button onclick="app.setAudioTime(Math.min(${duration}, ${curTime} + 10))" class="p-2 text-zinc-400 hover:text-white" title="+10s">
               <i data-lucide="rotate-cw" class="w-4 h-4"></i>
             </button>
           </div>
 
-          <button onclick="app.downloadFile('${res.id}')" class="text-xs text-slate-300 hover:text-white flex items-center gap-1 font-medium">
+          <button onclick="app.downloadFile('${res.id}')" class="text-xs text-zinc-300 hover:text-white flex items-center gap-1 font-medium">
             <i data-lucide="download" class="w-3.5 h-3.5"></i> MP3
           </button>
         </div>
@@ -2525,14 +2525,14 @@ class AcademicHubApp {
       </div>
 
       <!-- Synchronized Interactive Transcript -->
-      <div class="p-6 space-y-3 bg-slate-50">
-        <h3 class="text-xs font-bold text-slate-800 flex items-center gap-1.5 uppercase tracking-wider">
-          <i data-lucide="file-text" class="w-3.5 h-3.5 text-blue-600"></i> Transcription Synchronisée
+      <div class="p-6 space-y-3 bg-[#16171a]">
+        <h3 class="text-xs font-bold text-zinc-300 flex items-center gap-1.5 uppercase tracking-wider">
+          <i data-lucide="file-text" class="w-3.5 h-3.5 text-blue-400"></i> Transcription Synchronisée
         </h3>
         <div class="space-y-2">
           ${transcriptItems.map(item => `
-            <div onclick="app.setAudioTime(${item.time})" class="p-2.5 rounded-lg border transition cursor-pointer flex items-start gap-3 ${curTime >= item.time && curTime < item.time + 60 ? 'bg-blue-50 border-blue-300 text-blue-950 font-medium' : 'bg-white border-slate-200 hover:bg-slate-50 text-slate-700'}">
-              <span class="font-mono text-xs text-blue-600 font-bold shrink-0">[${item.stamp}]</span>
+            <div onclick="app.setAudioTime(${item.time})" class="p-2.5 rounded-lg border transition cursor-pointer flex items-start gap-3 ${curTime >= item.time && curTime < item.time + 60 ? 'bg-blue-900/30 border-blue-500/50 text-white font-medium' : 'bg-[#121316] border-zinc-800 hover:bg-zinc-800/80 text-zinc-300'}">
+              <span class="font-mono text-xs text-blue-400 font-bold shrink-0">[${item.stamp}]</span>
               <span class="text-xs">${item.text}</span>
             </div>
           `).join('')}
@@ -2558,16 +2558,16 @@ class AcademicHubApp {
     ];
 
     return `
-    <div class="bg-white rounded-lg border border-slate-200 overflow-hidden">
+    <div class="bg-[#16171a] rounded-lg border border-zinc-800 overflow-hidden">
       
       <!-- Video Screen Frame -->
       <div class="relative bg-black aspect-video flex flex-col justify-between p-4 text-white overflow-hidden group">
         <!-- Top Video Bar -->
         <div class="flex items-center justify-between text-xs z-10">
-          <span class="bg-black/60 backdrop-blur-xs px-2.5 py-1 rounded-lg font-semibold flex items-center gap-1.5">
+          <span class="bg-black/60 backdrop-blur-xs px-2.5 py-1 rounded-lg font-semibold flex items-center gap-1.5 border border-zinc-800">
             <i data-lucide="video" class="w-3.5 h-3.5 text-blue-400"></i> ${res.title}
           </span>
-          <span class="bg-black/60 px-2 py-1 rounded font-mono text-[11px] text-slate-300">${res.fileSize || '48 Mo'}</span>
+          <span class="bg-black/60 px-2 py-1 rounded font-mono text-[11px] text-zinc-300 border border-zinc-800">${res.fileSize || '48 Mo'}</span>
         </div>
 
         <!-- Center Play Overlay -->
@@ -2585,9 +2585,9 @@ class AcademicHubApp {
             max="${duration}" 
             value="${curTime}" 
             onchange="app.setVideoTime(parseInt(this.value, 10))"
-            class="w-full accent-blue-600 cursor-pointer h-1.5 bg-slate-800 rounded-lg"
+            class="w-full accent-blue-600 cursor-pointer h-1.5 bg-zinc-800 rounded-lg"
           />
-          <div class="flex items-center justify-between text-xs font-mono text-slate-300">
+          <div class="flex items-center justify-between text-xs font-mono text-zinc-300">
             <span>${this.formatTime(curTime)} / ${this.formatTime(duration)}</span>
             <div class="flex items-center gap-3">
               <button onclick="app.toggleVideoPlay()" class="hover:text-white"><i data-lucide="${isPlaying ? 'pause' : 'play'}" class="w-4 h-4"></i></button>
@@ -2598,15 +2598,15 @@ class AcademicHubApp {
       </div>
 
       <!-- Video Chapters & Notes -->
-      <div class="p-6 space-y-4 bg-slate-50">
-        <h3 class="text-xs font-bold text-slate-800 uppercase tracking-wider flex items-center gap-1.5">
-          <i data-lucide="bookmark" class="w-3.5 h-3.5 text-blue-600"></i> Chapitres de la séance
+      <div class="p-6 space-y-4 bg-[#16171a] border-t border-zinc-800">
+        <h3 class="text-xs font-bold text-zinc-300 uppercase tracking-wider flex items-center gap-1.5">
+          <i data-lucide="bookmark" class="w-3.5 h-3.5 text-blue-400"></i> Chapitres de la séance
         </h3>
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
           ${chapters.map(c => `
-            <button onclick="app.setVideoTime(${c.time})" class="p-2.5 text-left rounded-lg border transition flex items-center justify-between ${curTime >= c.time && curTime < c.time + 120 ? 'bg-blue-50 border-blue-300 text-blue-950 font-bold' : 'bg-white border-slate-200 hover:bg-slate-50 text-slate-700'}">
+            <button onclick="app.setVideoTime(${c.time})" class="p-2.5 text-left rounded-lg border transition flex items-center justify-between ${curTime >= c.time && curTime < c.time + 120 ? 'bg-blue-900/30 border-blue-500/50 text-white font-bold' : 'bg-[#121316] border-zinc-800 hover:bg-zinc-800/80 text-zinc-300'}">
               <span class="text-xs truncate">${c.title}</span>
-              <span class="font-mono text-xs text-blue-600 shrink-0 font-bold">[${c.stamp}]</span>
+              <span class="font-mono text-xs text-blue-400 shrink-0 font-bold">[${c.stamp}]</span>
             </button>
           `).join('')}
         </div>
@@ -2622,57 +2622,57 @@ class AcademicHubApp {
     <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
       
       <!-- Academic Context Card -->
-      <div class="bg-white rounded-lg border border-slate-200 p-4 space-y-2.5 text-xs">
-        <h2 class="font-bold text-slate-900 text-xs flex items-center gap-1.5 border-b border-slate-100 pb-1.5">
-          <i data-lucide="info" class="w-3.5 h-3.5 text-blue-600"></i>
+      <div class="bg-[#16171a] rounded-lg border border-zinc-800 p-4 space-y-2.5 text-xs">
+        <h2 class="font-bold text-white text-xs flex items-center gap-1.5 border-b border-zinc-800 pb-1.5">
+          <i data-lucide="info" class="w-3.5 h-3.5 text-blue-400"></i>
           Contexte Académique Officiel
         </h2>
-        <div class="space-y-1.5 text-slate-600">
-          <div><span class="font-semibold text-slate-800">Matière :</span> ${course ? `${course.code} — ${course.name}` : 'Matière'}</div>
-          <div><span class="font-semibold text-slate-800">Pôle / Filière :</span> ${promo ? `${promo.name} (${promo.cycle})` : 'Cycle préparatoire & Licence'}</div>
-          <div><span class="font-semibold text-slate-800">Enseignant :</span> ${res.professor || 'Département Pédagogique'}</div>
-          <div><span class="font-semibold text-slate-800">Chapitre ciblé :</span> ${res.chapter || 'Général'}</div>
-          <div><span class="font-semibold text-slate-800">Session :</span> ${res.session || 'Principale'} (${res.semester || 'S1'})</div>
+        <div class="space-y-1.5 text-zinc-300">
+          <div><span class="font-semibold text-zinc-400">Matière :</span> ${course ? `${course.code} — ${course.name}` : 'Matière'}</div>
+          <div><span class="font-semibold text-zinc-400">Pôle / Filière :</span> ${promo ? `${promo.name} (${promo.cycle})` : 'Cycle préparatoire & Licence'}</div>
+          <div><span class="font-semibold text-zinc-400">Enseignant :</span> ${res.professor || 'Département Pédagogique'}</div>
+          <div><span class="font-semibold text-zinc-400">Chapitre ciblé :</span> ${res.chapter || 'Général'}</div>
+          <div><span class="font-semibold text-zinc-400">Session :</span> ${res.session || 'Principale'} (${res.semester || 'S1'})</div>
         </div>
       </div>
 
       <!-- Correction & Related Card -->
-      <div class="bg-white rounded-lg border border-slate-200 p-4 space-y-2.5 text-xs">
-        <h2 class="font-bold text-slate-900 text-xs flex items-center gap-1.5 border-b border-slate-100 pb-1.5">
-          <i data-lucide="link-2" class="w-3.5 h-3.5 text-blue-600"></i>
+      <div class="bg-[#16171a] rounded-lg border border-zinc-800 p-4 space-y-2.5 text-xs">
+        <h2 class="font-bold text-white text-xs flex items-center gap-1.5 border-b border-zinc-800 pb-1.5">
+          <i data-lucide="link-2" class="w-3.5 h-3.5 text-blue-400"></i>
           Ressources Associées & Corrigé
         </h2>
         
         ${correction ? `
-          <div class="bg-blue-50 border border-blue-200 rounded-lg p-3 space-y-2">
+          <div class="bg-blue-950/40 border border-blue-800/60 rounded-lg p-3 space-y-2">
             <div class="flex items-center justify-between">
-              <div class="flex items-center gap-1.5 text-blue-900 font-bold text-xs">
-                <i data-lucide="check-circle" class="w-4 h-4 text-blue-600"></i>
+              <div class="flex items-center gap-1.5 text-blue-300 font-bold text-xs">
+                <i data-lucide="check-circle" class="w-4 h-4 text-blue-400"></i>
                 Corrigé Type Officiel
               </div>
-              <span class="text-[10px] bg-blue-200 text-blue-900 px-1.5 py-0.5 rounded font-bold">Validé</span>
+              <span class="text-[10px] bg-blue-900/60 text-blue-300 px-1.5 py-0.5 rounded font-bold border border-blue-700/50">Validé</span>
             </div>
-            <p class="text-[11px] text-blue-800 line-clamp-1">${correction.title}</p>
-            <button onclick="app.openDocument('${correction.id}')" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium text-xs py-1.5 rounded-lg transition flex items-center justify-center gap-1.5">
+            <p class="text-[11px] text-blue-200 line-clamp-1">${correction.title}</p>
+            <button onclick="app.openDocument('${correction.id}')" class="w-full bg-blue-600 hover:bg-blue-500 text-white font-medium text-xs py-1.5 rounded-lg transition flex items-center justify-center gap-1.5">
               <i data-lucide="file-check" class="w-3.5 h-3.5"></i>
               Consulter le Corrigé Type
             </button>
           </div>
         ` : `
-          <div class="text-slate-500 italic p-3 bg-slate-50 rounded-lg border border-slate-100">
+          <div class="text-zinc-500 italic p-3 bg-[#121316] rounded-lg border border-zinc-800/80">
             Aucun corrigé direct requis pour ce type de ressource.
           </div>
         `}
 
         ${courseVideo ? `
-          <div class="bg-slate-50 border border-slate-200 rounded-lg p-3 flex items-center justify-between gap-2">
+          <div class="bg-[#121316] border border-zinc-800 rounded-lg p-3 flex items-center justify-between gap-2">
             <div class="truncate">
-              <div class="font-bold text-slate-900 text-xs flex items-center gap-1">
-                <i data-lucide="video" class="w-3.5 h-3.5 text-blue-600"></i> Vidéo Explicative
+              <div class="font-bold text-white text-xs flex items-center gap-1">
+                <i data-lucide="video" class="w-3.5 h-3.5 text-blue-400"></i> Vidéo Explicative
               </div>
-              <div class="text-[11px] text-slate-600 truncate">${courseVideo.title}</div>
+              <div class="text-[11px] text-zinc-400 truncate">${courseVideo.title}</div>
             </div>
-            <button onclick="app.openVideo('${courseVideo.id}')" class="bg-blue-600 hover:bg-blue-700 text-white font-medium text-xs px-2.5 py-1 rounded-lg shrink-0">
+            <button onclick="app.openVideo('${courseVideo.id}')" class="bg-blue-600 hover:bg-blue-500 text-white font-medium text-xs px-2.5 py-1 rounded-lg shrink-0">
               Voir
             </button>
           </div>
@@ -3279,19 +3279,19 @@ class AcademicHubApp {
         return `
         <div class="space-y-2">
           <!-- Section Heading (Panel 1 style) -->
-          <h2 class="text-xs font-semibold text-slate-500">${groupName}</h2>
+          <h2 class="text-xs font-semibold text-zinc-400">${groupName}</h2>
 
           <!-- List of history items with sparkle -->
           <div class="space-y-1.5">
             ${items.map(item => `
               <div 
                 onclick="app.resumeChatSession('${item.id}')" 
-                class="bg-white rounded-lg border border-slate-200 hover:border-blue-600 p-3 px-4 flex items-center justify-between cursor-pointer transition group"
+                class="bg-[#16171a] rounded-lg border border-zinc-800 hover:border-zinc-700 p-3 px-4 flex items-center justify-between cursor-pointer transition group"
               >
                 <div class="flex items-center gap-2 min-w-0 pr-2">
-                  <span class="font-medium text-slate-800 text-xs sm:text-sm group-hover:text-blue-600 truncate transition">${item.title}</span>
+                  <span class="font-medium text-zinc-200 text-xs sm:text-sm group-hover:text-blue-400 truncate transition">${item.title}</span>
                 </div>
-                <span class="text-blue-600 text-xs shrink-0 opacity-70 group-hover:opacity-100 transition">✦</span>
+                <span class="text-blue-400 text-xs shrink-0 opacity-70 group-hover:opacity-100 transition">✦</span>
               </div>
             `).join('')}
           </div>
@@ -3300,7 +3300,7 @@ class AcademicHubApp {
       }).join('')}
 
       <div class="pt-4 text-center">
-        <button onclick="app.startNewChat()" class="bg-blue-600 hover:bg-blue-700 text-white font-medium text-xs py-2.5 px-4 rounded-lg transition inline-flex items-center gap-1.5">
+        <button onclick="app.startNewChat()" class="bg-blue-600 hover:bg-blue-500 text-white font-medium text-xs py-2.5 px-4 rounded-lg transition inline-flex items-center gap-1.5 shadow-2xs">
           <i data-lucide="plus" class="w-3.5 h-3.5"></i>
           <span>Nouvelle discussion</span>
         </button>
@@ -3319,16 +3319,16 @@ class AcademicHubApp {
       
       <!-- Section: Mon Compte (Panel 2) -->
       <div class="space-y-2">
-        <h2 class="text-xs font-semibold text-slate-500 uppercase tracking-wide">Mon Compte</h2>
+        <h2 class="text-xs font-semibold text-zinc-400 uppercase tracking-wide">Mon Compte</h2>
         
-        <div class="bg-white rounded-lg border border-slate-200 p-4 flex items-center justify-between">
+        <div class="bg-[#16171a] rounded-lg border border-zinc-800 p-4 flex items-center justify-between">
           <div class="flex items-center gap-3">
-            <div class="w-10 h-10 rounded-full bg-slate-100 text-slate-500 flex items-center justify-center shrink-0">
+            <div class="w-10 h-10 rounded-full bg-[#121316] text-zinc-400 flex items-center justify-center shrink-0 border border-zinc-800">
               <i data-lucide="user" class="w-5 h-5"></i>
             </div>
             <div>
-              <div class="font-semibold text-slate-900 text-xs sm:text-sm">${this.studentProfile.name}</div>
-              <div class="text-[11px] text-slate-500">${this.studentProfile.name}</div>
+              <div class="font-semibold text-white text-xs sm:text-sm">${this.studentProfile.name}</div>
+              <div class="text-[11px] text-zinc-400">${this.studentProfile.name}</div>
             </div>
           </div>
         </div>
@@ -3336,56 +3336,56 @@ class AcademicHubApp {
 
       <!-- Section: Préférences (Panel 2) -->
       <div class="space-y-2">
-        <h2 class="text-xs font-semibold text-slate-500 uppercase tracking-wide">Préférences</h2>
+        <h2 class="text-xs font-semibold text-zinc-400 uppercase tracking-wide">Préférences</h2>
         
-        <div class="bg-white rounded-lg border border-slate-200 divide-y divide-slate-100">
+        <div class="bg-[#16171a] rounded-lg border border-zinc-800 divide-y divide-zinc-800">
           <div class="p-3.5 px-4 flex items-center justify-between text-xs sm:text-sm">
-            <span class="text-slate-800 font-normal">Mode Sombre</span>
+            <span class="text-zinc-200 font-normal">Mode Sombre</span>
             <label class="relative inline-flex items-center cursor-pointer">
-              <input type="checkbox" class="sr-only peer">
-              <div class="w-9 h-5 bg-slate-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-blue-600"></div>
+              <input type="checkbox" checked class="sr-only peer" disabled>
+              <div class="w-9 h-5 bg-zinc-800 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-blue-600"></div>
             </label>
           </div>
 
           <div class="p-3.5 px-4 flex items-center justify-between text-xs sm:text-sm">
-            <span class="text-slate-800 font-normal">Notifications</span>
+            <span class="text-zinc-200 font-normal">Notifications</span>
             <label class="relative inline-flex items-center cursor-pointer">
               <input type="checkbox" checked class="sr-only peer">
-              <div class="w-9 h-5 bg-slate-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-blue-600"></div>
+              <div class="w-9 h-5 bg-zinc-800 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-blue-600"></div>
             </label>
           </div>
 
           <div class="p-3.5 px-4 flex items-center justify-between text-xs sm:text-sm">
-            <span class="text-slate-800 font-normal">Langue</span>
-            <span class="text-xs text-slate-500 font-medium">Français (FR)</span>
+            <span class="text-zinc-200 font-normal">Langue</span>
+            <span class="text-xs text-zinc-400 font-medium">Français (FR)</span>
           </div>
         </div>
       </div>
 
       <!-- Section: Gestion de la Clé API (Panel 4) -->
       <div class="space-y-2">
-        <h2 class="text-xs font-semibold text-slate-500 uppercase tracking-wide">Gestion de la Clé API</h2>
+        <h2 class="text-xs font-semibold text-zinc-400 uppercase tracking-wide">Gestion de la Clé API</h2>
         
-        <div class="bg-white rounded-lg border border-slate-200 p-4 space-y-3.5">
-          <p class="text-xs text-slate-500">
+        <div class="bg-[#16171a] rounded-lg border border-zinc-800 p-4 space-y-3.5">
+          <p class="text-xs text-zinc-400">
             Pour un usage illimité, configurez votre clé API Gemini.
           </p>
 
           <div class="space-y-1">
-            <label class="block text-[11px] font-medium text-slate-700">Clé API Gemini (votre clé personnelle)</label>
+            <label class="block text-[11px] font-medium text-zinc-300">Clé API Gemini (votre clé personnelle)</label>
             <input 
               type="password" 
               id="settings-api-key-input" 
               value="${this.userApiKey}"
               placeholder="ex: AIzaSy..." 
-              class="w-full bg-white border border-slate-200 rounded-lg p-2.5 text-xs text-slate-900 outline-none focus:border-blue-600 focus:ring-1 focus:ring-blue-600 transition font-mono"
+              class="w-full bg-[#121316] border border-zinc-800 rounded-lg p-2.5 text-xs text-white outline-none focus:border-blue-500 transition font-mono"
             >
           </div>
 
           <div class="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-2.5 pt-1">
             <button 
               onclick="app.saveApiKeyFromSettings()" 
-              class="bg-blue-600 hover:bg-blue-700 text-white font-medium text-xs py-2 px-4 rounded-lg transition text-center"
+              class="bg-blue-600 hover:bg-blue-500 text-white font-medium text-xs py-2 px-4 rounded-lg transition text-center shadow-2xs"
             >
               Tester et Enregistrer
             </button>
@@ -3393,15 +3393,15 @@ class AcademicHubApp {
               href="https://aistudio.google.com/app/apikey" 
               target="_blank" 
               rel="noopener noreferrer" 
-              class="text-blue-600 hover:underline text-xs text-center"
+              class="text-blue-400 hover:underline text-xs text-center"
             >
               Obtenir ma clé gratuite sur Google AI Studio
             </a>
           </div>
 
-          <div class="pt-2 border-t border-slate-100 flex items-center justify-between text-[11px]">
-            <span class="text-slate-500">Statut :</span>
-            <span class="font-medium ${this.userApiKey ? 'text-blue-700 bg-blue-50 px-2 py-0.5 rounded-md border border-blue-200' : 'text-slate-500 bg-slate-100 px-2 py-0.5 rounded-md'}">
+          <div class="pt-2 border-t border-zinc-800 flex items-center justify-between text-[11px]">
+            <span class="text-zinc-400">Statut :</span>
+            <span class="font-medium ${this.userApiKey ? 'text-blue-400 bg-[#121316] px-2 py-0.5 rounded-md border border-zinc-800' : 'text-zinc-500 bg-[#121316] px-2 py-0.5 rounded-md border border-zinc-800'}">
               ${this.userApiKey ? 'Active (personnelle)' : 'Non configurée (standard)'}
             </span>
           </div>
@@ -3410,23 +3410,23 @@ class AcademicHubApp {
 
       <!-- Section: Support (Panel 2) -->
       <div class="space-y-2">
-        <h2 class="text-xs font-semibold text-slate-500 uppercase tracking-wide">Support</h2>
+        <h2 class="text-xs font-semibold text-zinc-400 uppercase tracking-wide">Support</h2>
         
-        <div class="bg-white rounded-lg border border-slate-200 divide-y divide-slate-100">
-          <button onclick="app.showToast('Centre d\\'aide disponible 24/7')" class="w-full p-3.5 px-4 flex items-center justify-between text-xs sm:text-sm text-left hover:bg-slate-50 transition">
-            <span class="text-slate-800">Centre d'aide</span>
-            <i data-lucide="chevron-right" class="w-4 h-4 text-slate-300"></i>
+        <div class="bg-[#16171a] rounded-lg border border-zinc-800 divide-y divide-zinc-800">
+          <button onclick="app.showToast('Centre d\\'aide disponible 24/7')" class="w-full p-3.5 px-4 flex items-center justify-between text-xs sm:text-sm text-left hover:bg-[#1f2024] transition">
+            <span class="text-zinc-200">Centre d'aide</span>
+            <i data-lucide="chevron-right" class="w-4 h-4 text-zinc-500"></i>
           </button>
-          <button onclick="app.showToast('Conditions d\\'utilisation académiques')" class="w-full p-3.5 px-4 flex items-center justify-between text-xs sm:text-sm text-left hover:bg-slate-50 transition">
-            <span class="text-slate-800">Conditions d'utilisation</span>
-            <i data-lucide="chevron-right" class="w-4 h-4 text-slate-300"></i>
+          <button onclick="app.showToast('Conditions d\\'utilisation académiques')" class="w-full p-3.5 px-4 flex items-center justify-between text-xs sm:text-sm text-left hover:bg-[#1f2024] transition">
+            <span class="text-zinc-200">Conditions d'utilisation</span>
+            <i data-lucide="chevron-right" class="w-4 h-4 text-zinc-500"></i>
           </button>
         </div>
       </div>
 
       <!-- Déconnexion button (Panel 2) -->
       <div class="pt-2">
-        <button onclick="app.clearApiKey(); app.showToast('Déconnexion effectuée');" class="w-full bg-white hover:bg-slate-50 border border-slate-200 text-slate-700 font-medium text-xs sm:text-sm py-3 rounded-lg transition text-center">
+        <button onclick="app.clearApiKey(); app.showToast('Déconnexion effectuée');" class="w-full bg-[#16171a] hover:bg-zinc-800 border border-zinc-800 text-zinc-300 hover:text-white font-medium text-xs sm:text-sm py-3 rounded-lg transition text-center">
           Déconnexion
         </button>
       </div>
@@ -3776,7 +3776,7 @@ class AcademicHubApp {
 
       if (res.success) {
         if (feedback) {
-          feedback.className = 'p-3 rounded-lg text-xs bg-slate-100 text-slate-800 border border-slate-200 block';
+          feedback.className = 'p-3 rounded-lg text-xs bg-emerald-950/40 text-emerald-300 border border-emerald-800/60 block';
           feedback.innerHTML = `<strong>Succès :</strong> ${res.message}`;
         }
         this.showToast(res.message || "Document ajouté avec succès !", "success");
@@ -3785,14 +3785,14 @@ class AcademicHubApp {
         this.render();
       } else {
         if (feedback) {
-          feedback.className = 'p-3 rounded-lg text-xs bg-slate-100 text-slate-800 border border-slate-200 block';
+          feedback.className = 'p-3 rounded-lg text-xs bg-rose-950/40 text-rose-300 border border-rose-800/60 block';
           feedback.innerHTML = `<strong>Échec :</strong> ${res.error || 'Erreur inconnue'}`;
         }
         this.showToast(res.error || "Échec de l'ajout du document", "error");
       }
     } catch (err) {
       if (feedback) {
-        feedback.className = 'p-3 rounded-lg text-xs bg-slate-100 text-slate-800 border border-slate-200 block';
+        feedback.className = 'p-3 rounded-lg text-xs bg-rose-950/40 text-rose-300 border border-rose-800/60 block';
         feedback.innerHTML = `Erreur réseau : ${err.message}`;
       }
       this.showToast("Erreur réseau : " + err.message, "error");
@@ -3816,7 +3816,7 @@ Exercice 1 : Oscillations libres amorties, équation différentielle x'' + 2gamm
 
     const feedback = document.getElementById('upload-feedback');
     if (feedback) {
-      feedback.className = 'p-3 rounded-lg text-xs bg-blue-50 text-blue-800 border border-blue-200 block';
+      feedback.className = 'p-3 rounded-lg text-xs bg-blue-950/40 text-blue-300 border border-blue-800/60 block';
       feedback.innerHTML = `Attribution du fichier démo à l'un des 3 agents...`;
     }
 
@@ -3832,14 +3832,14 @@ Exercice 1 : Oscillations libres amorties, équation différentielle x'' + 2gamm
       }).then(r => r.json());
 
       if (feedback) {
-        feedback.className = 'p-3 rounded-lg text-xs bg-blue-50 text-blue-800 border border-blue-200 block';
+        feedback.className = 'p-3 rounded-lg text-xs bg-emerald-950/40 text-emerald-300 border border-emerald-800/60 block';
         feedback.innerHTML = `Fichier démo analysé et classifié avec succès !`;
       }
       await this.fetchBaseData();
       await this.loadAdminWorkers();
     } catch (err) {
       if (feedback) {
-        feedback.className = 'p-3 rounded-lg text-xs bg-slate-100 text-slate-800 border border-slate-200 block';
+        feedback.className = 'p-3 rounded-lg text-xs bg-rose-950/40 text-rose-300 border border-rose-800/60 block';
         feedback.innerHTML = `Erreur : ${err.message}`;
       }
     }
@@ -3865,12 +3865,12 @@ Exercice 1 : Oscillations libres amorties, équation différentielle x'' + 2gamm
 
     const key = input.value.trim();
     if (key.length < 10) {
-      feedback.className = 'text-xs p-3 rounded-lg bg-slate-100 text-slate-800 border border-slate-200 block';
+      feedback.className = 'text-xs p-3 rounded-lg bg-[#121316] text-zinc-300 border border-zinc-800 block';
       feedback.innerText = 'Veuillez saisir une clé API Gemini valide (ex: AIzaSy...).';
       return;
     }
 
-    feedback.className = 'text-xs p-3 rounded-lg bg-blue-50 text-blue-800 border border-blue-200 block';
+    feedback.className = 'text-xs p-3 rounded-lg bg-blue-950/40 text-blue-300 border border-blue-800/60 block';
     feedback.innerText = 'Test de connexion avec Google AI Studio...';
 
     try {
@@ -3883,16 +3883,16 @@ Exercice 1 : Oscillations libres amorties, équation différentielle x'' + 2gamm
       if (res.success) {
         this.userApiKey = key;
         sessionStorage.setItem('academic_hub_api_key', key);
-        feedback.className = 'text-xs p-3 rounded-lg bg-blue-50 text-blue-800 border border-blue-200 block';
+        feedback.className = 'text-xs p-3 rounded-lg bg-emerald-950/40 text-emerald-300 border border-emerald-800/60 block';
         feedback.innerText = 'Clé API validée avec succès !';
         this.updateApiKeyBadge();
         setTimeout(() => this.closeApiKeyModal(), 1200);
       } else {
-        feedback.className = 'text-xs p-3 rounded-lg bg-slate-100 text-slate-800 border border-slate-200 block';
+        feedback.className = 'text-xs p-3 rounded-lg bg-rose-950/40 text-rose-300 border border-rose-800/60 block';
         feedback.innerText = `Échec : ${res.error}`;
       }
     } catch (err) {
-      feedback.className = 'text-xs p-3 rounded-lg bg-slate-100 text-slate-800 border border-slate-200 block';
+      feedback.className = 'text-xs p-3 rounded-lg bg-rose-950/40 text-rose-300 border border-rose-800/60 block';
       feedback.innerText = `Erreur réseau : ${err.message}`;
     }
   }
@@ -3904,7 +3904,7 @@ Exercice 1 : Oscillations libres amorties, équation différentielle x'' + 2gamm
     if (input) input.value = '';
     const feedback = document.getElementById('api-key-test-feedback');
     if (feedback) {
-      feedback.className = 'text-xs p-3 rounded-lg bg-slate-100 text-slate-700 block';
+      feedback.className = 'text-xs p-3 rounded-lg bg-[#121316] text-zinc-400 border border-zinc-800 block';
       feedback.innerText = 'Clé effacée. Relais serveur actif.';
     }
     this.updateApiKeyBadge();
@@ -3914,8 +3914,8 @@ Exercice 1 : Oscillations libres amorties, équation différentielle x'' + 2gamm
     const statusBox = document.getElementById('api-key-status-box');
     if (statusBox) {
       statusBox.innerHTML = this.userApiKey
-        ? `<span class="text-blue-600 font-medium">● Clé Personnelle Active</span>`
-        : `<span class="text-slate-400">● Utilisation du relais faculté par défaut</span>`;
+        ? `<span class="text-blue-400 font-medium">● Clé Personnelle Active</span>`
+        : `<span class="text-zinc-500">● Utilisation du relais faculté par défaut</span>`;
     }
   }
 
@@ -4121,7 +4121,7 @@ Exercice 1 : Oscillations libres amorties, équation différentielle x'' + 2gamm
         if (t === filter) {
           btn.className = 'px-2.5 py-1 rounded-lg font-semibold bg-blue-600 text-white whitespace-nowrap';
         } else {
-          btn.className = 'px-2.5 py-1 rounded-lg font-medium bg-white text-slate-600 border border-slate-200 whitespace-nowrap';
+          btn.className = 'px-2.5 py-1 rounded-lg font-medium bg-[#16171a] text-zinc-300 border border-zinc-800 hover:bg-zinc-800 whitespace-nowrap';
         }
       }
     });
@@ -4139,10 +4139,10 @@ Exercice 1 : Oscillations libres amorties, équation différentielle x'' + 2gamm
     if (treeBtn && listBtn) {
       if (mode === 'tree') {
         treeBtn.className = 'p-1 rounded font-medium bg-blue-600 text-white';
-        listBtn.className = 'p-1 rounded font-medium text-slate-500 hover:text-slate-800';
+        listBtn.className = 'p-1 rounded font-medium text-zinc-400 hover:text-white';
       } else {
         listBtn.className = 'p-1 rounded font-medium bg-blue-600 text-white';
-        treeBtn.className = 'p-1 rounded font-medium text-slate-500 hover:text-slate-800';
+        treeBtn.className = 'p-1 rounded font-medium text-zinc-400 hover:text-white';
       }
     }
 
@@ -4220,7 +4220,7 @@ Exercice 1 : Oscillations libres amorties, équation différentielle x'' + 2gamm
       // Flat list layout
       if (filtered.length === 0) {
         listContainer.innerHTML = `
-          <div class="p-8 text-center text-slate-500 text-xs">
+          <div class="p-8 text-center text-zinc-500 text-xs">
             Aucun document ne correspond à vos filtres.
           </div>
         `;
@@ -4230,26 +4230,26 @@ Exercice 1 : Oscillations libres amorties, équation différentielle x'' + 2gamm
       listContainer.innerHTML = filtered.map(r => {
         const course = this.courses.find(c => c.id === r.courseId);
         return `
-          <div onclick="app.selectDocumentForChat('${r.id}')" class="bg-slate-50 hover:bg-slate-100 border border-slate-200 rounded-lg p-3 transition cursor-pointer flex items-center justify-between gap-3 group">
+          <div onclick="app.selectDocumentForChat('${r.id}')" class="bg-[#16171a] hover:bg-zinc-800/80 border border-zinc-800 rounded-lg p-3 transition cursor-pointer flex items-center justify-between gap-3 group">
             <div class="min-w-0">
               <div class="flex items-center gap-2 mb-1 flex-wrap">
-                <span class="text-[9px] font-bold uppercase tracking-wider text-blue-600 bg-blue-50 px-1.5 py-0.5 rounded">
+                <span class="text-[9px] font-bold uppercase tracking-wider text-blue-400 bg-blue-950/50 border border-blue-800/40 px-1.5 py-0.5 rounded">
                   ${r.type}
                 </span>
                 ${r.hasCorrection ? `
-                  <span class="text-[9px] font-bold uppercase tracking-wider text-blue-700 bg-blue-50 px-1.5 py-0.5 rounded">
+                  <span class="text-[9px] font-bold uppercase tracking-wider text-emerald-400 bg-emerald-950/50 border border-emerald-800/40 px-1.5 py-0.5 rounded">
                     Corrigé
                   </span>
                 ` : ''}
               </div>
-              <h4 class="font-semibold text-slate-800 text-xs truncate group-hover:text-blue-600 transition">
+              <h4 class="font-semibold text-white text-xs truncate group-hover:text-blue-400 transition">
                 ${r.title}
               </h4>
-              <p class="text-[10px] text-slate-500 mt-0.5 truncate">
+              <p class="text-[10px] text-zinc-400 mt-0.5 truncate">
                 ${course ? `${course.code} — ${course.name}` : ''} ${r.professor ? `• ${r.professor}` : ''}
               </p>
             </div>
-            <span class="text-slate-400 group-hover:text-blue-600 shrink-0 transition">
+            <span class="text-zinc-500 group-hover:text-blue-400 shrink-0 transition">
               <i data-lucide="plus-circle" class="w-4 h-4"></i>
             </span>
           </div>
@@ -4287,7 +4287,7 @@ Exercice 1 : Oscillations libres amorties, équation différentielle x'' + 2gamm
 
       if (promoMap.size === 0) {
         listContainer.innerHTML = `
-          <div class="p-8 text-center text-slate-500 text-xs">
+          <div class="p-8 text-center text-zinc-500 text-xs">
             Aucun document ne correspond à vos filtres.
           </div>
         `;
@@ -4298,55 +4298,55 @@ Exercice 1 : Oscillations libres amorties, équation différentielle x'' + 2gamm
       for (const [promoId, promoData] of promoMap.entries()) {
         const isPromoExpanded = this.expandedPromos.has(promoId);
         html += `
-          <div class="border border-slate-200 rounded-lg bg-slate-50 overflow-hidden mb-2">
+          <div class="border border-zinc-800 rounded-lg bg-[#16171a] overflow-hidden mb-2">
             <!-- Promo Header -->
-            <div onclick="app.toggleLibraryPromo('${promoId}')" class="p-3 bg-slate-100 hover:bg-slate-200 transition flex items-center justify-between cursor-pointer border-b border-slate-200">
-              <span class="font-bold text-slate-800 text-xs flex items-center gap-2">
-                <i data-lucide="graduation-cap" class="w-4 h-4 text-slate-500"></i>
-                ${promoData.promo.name} <span class="text-[10px] text-slate-400 font-normal">(${promoData.promo.cycle})</span>
+            <div onclick="app.toggleLibraryPromo('${promoId}')" class="p-3 bg-[#121316] hover:bg-zinc-800/80 transition flex items-center justify-between cursor-pointer border-b border-zinc-800">
+              <span class="font-bold text-white text-xs flex items-center gap-2">
+                <i data-lucide="graduation-cap" class="w-4 h-4 text-zinc-400"></i>
+                ${promoData.promo.name} <span class="text-[10px] text-zinc-500 font-normal">(${promoData.promo.cycle})</span>
               </span>
-              <span class="text-slate-400">
+              <span class="text-zinc-500">
                 <i data-lucide="${isPromoExpanded ? 'chevron-down' : 'chevron-right'}" class="w-4 h-4"></i>
               </span>
             </div>
             
             ${isPromoExpanded ? `
-              <div class="p-2.5 space-y-2 bg-white">
+              <div class="p-2.5 space-y-2 bg-[#121316]">
                 ${Array.from(promoData.courses.entries()).map(([courseId, courseData]) => {
                   const isCourseExpanded = this.expandedCourses.has(courseId);
                   return `
-                    <div class="border border-slate-200 rounded-lg overflow-hidden">
+                    <div class="border border-zinc-800 rounded-lg overflow-hidden bg-[#16171a]">
                       <!-- Course Header -->
-                      <div onclick="app.toggleLibraryCourse('${courseId}')" class="p-2.5 bg-slate-50 hover:bg-slate-100 transition flex items-center justify-between cursor-pointer border-b border-slate-200">
-                        <span class="font-medium text-slate-700 text-xs flex items-center gap-1.5">
-                          <i data-lucide="book-open" class="w-3.5 h-3.5 text-slate-400"></i>
+                      <div onclick="app.toggleLibraryCourse('${courseId}')" class="p-2.5 bg-[#18191c] hover:bg-zinc-800/80 transition flex items-center justify-between cursor-pointer border-b border-zinc-800">
+                        <span class="font-medium text-zinc-200 text-xs flex items-center gap-1.5">
+                          <i data-lucide="book-open" class="w-3.5 h-3.5 text-zinc-400"></i>
                           ${courseData.course.code} — ${courseData.course.name}
                         </span>
-                        <span class="text-slate-400">
+                        <span class="text-zinc-500">
                           <i data-lucide="${isCourseExpanded ? 'chevron-down' : 'chevron-right'}" class="w-3.5 h-3.5"></i>
                         </span>
                       </div>
                       
                       ${isCourseExpanded ? `
-                        <div class="p-2 space-y-1.5 bg-slate-50">
+                        <div class="p-2 space-y-1.5 bg-[#121316]">
                           ${courseData.resources.map(r => `
-                            <div onclick="app.selectDocumentForChat('${r.id}')" class="flex items-center justify-between p-2 rounded-lg hover:bg-white transition cursor-pointer text-xs group">
+                            <div onclick="app.selectDocumentForChat('${r.id}')" class="flex items-center justify-between p-2 rounded-lg hover:bg-[#18191c] transition cursor-pointer text-xs group">
                               <div class="min-w-0 pr-2">
                                 <div class="flex items-center gap-1.5 mb-0.5">
-                                  <span class="text-[9px] font-medium text-blue-600 bg-blue-50 px-1 py-0.2 rounded shrink-0">
+                                  <span class="text-[9px] font-medium text-blue-400 bg-blue-950/50 border border-blue-800/40 px-1 py-0.2 rounded shrink-0">
                                     ${r.type}
                                   </span>
                                   ${r.hasCorrection ? `
-                                    <span class="text-[9px] font-medium text-blue-700 bg-blue-50 px-1 py-0.2 rounded shrink-0">
+                                    <span class="text-[9px] font-medium text-emerald-400 bg-emerald-950/50 border border-emerald-800/40 px-1 py-0.2 rounded shrink-0">
                                       Corrigé
                                     </span>
                                   ` : ''}
                                 </div>
-                                <div class="font-medium text-slate-700 truncate group-hover:text-blue-600 transition">
+                                <div class="font-medium text-zinc-200 truncate group-hover:text-blue-400 transition">
                                   ${r.title}
                                 </div>
                               </div>
-                              <span class="text-slate-300 group-hover:text-blue-600 shrink-0 transition">
+                              <span class="text-zinc-500 group-hover:text-blue-400 shrink-0 transition">
                                 <i data-lucide="plus" class="w-4 h-4"></i>
                               </span>
                             </div>
@@ -5068,21 +5068,21 @@ Exercice 1 : Oscillations libres amorties, équation différentielle x'' + 2gamm
     let formatted = this.escapeHtml(text);
 
     // Headers
-    formatted = formatted.replace(/^### (.*?)$/gm, '<h3 class="font-bold text-slate-900 text-xs sm:text-sm mt-2.5 mb-1">$1</h3>');
-    formatted = formatted.replace(/^## (.*?)$/gm, '<h2 class="font-extrabold text-slate-900 text-sm sm:text-base mt-3 mb-1">$1</h2>');
+    formatted = formatted.replace(/^### (.*?)$/gm, '<h3 class="font-bold text-white text-xs sm:text-sm mt-2.5 mb-1">$1</h3>');
+    formatted = formatted.replace(/^## (.*?)$/gm, '<h2 class="font-extrabold text-white text-sm sm:text-base mt-3 mb-1">$1</h2>');
 
     // Bold & Italics
-    formatted = formatted.replace(/\*\*(.*?)\*\*/g, '<strong class="font-semibold text-slate-900">$1</strong>');
-    formatted = formatted.replace(/\*([^\*\n]+)\*/g, '<em class="italic text-slate-700">$1</em>');
+    formatted = formatted.replace(/\*\*(.*?)\*\*/g, '<strong class="font-semibold text-white">$1</strong>');
+    formatted = formatted.replace(/\*([^\*\n]+)\*/g, '<em class="italic text-zinc-300">$1</em>');
 
     // Inline Code
-    formatted = formatted.replace(/`([^`\n]+)`/g, '<code class="bg-slate-200/80 text-slate-800 px-1.5 py-0.5 rounded font-mono text-[11px]">$1</code>');
+    formatted = formatted.replace(/`([^`\n]+)`/g, '<code class="bg-[#18191c] text-blue-400 border border-zinc-800 px-1.5 py-0.5 rounded font-mono text-[11px]">$1</code>');
 
     // Bullet points
-    formatted = formatted.replace(/^[•*-] (.*?)$/gm, '<div class="flex items-start gap-1.5 my-1"><span class="text-blue-500 font-bold shrink-0">•</span><span class="flex-1">$1</span></div>');
+    formatted = formatted.replace(/^[•*-] (.*?)$/gm, '<div class="flex items-start gap-1.5 my-1"><span class="text-blue-400 font-bold shrink-0">•</span><span class="flex-1">$1</span></div>');
 
     // Numbered points
-    formatted = formatted.replace(/^(\d+)\. (.*?)$/gm, '<div class="flex items-start gap-1.5 my-1"><span class="font-bold text-blue-700 shrink-0 text-xs">$1.</span><span class="flex-1">$2</span></div>');
+    formatted = formatted.replace(/^(\d+)\. (.*?)$/gm, '<div class="flex items-start gap-1.5 my-1"><span class="font-bold text-blue-400 shrink-0 text-xs">$1.</span><span class="flex-1">$2</span></div>');
 
     return formatted;
   }
@@ -5253,11 +5253,11 @@ Exercice 1 : Oscillations libres amorties, équation différentielle x'' + 2gamm
     content.innerHTML = `
       <div class="space-y-3.5">
         <!-- Course & Chapter Header -->
-        <div class="p-3 bg-slate-50 rounded-lg border border-slate-200">
-          <div class="text-[10px] uppercase font-bold tracking-wider text-slate-500">Matière & Enseignant</div>
-          <div class="font-bold text-slate-900 text-xs mt-0.5">${curCourse ? curCourse.name : (sess.courseId || 'Cours')}</div>
-          <div class="text-[11px] text-slate-600 mt-0.5">Enseignant référent : <span class="font-medium">${sess.demystification ? sess.demystification.professor : 'Professeur'}</span></div>
-          <div class="text-xs font-semibold text-blue-700 mt-2 flex items-center gap-1.5">
+        <div class="p-3 bg-[#121316] rounded-lg border border-zinc-800">
+          <div class="text-[10px] uppercase font-bold tracking-wider text-zinc-500">Matière & Enseignant</div>
+          <div class="font-bold text-white text-xs mt-0.5">${curCourse ? curCourse.name : (sess.courseId || 'Cours')}</div>
+          <div class="text-[11px] text-zinc-400 mt-0.5">Enseignant référent : <span class="font-medium text-zinc-300">${sess.demystification ? sess.demystification.professor : 'Professeur'}</span></div>
+          <div class="text-xs font-semibold text-blue-400 mt-2 flex items-center gap-1.5">
             <i data-lucide="bookmark" class="w-3.5 h-3.5"></i>
             ${sess.chapterTitle || 'Chapitre'}
           </div>
@@ -5265,38 +5265,38 @@ Exercice 1 : Oscillations libres amorties, équation différentielle x'' + 2gamm
 
         <!-- Global Progress Bar -->
         <div class="space-y-1.5">
-          <div class="flex justify-between text-xs font-semibold text-slate-700">
+          <div class="flex justify-between text-xs font-semibold text-zinc-300">
             <span>Progression du chapitre</span>
-            <span class="text-blue-600 font-bold">${pct}% (${completedCount}/${totalCount} étapes)</span>
+            <span class="text-blue-400 font-bold">${pct}% (${completedCount}/${totalCount} étapes)</span>
           </div>
-          <div class="w-full bg-slate-100 rounded-full h-2 overflow-hidden border border-slate-200/60">
+          <div class="w-full bg-zinc-900 rounded-full h-2 overflow-hidden border border-zinc-800">
             <div class="bg-blue-600 h-2 rounded-full transition-all duration-300" style="width: ${pct}%"></div>
           </div>
         </div>
 
         <!-- Active Step Details -->
-        <div class="p-3 bg-blue-50/70 rounded-lg border border-blue-200 space-y-1.5">
-          <div class="text-[10px] font-bold text-blue-700 uppercase tracking-wider flex items-center gap-1">
-            <span class="w-1.5 h-1.5 rounded-full bg-blue-600"></span>
+        <div class="p-3 bg-blue-950/30 rounded-lg border border-blue-800/50 space-y-1.5">
+          <div class="text-[10px] font-bold text-blue-400 uppercase tracking-wider flex items-center gap-1">
+            <span class="w-1.5 h-1.5 rounded-full bg-blue-500"></span>
             Étape en cours
           </div>
-          <div class="font-bold text-slate-900 text-xs">${activeStep ? activeStep.title : 'Étape active'}</div>
-          <div class="text-[11px] text-slate-600">${activeStep && activeStep.objective ? activeStep.objective : 'Approfondissement des notions fondamentales.'}</div>
+          <div class="font-bold text-white text-xs">${activeStep ? activeStep.title : 'Étape active'}</div>
+          <div class="text-[11px] text-zinc-300">${activeStep && activeStep.objective ? activeStep.objective : 'Approfondissement des notions fondamentales.'}</div>
         </div>
 
         <!-- Prerequisite Branch Status -->
         ${sess.branchOpen ? `
-          <div class="p-3 bg-slate-100 rounded-lg border border-slate-200 space-y-1">
-            <div class="text-[10px] font-bold text-slate-800 uppercase tracking-wider flex items-center gap-1">
-              <i data-lucide="git-branch" class="w-3 h-3 text-blue-600"></i>
+          <div class="p-3 bg-[#121316] rounded-lg border border-zinc-800 space-y-1">
+            <div class="text-[10px] font-bold text-amber-400 uppercase tracking-wider flex items-center gap-1">
+              <i data-lucide="git-branch" class="w-3 h-3 text-amber-400"></i>
               Branche de consolidation active
             </div>
-            <div class="font-bold text-slate-900 text-xs">${sess.activeBranch ? sess.activeBranch.title : 'Prérequis'}</div>
-            <div class="text-[11px] text-slate-600">${sess.activeBranch ? sess.activeBranch.reason : 'Consolidation ciblée'}</div>
+            <div class="font-bold text-white text-xs">${sess.activeBranch ? sess.activeBranch.title : 'Prérequis'}</div>
+            <div class="text-[11px] text-zinc-400">${sess.activeBranch ? sess.activeBranch.reason : 'Consolidation ciblée'}</div>
           </div>
         ` : `
-          <div class="p-2.5 bg-slate-50 rounded-lg border border-slate-200 text-[11px] text-slate-600 flex items-center gap-2">
-            <i data-lucide="check-circle" class="w-3.5 h-3.5 text-blue-600"></i>
+          <div class="p-2.5 bg-[#121316] rounded-lg border border-zinc-800 text-[11px] text-zinc-400 flex items-center gap-2">
+            <i data-lucide="check-circle" class="w-3.5 h-3.5 text-emerald-400"></i>
             <span>Aucune branche prérequis ouverte. Tu es sur le fil directeur du cours.</span>
           </div>
         `}
@@ -5304,10 +5304,10 @@ Exercice 1 : Oscillations libres amorties, équation différentielle x'' + 2gamm
         <!-- Mastered Branches -->
         ${masteredBranches.length > 0 ? `
           <div class="space-y-1">
-            <div class="text-[10px] font-bold text-slate-500 uppercase tracking-wider">Prérequis consolidés dans cette session</div>
+            <div class="text-[10px] font-bold text-zinc-500 uppercase tracking-wider">Prérequis consolidés dans cette session</div>
             <div class="flex flex-wrap gap-1.5">
               ${masteredBranches.map(b => `
-                <span class="px-2 py-0.5 rounded-lg bg-blue-50 text-blue-700 border border-blue-200 text-[11px] font-medium flex items-center gap-1">
+                <span class="px-2 py-0.5 rounded-lg bg-blue-950/40 text-blue-300 border border-blue-800/50 text-[11px] font-medium flex items-center gap-1">
                   ✓ ${b.title || b.conceptId}
                 </span>
               `).join('')}
@@ -5317,16 +5317,16 @@ Exercice 1 : Oscillations libres amorties, équation différentielle x'' + 2gamm
 
         <!-- Sources Quick Citation -->
         <div class="pt-1">
-          <div class="text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-1.5">Document de référence officiel</div>
+          <div class="text-[10px] font-bold text-zinc-500 uppercase tracking-wider mb-1.5">Document de référence officiel</div>
           ${officialSources.length > 0 ? `
-            <div class="p-2.5 bg-slate-50 rounded-lg border border-slate-200 text-[11px] text-slate-700 flex items-start gap-2">
-              <i data-lucide="file-text" class="w-3.5 h-3.5 text-slate-500 shrink-0 mt-0.5"></i>
+            <div class="p-2.5 bg-[#121316] rounded-lg border border-zinc-800 text-[11px] text-zinc-300 flex items-start gap-2">
+              <i data-lucide="file-text" class="w-3.5 h-3.5 text-zinc-500 shrink-0 mt-0.5"></i>
               <div>
-                <div class="font-semibold text-slate-900">${officialSources[0].documentTitle}</div>
-                <div class="text-slate-500 text-[10px]">Page ${officialSources[0].page} • ${officialSources[0].section}</div>
+                <div class="font-semibold text-white">${officialSources[0].documentTitle}</div>
+                <div class="text-zinc-500 text-[10px]">Page ${officialSources[0].page} • ${officialSources[0].section}</div>
               </div>
             </div>
-          ` : '<div class="text-[11px] text-slate-500">Corpus académique vérifié.</div>'}
+          ` : '<div class="text-[11px] text-zinc-500">Corpus académique vérifié.</div>'}
         </div>
       </div>
     `;
@@ -5351,32 +5351,32 @@ Exercice 1 : Oscillations libres amorties, équation différentielle x'' + 2gamm
 
     if (sources.length === 0) {
       content.innerHTML = `
-        <div class="p-4 text-center text-slate-500 text-xs">
+        <div class="p-4 text-center text-zinc-500 text-xs">
           Les extraits documentaires sont directement issus des polycopiés enregistrés dans votre bibliothèque.
         </div>
       `;
     } else {
       content.innerHTML = `
         <div class="space-y-3">
-          <p class="text-slate-600 text-xs">
+          <p class="text-zinc-400 text-xs">
             Le contenu de ce chapitre est strictement aligné sur les polycopiés et fiches de travaux dirigés fournis par vos enseignants :
           </p>
           ${sources.map(src => `
-            <div class="p-3.5 bg-slate-50 rounded-lg border border-slate-200 space-y-2">
+            <div class="p-3.5 bg-[#121316] rounded-lg border border-zinc-800 space-y-2">
               <div class="flex items-start justify-between gap-2">
                 <div>
-                  <div class="font-bold text-slate-900 text-xs">${src.documentTitle}</div>
-                  <div class="text-[11px] text-slate-500">${src.professor ? src.professor + ' • ' : ''}Section : ${src.section} (Page ${src.page})</div>
+                  <div class="font-bold text-white text-xs">${src.documentTitle}</div>
+                  <div class="text-[11px] text-zinc-400">${src.professor ? src.professor + ' • ' : ''}Section : ${src.section} (Page ${src.page})</div>
                 </div>
-                <span class="px-2 py-0.5 rounded bg-blue-50 text-blue-700 text-[10px] font-bold border border-blue-200 shrink-0">
+                <span class="px-2 py-0.5 rounded bg-blue-950/50 text-blue-400 text-[10px] font-bold border border-blue-800/50 shrink-0">
                   Page ${src.page}
                 </span>
               </div>
-              <div class="p-2.5 bg-white rounded-lg border border-slate-200/80 font-serif text-[11px] text-slate-800 italic leading-relaxed">
+              <div class="p-2.5 bg-[#16171a] rounded-lg border border-zinc-800 font-serif text-[11px] text-zinc-300 italic leading-relaxed">
                 « ${src.excerpt} »
               </div>
               <div class="flex justify-end pt-1">
-                <button onclick="app.closeCourseSourcesModal(); app.openDocumentPage('${src.documentTitle}', ${src.page});" class="text-xs font-semibold text-blue-600 hover:text-blue-800 flex items-center gap-1 transition">
+                <button onclick="app.closeCourseSourcesModal(); app.openDocumentPage('${src.documentTitle}', ${src.page});" class="text-xs font-semibold text-blue-400 hover:text-blue-300 flex items-center gap-1 transition">
                   <i data-lucide="book-open" class="w-3.5 h-3.5"></i>
                   Consulter dans le lecteur de documents ›
                 </button>
@@ -5570,19 +5570,19 @@ Exercice 1 : Oscillations libres amorties, équation différentielle x'' + 2gamm
     <div class="max-w-2xl mx-auto px-4 py-4 sm:px-6 sm:py-6 w-full flex-1 space-y-5">
       
       <!-- Top Academic Header -->
-      <div class="flex items-center justify-between border-b border-slate-200 pb-3">
+      <div class="flex items-center justify-between border-b border-zinc-800 pb-3">
         <div class="flex items-center gap-3">
-          <button onclick="app.navigate('tutor')" class="p-1.5 rounded-lg text-slate-500 hover:text-slate-800 hover:bg-slate-100 transition" title="Retour au Tuteur" aria-label="Retour au Tuteur">
+          <button onclick="app.navigate('tutor')" class="p-1.5 rounded-lg text-zinc-400 hover:text-white hover:bg-zinc-800 transition" title="Retour au Tuteur" aria-label="Retour au Tuteur">
             <i data-lucide="arrow-left" class="w-5 h-5"></i>
           </button>
           <div>
-            <h1 class="text-base sm:text-lg font-bold text-slate-900 flex items-center gap-2">
-              <span class="w-7 h-7 rounded-lg bg-blue-100 text-blue-700 flex items-center justify-center font-bold text-xs">
+            <h1 class="text-base sm:text-lg font-bold text-white flex items-center gap-2">
+              <span class="w-7 h-7 rounded-lg bg-[#121316] text-blue-400 flex items-center justify-center font-bold text-xs border border-zinc-800">
                 <i data-lucide="graduation-cap" class="w-4 h-4"></i>
               </span>
               Mode Apprendre : Choix du Parcours
             </h1>
-            <p class="text-xs text-slate-500 mt-0.5">Sélectionnez une matière puis un chapitre pour démarrer l'enseignement structuré</p>
+            <p class="text-xs text-zinc-400 mt-0.5">Sélectionnez une matière puis un chapitre pour démarrer l'enseignement structuré</p>
           </div>
         </div>
       </div>
@@ -5595,21 +5595,21 @@ Exercice 1 : Oscillations libres amorties, équation différentielle x'' + 2gamm
         const stepIdx = sess.currentStepIndex ?? sess.activeStepIndex ?? 0;
         const totalSteps = Math.max(1, roadmap.length || sess.totalSteps || 1);
         return `
-        <div class="p-4 bg-blue-50/80 rounded-lg border border-blue-200 flex flex-col sm:flex-row sm:items-center justify-between gap-3 animate-in fade-in duration-150">
+        <div class="p-4 bg-[#16171a] rounded-lg border border-zinc-800 flex flex-col sm:flex-row sm:items-center justify-between gap-3 animate-in fade-in duration-150">
           <div class="space-y-1">
-            <div class="flex items-center gap-1.5 text-[11px] font-semibold uppercase tracking-wider text-blue-800">
-              <span class="w-2 h-2 rounded-full bg-blue-600 animate-pulse"></span>
+            <div class="flex items-center gap-1.5 text-[11px] font-semibold uppercase tracking-wider text-blue-400">
+              <span class="w-2 h-2 rounded-full bg-blue-500 animate-pulse"></span>
               Parcours en cours
             </div>
-            <div class="font-bold text-slate-900 text-sm">${this.escapeHtml(sess.chapterTitle)}</div>
-            <div class="text-xs text-slate-600">Progression enregistrée : Étape ${stepIdx + 1} sur ${totalSteps}</div>
+            <div class="font-bold text-white text-sm">${this.escapeHtml(sess.chapterTitle)}</div>
+            <div class="text-xs text-zinc-400">Progression enregistrée : Étape ${stepIdx + 1} sur ${totalSteps}</div>
           </div>
           <div class="flex items-center gap-2 shrink-0">
-            <button onclick="app.resumeActiveSession()" class="bg-blue-600 hover:bg-blue-700 text-white font-medium text-xs px-3.5 py-2 rounded-lg transition flex items-center gap-1.5 shadow-2xs">
+            <button onclick="app.resumeActiveSession()" class="bg-blue-600 hover:bg-blue-500 text-white font-medium text-xs px-3.5 py-2 rounded-lg transition flex items-center gap-1.5 shadow-2xs">
               <i data-lucide="play" class="w-3.5 h-3.5 fill-current"></i>
               <span>Reprendre ce chapitre</span>
             </button>
-            <button onclick="app.confirmQuitLearningSession()" class="text-xs text-slate-500 hover:text-rose-600 font-medium px-2 py-2 transition" title="Effacer cette session">
+            <button onclick="app.confirmQuitLearningSession()" class="text-xs text-zinc-400 hover:text-rose-400 font-medium px-2 py-2 transition" title="Effacer cette session">
               Réinitialiser
             </button>
           </div>
@@ -5621,51 +5621,51 @@ Exercice 1 : Oscillations libres amorties, équation différentielle x'' + 2gamm
         <!-- Step 1 : Choisir un Cours -->
         <div class="space-y-3">
           <div class="flex items-center justify-between gap-2">
-            <span class="text-xs font-bold uppercase tracking-wider text-slate-700 flex items-center gap-1.5">
+            <span class="text-xs font-bold uppercase tracking-wider text-zinc-300 flex items-center gap-1.5">
               <span class="w-5 h-5 rounded-full bg-blue-600 text-white text-[11px] flex items-center justify-center font-bold">1</span>
               Choisissez une matière
             </span>
-            <span class="text-[11px] text-slate-500 font-medium">${coursesList.length} cours disponibles</span>
+            <span class="text-[11px] text-zinc-400 font-medium">${coursesList.length} cours disponibles</span>
           </div>
 
           <!-- Search Input -->
           <div class="relative flex items-center">
-            <i data-lucide="search" class="w-4 h-4 text-slate-400 absolute left-3 pointer-events-none"></i>
+            <i data-lucide="search" class="w-4 h-4 text-zinc-400 absolute left-3 pointer-events-none"></i>
             <input 
               type="text" 
               placeholder="Rechercher une matière (ex: Analyse, Mécanique, Algorithmique)..."
               value="${this.escapeHtml(this.learnSearchQuery || '')}"
               oninput="app.learnSearchQuery = this.value; app.render();"
-              class="w-full bg-white text-slate-900 pl-9 pr-3 py-2 rounded-lg border border-slate-200 focus:border-blue-600 outline-none text-xs transition"
+              class="w-full bg-[#16171a] text-white pl-9 pr-3 py-2 rounded-lg border border-zinc-800 focus:border-blue-500 outline-none text-xs transition"
             />
           </div>
 
           <!-- Courses List -->
           <div class="space-y-2.5">
             ${coursesList.map(c => `
-              <div onclick="app.selectLearnCourse('${c.id}')" class="p-4 bg-white hover:bg-slate-50 rounded-lg border border-slate-200 hover:border-blue-500 transition cursor-pointer group flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+              <div onclick="app.selectLearnCourse('${c.id}')" class="p-4 bg-[#16171a] hover:bg-[#1f2024] rounded-lg border border-zinc-800 hover:border-zinc-700 transition cursor-pointer group flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                 <div class="space-y-1">
                   <div class="flex items-center gap-2">
-                    <span class="px-2 py-0.5 rounded-md bg-slate-100 text-slate-700 font-mono text-[10px] font-medium border border-slate-200">
+                    <span class="px-2 py-0.5 rounded-md bg-[#121316] text-zinc-300 font-mono text-[10px] font-medium border border-zinc-800">
                       ${c.code || c.id}
                     </span>
-                    <h3 class="font-semibold text-slate-900 text-sm group-hover:text-blue-600 transition">${c.name}</h3>
+                    <h3 class="font-semibold text-white text-sm group-hover:text-blue-400 transition">${c.name}</h3>
                   </div>
-                  <div class="text-xs text-slate-500">${c.professor ? c.professor + ' • ' : ''}${c.description || 'Programme universitaire'}</div>
+                  <div class="text-xs text-zinc-400">${c.professor ? c.professor + ' • ' : ''}${c.description || 'Programme universitaire'}</div>
                 </div>
                 <div class="flex items-center gap-2 shrink-0 self-end sm:self-center">
-                  <span class="text-xs font-medium px-2.5 py-1 rounded-lg bg-blue-50 text-blue-700 border border-blue-200">
+                  <span class="text-xs font-medium px-2.5 py-1 rounded-lg bg-[#121316] text-blue-400 border border-zinc-800">
                     ${Array.isArray(c.chapters) ? c.chapters.length : 1} chapitre(s)
                   </span>
-                  <i data-lucide="chevron-right" class="w-4 h-4 text-slate-400 group-hover:text-blue-600 transition"></i>
+                  <i data-lucide="chevron-right" class="w-4 h-4 text-zinc-500 group-hover:text-blue-400 transition"></i>
                 </div>
               </div>
             `).join('')}
 
             ${coursesList.length === 0 ? `
-              <div class="p-8 text-center bg-white rounded-lg border border-slate-200 space-y-3">
-                <p class="text-xs text-slate-500">Aucun cours disponible.</p>
-                <button onclick="app.loadLearningCourses()" class="px-3 py-1.5 rounded-lg bg-blue-50 text-blue-700 text-xs font-semibold border border-blue-200 hover:bg-blue-100 transition">
+              <div class="p-8 text-center bg-[#16171a] rounded-lg border border-zinc-800 space-y-3">
+                <p class="text-xs text-zinc-400">Aucun cours disponible.</p>
+                <button onclick="app.loadLearningCourses()" class="px-3 py-1.5 rounded-lg bg-[#121316] text-blue-400 text-xs font-semibold border border-zinc-800 hover:bg-zinc-800 transition">
                   Actualiser la liste des cours
                 </button>
               </div>
@@ -5677,20 +5677,20 @@ Exercice 1 : Oscillations libres amorties, équation différentielle x'' + 2gamm
         <div class="space-y-4 animate-in fade-in duration-150">
           
           <!-- Back Link to Courses -->
-          <button onclick="app.selectLearnCourse(null)" class="text-xs font-semibold text-slate-600 hover:text-slate-900 flex items-center gap-1.5 transition">
+          <button onclick="app.selectLearnCourse(null)" class="text-xs font-semibold text-zinc-400 hover:text-white flex items-center gap-1.5 transition">
             <i data-lucide="arrow-left" class="w-3.5 h-3.5"></i>
             Changer de matière
           </button>
 
           <!-- Selected Course Card -->
-          <div class="p-4 bg-slate-50 rounded-lg border border-slate-200 space-y-1">
-            <div class="text-[10px] font-medium font-mono text-slate-500 uppercase">${activeCourse.code || activeCourse.id}</div>
-            <h2 class="text-base font-bold text-slate-900">${activeCourse.name}</h2>
-            <p class="text-xs text-slate-600">${activeCourse.description || ''}</p>
+          <div class="p-4 bg-[#16171a] rounded-lg border border-zinc-800 space-y-1">
+            <div class="text-[10px] font-medium font-mono text-zinc-400 uppercase">${activeCourse.code || activeCourse.id}</div>
+            <h2 class="text-base font-bold text-white">${activeCourse.name}</h2>
+            <p class="text-xs text-zinc-400">${activeCourse.description || ''}</p>
           </div>
 
           <div class="space-y-2.5">
-            <div class="text-xs font-bold uppercase tracking-wider text-slate-700 flex items-center gap-1.5">
+            <div class="text-xs font-bold uppercase tracking-wider text-zinc-300 flex items-center gap-1.5">
               <span class="w-5 h-5 rounded-full bg-blue-600 text-white text-[11px] flex items-center justify-center font-bold">2</span>
               Choisissez un chapitre pour commencer
             </div>
@@ -5698,15 +5698,15 @@ Exercice 1 : Oscillations libres amorties, équation différentielle x'' + 2gamm
             <!-- Chapters List -->
             <div class="space-y-2.5">
               ${(Array.isArray(activeCourse.chapters) ? activeCourse.chapters : []).map((chap, idx) => `
-                <div class="p-4 bg-white rounded-lg border border-slate-200 hover:border-blue-600 transition flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                <div class="p-4 bg-[#16171a] rounded-lg border border-zinc-800 hover:border-zinc-700 transition flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                   <div class="space-y-1">
                     <div class="flex items-center gap-2">
-                      <span class="w-6 h-6 rounded-full bg-slate-100 text-slate-800 font-bold text-xs flex items-center justify-center shrink-0">
+                      <span class="w-6 h-6 rounded-full bg-[#121316] text-zinc-300 font-bold text-xs flex items-center justify-center shrink-0 border border-zinc-800">
                         ${idx + 1}
                       </span>
-                      <h4 class="font-semibold text-slate-900 text-xs sm:text-sm">${chap.title}</h4>
+                      <h4 class="font-semibold text-white text-xs sm:text-sm">${chap.title}</h4>
                     </div>
-                    <div class="text-[11px] text-slate-500 pl-8">
+                    <div class="text-[11px] text-zinc-400 pl-8">
                       ${chap.topics ? chap.topics.join(' • ') : 'Parcours structuré avec points de contrôle et exercices guidés'}
                     </div>
                   </div>
@@ -5714,7 +5714,7 @@ Exercice 1 : Oscillations libres amorties, équation différentielle x'' + 2gamm
                     <button 
                       onclick="app.startLearningChapter('${activeCourse.id}', '${chap.id}')"
                       ${this.isLearningLoading ? 'disabled' : ''}
-                      class="w-full sm:w-auto bg-blue-600 hover:bg-blue-700 text-white font-medium text-xs px-3.5 py-2 rounded-lg transition flex items-center justify-center gap-1.5 disabled:opacity-50 shadow-2xs"
+                      class="w-full sm:w-auto bg-blue-600 hover:bg-blue-500 text-white font-medium text-xs px-3.5 py-2 rounded-lg transition flex items-center justify-center gap-1.5 disabled:opacity-50 shadow-2xs"
                     >
                       <i data-lucide="play" class="w-3.5 h-3.5 fill-current"></i>
                       <span>Lancer ce chapitre</span>
@@ -5748,49 +5748,49 @@ Exercice 1 : Oscillations libres amorties, équation différentielle x'' + 2gamm
     <div class="max-w-2xl mx-auto px-4 py-3 sm:px-6 sm:py-4 w-full flex-1 flex flex-col justify-between min-h-0 space-y-3">
       
       <!-- Top Navigation & Status Bar -->
-      <div class="bg-white rounded-lg border border-slate-200 p-3 sm:p-3.5 space-y-2.5">
+      <div class="bg-[#16171a] rounded-lg border border-zinc-800 p-3 sm:p-3.5 space-y-2.5">
         <div class="flex items-center justify-between gap-2">
           
           <!-- Left: Change Course / Back to Selection -->
-          <button onclick="app.exitLearningToSelection()" class="text-xs font-semibold text-slate-700 hover:text-slate-900 bg-slate-100 hover:bg-slate-200 px-2.5 py-1.5 rounded-lg flex items-center gap-1 transition border border-slate-200" title="Changer de matière ou de chapitre">
+          <button onclick="app.exitLearningToSelection()" class="text-xs font-semibold text-zinc-300 hover:text-white bg-[#121316] hover:bg-zinc-800 px-2.5 py-1.5 rounded-lg flex items-center gap-1 transition border border-zinc-800" title="Changer de matière ou de chapitre">
             <i data-lucide="chevron-left" class="w-3.5 h-3.5"></i>
             <span>Changer de cours</span>
           </button>
 
           <!-- Center: Breadcrumb Capsule -->
           <div class="text-center truncate px-2">
-            <div class="font-bold text-xs sm:text-sm text-slate-900 truncate">
+            <div class="font-bold text-xs sm:text-sm text-white truncate">
               ${sess.chapterTitle}
             </div>
-            <div class="text-[10px] text-slate-500 font-mono truncate">
+            <div class="text-[10px] text-zinc-400 font-mono truncate">
               ${curCourse ? curCourse.name : sess.courseId}
             </div>
           </div>
 
           <!-- Right: Tools Quick Buttons -->
           <div class="flex items-center gap-1.5 shrink-0">
-            <button onclick="app.openWhereAreWeModal()" class="px-2.5 py-1.5 rounded-lg bg-blue-50 hover:bg-blue-100 text-blue-700 text-xs font-semibold flex items-center gap-1 border border-blue-200 transition" title="Point d'étape complet">
-              <i data-lucide="compass" class="w-3.5 h-3.5 text-blue-600"></i>
+            <button onclick="app.openWhereAreWeModal()" class="px-2.5 py-1.5 rounded-lg bg-[#121316] hover:bg-zinc-800 text-blue-400 text-xs font-semibold flex items-center gap-1 border border-zinc-800 transition" title="Point d'étape complet">
+              <i data-lucide="compass" class="w-3.5 h-3.5 text-blue-400"></i>
               <span class="hidden sm:inline">Où en sommes-nous ?</span>
             </button>
-            <button onclick="app.openCourseSourcesModal()" class="p-1.5 sm:px-2.5 sm:py-1.5 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-medium flex items-center gap-1 transition border border-slate-200" title="Sources officielles">
-              <i data-lucide="book-open" class="w-3.5 h-3.5 text-slate-600"></i>
+            <button onclick="app.openCourseSourcesModal()" class="p-1.5 sm:px-2.5 sm:py-1.5 rounded-lg bg-[#121316] hover:bg-zinc-800 text-zinc-300 text-xs font-medium flex items-center gap-1 transition border border-zinc-800" title="Sources officielles">
+              <i data-lucide="book-open" class="w-3.5 h-3.5 text-zinc-400"></i>
               <span class="hidden sm:inline">Sources</span>
             </button>
           </div>
         </div>
 
         <!-- Linear Stepper Bar -->
-        <div class="space-y-1 pt-1 border-t border-slate-100">
-          <div class="flex items-center justify-between text-[11px] font-semibold text-slate-600">
-            <span class="truncate max-w-[200px] sm:max-w-xs font-bold text-slate-800">
+        <div class="space-y-1 pt-1 border-t border-zinc-800/80">
+          <div class="flex items-center justify-between text-[11px] font-semibold text-zinc-400">
+            <span class="truncate max-w-[200px] sm:max-w-xs font-bold text-zinc-200">
               Étape ${stepIdx + 1} : ${activeStep ? activeStep.title : ''}
             </span>
-            <span class="text-blue-700 font-bold shrink-0">${progressPct}% complété</span>
+            <span class="text-blue-400 font-bold shrink-0">${progressPct}% complété</span>
           </div>
 
           <!-- Progress Line -->
-          <div class="w-full bg-slate-100 rounded-full h-1.5 overflow-hidden border border-slate-200">
+          <div class="w-full bg-[#121316] rounded-full h-1.5 overflow-hidden border border-zinc-800">
             <div class="bg-blue-600 h-1.5 rounded-full transition-all duration-300" style="width: ${progressPct}%"></div>
           </div>
 
@@ -5800,8 +5800,8 @@ Exercice 1 : Oscillations libres amorties, équation différentielle x'' + 2gamm
               const isComp = step.status === 'completed';
               const isAct = step.status === 'active';
               return `
-                <div class="flex items-center gap-1 shrink-0 ${isAct ? 'font-bold text-blue-700' : (isComp ? 'text-slate-600' : 'text-slate-400')} text-[10px]" title="${step.title}">
-                  <span class="w-4 h-4 rounded-full flex items-center justify-center text-[9px] font-bold ${isAct ? 'bg-blue-600 text-white' : (isComp ? 'bg-blue-100 text-blue-800' : 'bg-slate-200 text-slate-600')}">
+                <div class="flex items-center gap-1 shrink-0 ${isAct ? 'font-bold text-blue-400' : (isComp ? 'text-zinc-300' : 'text-zinc-500')} text-[10px]" title="${step.title}">
+                  <span class="w-4 h-4 rounded-full flex items-center justify-center text-[9px] font-bold ${isAct ? 'bg-blue-600 text-white' : (isComp ? 'bg-blue-950 text-blue-400 border border-blue-800' : 'bg-[#121316] text-zinc-500 border border-zinc-800')}">
                     ${isComp ? '✓' : idx + 1}
                   </span>
                   <span class="hidden md:inline truncate max-w-[90px]">${step.title}</span>
@@ -5810,51 +5810,51 @@ Exercice 1 : Oscillations libres amorties, équation différentielle x'' + 2gamm
             }).join('')}
             
             <!-- Final Challenge Step Pin -->
-            <button onclick="app.startChapterAssessment()" class="flex items-center gap-1 shrink-0 text-[10px] font-medium text-blue-700 hover:text-blue-800 bg-blue-50 hover:bg-blue-100 px-2 py-0.5 rounded-md border border-blue-200 transition" title="Lancer le défi final">
+            <button onclick="app.startChapterAssessment()" class="flex items-center gap-1 shrink-0 text-[10px] font-medium text-blue-400 hover:text-blue-300 bg-[#121316] hover:bg-zinc-800 px-2 py-0.5 rounded-md border border-zinc-800 transition" title="Lancer le défi final">
               <span>🏁 Défi Final</span>
             </button>
           </div>
         </div>
 
         <!-- Situation & Progression Immédiate : Où en sommes-nous ? -->
-        <div class="p-2.5 bg-slate-50 rounded-lg border border-slate-200 text-xs space-y-1 mt-1">
+        <div class="p-2.5 bg-[#121316] rounded-lg border border-zinc-800 text-xs space-y-1 mt-1">
           <div class="flex items-center justify-between">
-            <div class="flex items-center gap-1.5 font-bold text-slate-900 text-[11px]">
-              <i data-lucide="compass" class="w-3.5 h-3.5 text-blue-600"></i>
+            <div class="flex items-center gap-1.5 font-bold text-white text-[11px]">
+              <i data-lucide="compass" class="w-3.5 h-3.5 text-blue-400"></i>
               <span>Où en sommes-nous ?</span>
             </div>
-            <button onclick="app.openWhereAreWeModal()" class="text-[11px] font-semibold text-blue-600 hover:text-blue-800 flex items-center gap-0.5">
+            <button onclick="app.openWhereAreWeModal()" class="text-[11px] font-semibold text-blue-400 hover:text-blue-300 flex items-center gap-0.5">
               <span>Voir la fiche détaillée</span>
               <i data-lucide="chevron-right" class="w-3 h-3"></i>
             </button>
           </div>
-          <div class="flex flex-wrap items-center gap-x-2 text-[11px] text-slate-600">
-            <span><strong class="text-slate-800">Matière :</strong> ${curCourse ? curCourse.name : (sess.courseId || 'Cours')}</span>
+          <div class="flex flex-wrap items-center gap-x-2 text-[11px] text-zinc-400">
+            <span><strong class="text-zinc-200">Matière :</strong> ${curCourse ? curCourse.name : (sess.courseId || 'Cours')}</span>
             <span>•</span>
-            <span><strong class="text-slate-800">Chapitre :</strong> ${sess.chapterTitle || 'Chapitre'}</span>
+            <span><strong class="text-zinc-200">Chapitre :</strong> ${sess.chapterTitle || 'Chapitre'}</span>
             <span>•</span>
-            <span class="text-blue-700 font-bold">Étape ${stepIdx + 1}/${totalSteps}</span>
+            <span class="text-blue-400 font-bold">Étape ${stepIdx + 1}/${totalSteps}</span>
           </div>
-          <div class="text-[11px] text-slate-600 pt-0.5">
-            <span class="font-bold text-slate-800">Notion active :</span> ${activeStep ? activeStep.title : 'Étape active'}
-            ${activeStep && activeStep.objective ? ` — <span class="text-slate-500">${activeStep.objective}</span>` : ''}
+          <div class="text-[11px] text-zinc-400 pt-0.5">
+            <span class="font-bold text-zinc-200">Notion active :</span> ${activeStep ? activeStep.title : 'Étape active'}
+            ${activeStep && activeStep.objective ? ` — <span class="text-zinc-500">${activeStep.objective}</span>` : ''}
           </div>
         </div>
       </div>
 
       <!-- Active Prerequisite Branch Alert -->
       ${sess.branchOpen ? `
-        <div class="p-3.5 bg-slate-50 rounded-lg border border-slate-200 space-y-2 animate-in fade-in duration-150">
+        <div class="p-3.5 bg-[#16171a] rounded-lg border border-zinc-800 space-y-2 animate-in fade-in duration-150">
           <div class="flex items-start justify-between gap-2">
-            <div class="flex items-center gap-2 text-xs font-semibold text-slate-900">
-              <i data-lucide="git-branch" class="w-4 h-4 text-blue-600 shrink-0"></i>
+            <div class="flex items-center gap-2 text-xs font-semibold text-white">
+              <i data-lucide="git-branch" class="w-4 h-4 text-blue-400 shrink-0"></i>
               <span>Branche temporaire de révision : ${sess.activeBranch ? sess.activeBranch.title : 'Prérequis'}</span>
             </div>
-            <button onclick="app.sendLearningMessage('J ai compris ce prérequis, reprenons le cours.', 'close_branch')" class="text-[11px] font-medium text-blue-700 hover:underline shrink-0">
+            <button onclick="app.sendLearningMessage('J ai compris ce prérequis, reprenons le cours.', 'close_branch')" class="text-[11px] font-medium text-blue-400 hover:underline shrink-0">
               ✓ Clôturer la branche
             </button>
           </div>
-          <p class="text-[11px] text-slate-600 leading-relaxed">
+          <p class="text-[11px] text-zinc-400 leading-relaxed">
             ${sess.activeBranch ? sess.activeBranch.reason : 'Une consolidation ciblée a été activée avant d aborder la suite.'}
           </p>
         </div>
@@ -5865,18 +5865,18 @@ Exercice 1 : Oscillations libres amorties, équation différentielle x'' + 2gamm
         
         <!-- Chapter Demystification Summary -->
         ${sess.demystification ? `
-          <div class="p-3.5 bg-slate-50 rounded-lg border border-slate-200 space-y-2 text-xs">
-            <div class="flex items-center justify-between text-slate-700 font-bold">
+          <div class="p-3.5 bg-[#16171a] rounded-lg border border-zinc-800 space-y-2 text-xs">
+            <div class="flex items-center justify-between text-zinc-200 font-bold">
               <span class="flex items-center gap-1.5">
-                <i data-lucide="target" class="w-3.5 h-3.5 text-blue-600"></i>
+                <i data-lucide="target" class="w-3.5 h-3.5 text-blue-400"></i>
                 Pourquoi cette notion ?
               </span>
-              <span class="text-[10px] text-slate-400 font-normal">Poly universitaire officiel</span>
+              <span class="text-[10px] text-zinc-500 font-normal">Poly universitaire officiel</span>
             </div>
-            <p class="text-slate-600 leading-relaxed">${sess.demystification.whyItMatters}</p>
+            <p class="text-zinc-400 leading-relaxed">${sess.demystification.whyItMatters}</p>
             ${sess.demystification.concreteApplication ? `
-              <div class="text-[11px] text-slate-500 bg-white p-2 rounded-md border border-slate-200 font-medium">
-                <span class="font-bold text-slate-700">Application concrète :</span> ${sess.demystification.concreteApplication}
+              <div class="text-[11px] text-zinc-300 bg-[#121316] p-2 rounded-md border border-zinc-800 font-medium">
+                <span class="font-bold text-zinc-200">Application concrète :</span> ${sess.demystification.concreteApplication}
               </div>
             ` : ''}
           </div>
@@ -5888,14 +5888,14 @@ Exercice 1 : Oscillations libres amorties, équation différentielle x'' + 2gamm
         <!-- Loading State Indicator -->
         ${this.isLearningLoading ? `
           <div class="flex items-start gap-2 animate-in fade-in duration-100">
-            <div class="w-6 h-6 rounded-full bg-blue-100 text-blue-700 flex items-center justify-center font-bold text-[10px] shrink-0 mt-1">
+            <div class="w-6 h-6 rounded-full bg-blue-600 text-white flex items-center justify-center font-bold text-[10px] shrink-0 mt-1">
               IA
             </div>
-            <div class="p-3 bg-white rounded-lg border border-slate-200 text-xs text-slate-500 flex items-center gap-2">
+            <div class="p-3 bg-[#16171a] rounded-lg border border-zinc-800 text-xs text-zinc-400 flex items-center gap-2">
               <div class="flex gap-1 items-center">
-                <span class="w-1.5 h-1.5 rounded-full bg-blue-600 animate-bounce" style="animation-delay: 0ms"></span>
-                <span class="w-1.5 h-1.5 rounded-full bg-blue-600 animate-bounce" style="animation-delay: 150ms"></span>
-                <span class="w-1.5 h-1.5 rounded-full bg-blue-600 animate-bounce" style="animation-delay: 300ms"></span>
+                <span class="w-1.5 h-1.5 rounded-full bg-blue-500 animate-bounce" style="animation-delay: 0ms"></span>
+                <span class="w-1.5 h-1.5 rounded-full bg-blue-500 animate-bounce" style="animation-delay: 150ms"></span>
+                <span class="w-1.5 h-1.5 rounded-full bg-blue-500 animate-bounce" style="animation-delay: 300ms"></span>
               </div>
               <span>Le tuteur prépare ton étape personnalisée...</span>
             </div>
@@ -5908,38 +5908,38 @@ Exercice 1 : Oscillations libres amorties, équation différentielle x'' + 2gamm
         
         <!-- Pedagogical Quick Action Buttons -->
         <div class="flex items-center gap-1.5 overflow-x-auto no-scrollbar py-1 text-xs">
-          <button onclick="app.sendLearningAction('hint')" class="px-2.5 py-1 rounded-lg bg-white hover:bg-slate-50 text-slate-700 border border-slate-200 transition font-medium shrink-0 flex items-center gap-1" title="Obtenir un indice">
+          <button onclick="app.sendLearningAction('hint')" class="px-2.5 py-1 rounded-lg bg-[#16171a] hover:bg-zinc-800 text-zinc-300 border border-zinc-800 transition font-medium shrink-0 flex items-center gap-1" title="Obtenir un indice">
             <span>💡 Indice</span>
           </button>
-          <button onclick="app.sendLearningAction('simplify')" class="px-2.5 py-1 rounded-lg bg-white hover:bg-slate-50 text-slate-700 border border-slate-200 transition font-medium shrink-0 flex items-center gap-1" title="Expliquer plus simplement">
+          <button onclick="app.sendLearningAction('simplify')" class="px-2.5 py-1 rounded-lg bg-[#16171a] hover:bg-zinc-800 text-zinc-300 border border-zinc-800 transition font-medium shrink-0 flex items-center gap-1" title="Expliquer plus simplement">
             <span>🔍 Plus simple</span>
           </button>
-          <button onclick="app.sendLearningAction('example')" class="px-2.5 py-1 rounded-lg bg-white hover:bg-slate-50 text-slate-700 border border-slate-200 transition font-medium shrink-0 flex items-center gap-1" title="Voir un exemple concret">
+          <button onclick="app.sendLearningAction('example')" class="px-2.5 py-1 rounded-lg bg-[#16171a] hover:bg-zinc-800 text-zinc-300 border border-zinc-800 transition font-medium shrink-0 flex items-center gap-1" title="Voir un exemple concret">
             <span>🔢 Exemple concret</span>
           </button>
-          <button onclick="app.sendLearningAction('in_course')" class="px-2.5 py-1 rounded-lg bg-white hover:bg-slate-50 text-slate-700 border border-slate-200 transition font-medium shrink-0 flex items-center gap-1" title="Où est-ce dans mon polycopié ?">
+          <button onclick="app.sendLearningAction('in_course')" class="px-2.5 py-1 rounded-lg bg-[#16171a] hover:bg-zinc-800 text-zinc-300 border border-zinc-800 transition font-medium shrink-0 flex items-center gap-1" title="Où est-ce dans mon polycopié ?">
             <span>📖 Dans mon cours ?</span>
           </button>
-          <button onclick="app.startChapterAssessment()" class="px-2.5 py-1 rounded-lg bg-blue-50 hover:bg-blue-100 text-blue-800 border border-blue-200 transition font-medium shrink-0 flex items-center gap-1 ml-auto">
+          <button onclick="app.startChapterAssessment()" class="px-2.5 py-1 rounded-lg bg-[#121316] hover:bg-zinc-800 text-blue-400 border border-zinc-800 transition font-medium shrink-0 flex items-center gap-1 ml-auto">
             <span>🏁 Défi du Chapitre</span>
           </button>
         </div>
 
         <!-- Student Input Bar -->
-        <form onsubmit="event.preventDefault(); app.sendLearningMessage();" class="flex items-center gap-2 bg-white p-1.5 rounded-lg border border-slate-200 focus-within:border-blue-600 focus-within:ring-1 focus-within:ring-blue-600 transition">
+        <form onsubmit="event.preventDefault(); app.sendLearningMessage();" class="flex items-center gap-2 bg-[#16171a] p-1.5 rounded-lg border border-zinc-800 focus-within:border-blue-500 transition">
           
           <input 
             type="text" 
             id="learning-input-text"
             placeholder="Tape ta réponse, ton calcul ou pose une question..." 
             autocomplete="off"
-            class="flex-1 bg-transparent px-3 py-2 text-xs sm:text-sm text-slate-800 placeholder:text-slate-400 outline-none"
+            class="flex-1 bg-transparent px-3 py-2 text-xs sm:text-sm text-white placeholder:text-zinc-500 outline-none"
           />
 
           <button 
             type="submit" 
             ${this.isLearningLoading ? 'disabled' : ''}
-            class="bg-blue-600 hover:bg-blue-700 text-white p-2.5 rounded-lg transition flex items-center justify-center disabled:opacity-40"
+            class="bg-blue-600 hover:bg-blue-500 text-white p-2.5 rounded-lg transition flex items-center justify-center disabled:opacity-40"
             aria-label="Envoyer"
           >
             <i data-lucide="arrow-up" class="w-4 h-4"></i>
@@ -5956,7 +5956,7 @@ Exercice 1 : Oscillations libres amorties, équation différentielle x'' + 2gamm
     if (!isTutor) {
       return `
         <div class="flex justify-end">
-          <div class="max-w-[85%] sm:max-w-[75%] p-3 rounded-lg bg-slate-100 text-slate-900 border border-slate-200 text-xs sm:text-sm leading-relaxed">
+          <div class="max-w-[85%] sm:max-w-[75%] p-3 rounded-lg bg-blue-600 text-white text-xs sm:text-sm leading-relaxed">
             ${this.escapeHtml(msg.text)}
           </div>
         </div>
@@ -5965,18 +5965,18 @@ Exercice 1 : Oscillations libres amorties, équation différentielle x'' + 2gamm
 
     return `
       <div class="flex items-start gap-2.5">
-        <div class="w-7 h-7 rounded-lg bg-blue-50 text-blue-700 border border-blue-200 flex items-center justify-center font-bold text-xs shrink-0 mt-1">
+        <div class="w-7 h-7 rounded-lg bg-[#16171a] text-blue-400 border border-zinc-800 flex items-center justify-center font-bold text-xs shrink-0 mt-1">
           <i data-lucide="sparkles" class="w-3.5 h-3.5"></i>
         </div>
         <div class="max-w-[90%] sm:max-w-[85%] space-y-2">
-          <div class="p-3.5 sm:p-4 rounded-lg bg-white text-slate-800 border border-slate-200 text-xs sm:text-sm leading-relaxed">
+          <div class="p-3.5 sm:p-4 rounded-lg bg-[#16171a] text-zinc-200 border border-zinc-800 text-xs sm:text-sm leading-relaxed">
             ${this.formatMarkdown(msg.text)}
           </div>
           
           <!-- Source citation pill if present -->
           ${(msg.sourceReference) ? `
-            <div class="text-[10px] text-slate-500 font-mono flex items-center gap-1 pl-1">
-              <i data-lucide="bookmark" class="w-3 h-3 text-slate-400"></i>
+            <div class="text-[10px] text-zinc-500 font-mono flex items-center gap-1 pl-1">
+              <i data-lucide="bookmark" class="w-3 h-3 text-zinc-500"></i>
               <span>Réf : ${this.escapeHtml(msg.sourceReference)}</span>
             </div>
           ` : ''}
@@ -6001,45 +6001,45 @@ Exercice 1 : Oscillations libres amorties, équation différentielle x'' + 2gamm
         
         <!-- Result Header -->
         <div class="text-center space-y-2">
-          <div class="w-12 h-12 rounded-lg ${isPass ? 'bg-blue-100 text-blue-700' : 'bg-slate-100 text-slate-700'} flex items-center justify-center mx-auto text-xl font-bold">
+          <div class="w-12 h-12 rounded-lg ${isPass ? 'bg-[#121316] text-blue-400 border border-zinc-800' : 'bg-[#121316] text-zinc-400 border border-zinc-800'} flex items-center justify-center mx-auto text-xl font-bold">
             ${isPass ? '🎓' : '📖'}
           </div>
-          <h2 class="text-base sm:text-lg font-bold text-slate-900">
+          <h2 class="text-base sm:text-lg font-bold text-white">
             ${isPass ? 'Félicitations ! Chapitre Maîtrisé' : 'Bilan de ton évaluation'}
           </h2>
-          <p class="text-xs text-slate-500 max-w-sm mx-auto">
+          <p class="text-xs text-zinc-400 max-w-sm mx-auto">
             ${this.escapeHtml(chapterTitle)}
           </p>
         </div>
 
         <!-- Score Card -->
-        <div class="p-5 bg-white rounded-lg border border-slate-200 text-center space-y-3">
-          <div class="text-3xl sm:text-4xl font-bold ${isPass ? 'text-blue-600' : 'text-slate-700'} font-mono">
+        <div class="p-5 bg-[#16171a] rounded-lg border border-zinc-800 text-center space-y-3">
+          <div class="text-3xl sm:text-4xl font-bold ${isPass ? 'text-blue-400' : 'text-zinc-300'} font-mono">
             ${result.score || 0}%
           </div>
-          <div class="text-xs font-medium text-slate-700">
+          <div class="text-xs font-medium text-zinc-300">
             ${result.correctCount || 0} bonne(s) réponse(s) sur ${result.totalQuestions || 0} questions
           </div>
-          <div class="w-full bg-slate-100 rounded-full h-2 overflow-hidden border border-slate-200">
-            <div class="${isPass ? 'bg-blue-600' : 'bg-slate-600'} h-2 rounded-full transition-all duration-500" style="width: ${result.score || 0}%"></div>
+          <div class="w-full bg-[#121316] rounded-full h-2 overflow-hidden border border-zinc-800">
+            <div class="${isPass ? 'bg-blue-600' : 'bg-zinc-600'} h-2 rounded-full transition-all duration-500" style="width: ${result.score || 0}%"></div>
           </div>
         </div>
 
         <!-- Breakdown by difficulty -->
-        <div class="p-4 bg-slate-50 rounded-lg border border-slate-200 space-y-2.5 text-xs">
-          <div class="text-[10px] font-semibold uppercase tracking-wider text-slate-500">Précision par niveau de difficulté</div>
+        <div class="p-4 bg-[#16171a] rounded-lg border border-zinc-800 space-y-2.5 text-xs">
+          <div class="text-[10px] font-semibold uppercase tracking-wider text-zinc-400">Précision par niveau de difficulté</div>
           <div class="grid grid-cols-3 gap-2 text-center">
-            <div class="p-2.5 bg-white rounded-lg border border-slate-200">
-              <div class="text-[10px] text-slate-500 font-medium">Facile</div>
-              <div class="font-mono font-bold text-slate-900 mt-1">${result.subScores ? result.subScores.easy : '-'}</div>
+            <div class="p-2.5 bg-[#121316] rounded-lg border border-zinc-800">
+              <div class="text-[10px] text-zinc-400 font-medium">Facile</div>
+              <div class="font-mono font-bold text-white mt-1">${result.subScores ? result.subScores.easy : '-'}</div>
             </div>
-            <div class="p-2.5 bg-white rounded-lg border border-slate-200">
-              <div class="text-[10px] text-slate-500 font-medium">Intermédiaire</div>
-              <div class="font-mono font-bold text-slate-900 mt-1">${result.subScores ? result.subScores.medium : '-'}</div>
+            <div class="p-2.5 bg-[#121316] rounded-lg border border-zinc-800">
+              <div class="text-[10px] text-zinc-400 font-medium">Intermédiaire</div>
+              <div class="font-mono font-bold text-white mt-1">${result.subScores ? result.subScores.medium : '-'}</div>
             </div>
-            <div class="p-2.5 bg-white rounded-lg border border-slate-200">
-              <div class="text-[10px] text-slate-500 font-medium">Difficile</div>
-              <div class="font-mono font-bold text-slate-900 mt-1">${result.subScores ? result.subScores.hard : '-'}</div>
+            <div class="p-2.5 bg-[#121316] rounded-lg border border-zinc-800">
+              <div class="text-[10px] text-zinc-400 font-medium">Difficile</div>
+              <div class="font-mono font-bold text-white mt-1">${result.subScores ? result.subScores.hard : '-'}</div>
             </div>
           </div>
         </div>
@@ -6047,64 +6047,64 @@ Exercice 1 : Oscillations libres amorties, équation différentielle x'' + 2gamm
         <!-- Mastered vs To Reinforce -->
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
           <!-- Mastered -->
-          <div class="p-3.5 bg-white rounded-lg border border-slate-200 space-y-2">
-            <div class="text-blue-700 font-semibold flex items-center gap-1.5 text-xs">
+          <div class="p-3.5 bg-[#16171a] rounded-lg border border-zinc-800 space-y-2">
+            <div class="text-blue-400 font-semibold flex items-center gap-1.5 text-xs">
               <i data-lucide="check-circle" class="w-4 h-4"></i>
               Notions acquises
             </div>
-            <div class="space-y-1 text-[11px] text-slate-600">
+            <div class="space-y-1 text-[11px] text-zinc-300">
               ${(result.masteredConcepts && result.masteredConcepts.length > 0) ? result.masteredConcepts.map(c => `
                 <div class="flex items-center gap-1.5">
-                  <span class="text-blue-600 font-bold">✓</span>
+                  <span class="text-blue-400 font-bold">✓</span>
                   <span>${c}</span>
                 </div>
-              `).join('') : '<div class="text-slate-400">Continue à pratiquer pour consolider.</div>'}
+              `).join('') : '<div class="text-zinc-500">Continue à pratiquer pour consolider.</div>'}
             </div>
           </div>
 
           <!-- To Reinforce -->
-          <div class="p-3.5 bg-white rounded-lg border border-slate-200 space-y-2">
-            <div class="text-slate-800 font-semibold flex items-center gap-1.5 text-xs">
-              <i data-lucide="alert-circle" class="w-4 h-4 text-blue-600"></i>
+          <div class="p-3.5 bg-[#16171a] rounded-lg border border-zinc-800 space-y-2">
+            <div class="text-zinc-200 font-semibold flex items-center gap-1.5 text-xs">
+              <i data-lucide="alert-circle" class="w-4 h-4 text-blue-400"></i>
               Points à renforcer
             </div>
-            <div class="space-y-1 text-[11px] text-slate-600">
+            <div class="space-y-1 text-[11px] text-zinc-300">
               ${(result.conceptsToReinforce && result.conceptsToReinforce.length > 0) ? result.conceptsToReinforce.map(c => `
                 <div class="flex items-center gap-1.5">
-                  <span class="text-slate-400 font-bold">•</span>
+                  <span class="text-zinc-500 font-bold">•</span>
                   <span>${c}</span>
                 </div>
-              `).join('') : '<div class="text-blue-600 font-medium">Aucun point faible majeur détecté !</div>'}
+              `).join('') : '<div class="text-blue-400 font-medium">Aucun point faible majeur détecté !</div>'}
             </div>
           </div>
         </div>
 
         <!-- Tutor Conclusion & Advice -->
-        <div class="p-4 bg-white rounded-lg border border-slate-200 space-y-2">
-          <div class="text-xs font-semibold text-slate-800 flex items-center gap-1.5">
-            <i data-lucide="message-circle" class="w-3.5 h-3.5 text-blue-600"></i>
+        <div class="p-4 bg-[#16171a] rounded-lg border border-zinc-800 space-y-2">
+          <div class="text-xs font-semibold text-white flex items-center gap-1.5">
+            <i data-lucide="message-circle" class="w-3.5 h-3.5 text-blue-400"></i>
             Conseil de ton Tuteur
           </div>
-          <p class="text-xs text-slate-600 leading-relaxed">${result.advice || 'Bon travail sur ce chapitre !'}</p>
+          <p class="text-xs text-zinc-300 leading-relaxed">${result.advice || 'Bon travail sur ce chapitre !'}</p>
         </div>
 
         <!-- Next Actions -->
         <div class="space-y-2 pt-2">
           ${!isPass ? `
-            <button onclick="app.resumeTargetedRemedial()" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-2.5 px-4 rounded-lg transition text-xs flex items-center justify-center gap-2">
+            <button onclick="app.resumeTargetedRemedial()" class="w-full bg-blue-600 hover:bg-blue-500 text-white font-medium py-2.5 px-4 rounded-lg transition text-xs flex items-center justify-center gap-2 shadow-2xs">
               <i data-lucide="repeat" class="w-4 h-4"></i>
               <span>Reprendre les notions fragiles avec le Tuteur</span>
             </button>
-            <button onclick="app.restartAssessment()" class="w-full bg-white hover:bg-slate-50 text-slate-700 font-medium py-2 px-4 rounded-lg border border-slate-200 transition text-xs">
+            <button onclick="app.restartAssessment()" class="w-full bg-[#16171a] hover:bg-zinc-800 text-zinc-300 hover:text-white font-medium py-2 px-4 rounded-lg border border-zinc-800 transition text-xs">
               Refaire l'évaluation
             </button>
           ` : `
-            <button onclick="app.finishAndSaveChapter()" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-2.5 px-4 rounded-lg transition text-xs flex items-center justify-center gap-2">
+            <button onclick="app.finishAndSaveChapter()" class="w-full bg-blue-600 hover:bg-blue-500 text-white font-medium py-2.5 px-4 rounded-lg transition text-xs flex items-center justify-center gap-2 shadow-2xs">
               <i data-lucide="check" class="w-4 h-4"></i>
               <span>Terminer et enregistrer mes progrès</span>
             </button>
           `}
-          <button onclick="app.learningAssessmentActive = false; app.render();" class="w-full text-xs text-slate-500 hover:text-slate-800 py-1.5 font-medium">
+          <button onclick="app.learningAssessmentActive = false; app.render();" class="w-full text-xs text-zinc-400 hover:text-white py-1.5 font-medium">
             Retour à la salle d'étude du chapitre
           </button>
         </div>
@@ -6120,26 +6120,26 @@ Exercice 1 : Oscillations libres amorties, équation différentielle x'' + 2gamm
     <div class="max-w-xl mx-auto px-4 py-4 sm:px-6 sm:py-6 w-full flex-1 space-y-4">
       
       <!-- Top Bar -->
-      <div class="flex items-center justify-between border-b border-slate-200 pb-3">
-        <button onclick="app.learningAssessmentActive = false; app.render();" class="text-xs font-semibold text-slate-500 hover:text-slate-800 flex items-center gap-1 transition">
+      <div class="flex items-center justify-between border-b border-zinc-800 pb-3">
+        <button onclick="app.learningAssessmentActive = false; app.render();" class="text-xs font-semibold text-zinc-400 hover:text-white flex items-center gap-1 transition">
           <i data-lucide="chevron-left" class="w-4 h-4"></i>
           <span>Retour à l'étude</span>
         </button>
-        <div class="text-xs font-bold text-slate-800">
+        <div class="text-xs font-bold text-white">
           Défi du Chapitre
         </div>
-        <div class="text-xs font-bold text-blue-700 font-mono">
+        <div class="text-xs font-bold text-blue-400 font-mono">
           ${answeredCount} / ${questions.length}
         </div>
       </div>
 
       <!-- Introduction note -->
-      <div class="p-3.5 bg-blue-50 rounded-lg border border-blue-200 text-xs text-blue-900 space-y-1">
-        <div class="font-semibold flex items-center gap-1.5">
-          <i data-lucide="award" class="w-3.5 h-3.5 text-blue-600"></i>
+      <div class="p-3.5 bg-[#16171a] rounded-lg border border-zinc-800 text-xs text-zinc-300 space-y-1">
+        <div class="font-semibold flex items-center gap-1.5 text-white">
+          <i data-lucide="award" class="w-3.5 h-3.5 text-blue-400"></i>
           Test de validation des connaissances
         </div>
-        <p class="text-[11px] text-blue-800">
+        <p class="text-[11px] text-zinc-400">
           Réponds à ces questions pour mesurer ta compréhension réelle. Chaque question teste une compétence précise du cours.
         </p>
       </div>
@@ -6147,32 +6147,32 @@ Exercice 1 : Oscillations libres amorties, équation différentielle x'' + 2gamm
       <!-- Question Cards -->
       <div class="space-y-4">
         ${questions.length === 0 ? `
-          <div class="p-8 text-center bg-white rounded-lg border border-slate-200 space-y-2">
-            <p class="text-xs text-slate-500">Chargement des questions du défi...</p>
+          <div class="p-8 text-center bg-[#16171a] rounded-lg border border-zinc-800 space-y-2">
+            <p class="text-xs text-zinc-400">Chargement des questions du défi...</p>
           </div>
         ` : questions.map((q, idx) => {
           const selectedChoice = (this.learningUserAnswers || {})[q.id];
           const hasAnswered = selectedChoice !== undefined;
           const diffBadge = {
-            'easy': '<span class="px-2 py-0.5 rounded-md bg-blue-50 text-blue-700 border border-blue-200 text-[10px] font-medium">Facile</span>',
-            'medium': '<span class="px-2 py-0.5 rounded-md bg-slate-100 text-slate-700 border border-slate-200 text-[10px] font-medium">Intermédiaire</span>',
-            'hard': '<span class="px-2 py-0.5 rounded-md bg-slate-200 text-slate-800 border border-slate-300 text-[10px] font-medium">Difficile</span>'
+            'easy': '<span class="px-2 py-0.5 rounded-md bg-[#121316] text-blue-400 border border-zinc-800 text-[10px] font-medium">Facile</span>',
+            'medium': '<span class="px-2 py-0.5 rounded-md bg-[#121316] text-zinc-300 border border-zinc-800 text-[10px] font-medium">Intermédiaire</span>',
+            'hard': '<span class="px-2 py-0.5 rounded-md bg-[#121316] text-zinc-400 border border-zinc-800 text-[10px] font-medium">Difficile</span>'
           }[q.difficulty] || '';
 
           return `
-            <div class="p-4 bg-white rounded-lg border border-slate-200 space-y-3">
+            <div class="p-4 bg-[#16171a] rounded-lg border border-zinc-800 space-y-3">
               <div class="flex items-start justify-between gap-2">
                 <div class="flex items-center gap-2">
-                  <span class="w-5 h-5 rounded-full bg-slate-100 text-slate-700 font-bold text-[11px] flex items-center justify-center shrink-0">
+                  <span class="w-5 h-5 rounded-full bg-[#121316] text-zinc-300 font-bold text-[11px] flex items-center justify-center shrink-0 border border-zinc-800">
                     ${idx + 1}
                   </span>
-                  <span class="text-xs font-semibold text-slate-800">${q.topic || 'Notion clé'}</span>
+                  <span class="text-xs font-semibold text-white">${q.topic || 'Notion clé'}</span>
                 </div>
                 ${diffBadge}
               </div>
 
               <!-- Question text -->
-              <div class="font-medium text-xs sm:text-sm text-slate-900 leading-relaxed pl-7">
+              <div class="font-medium text-xs sm:text-sm text-zinc-200 leading-relaxed pl-7">
                 ${q.question}
               </div>
 
@@ -6181,18 +6181,18 @@ Exercice 1 : Oscillations libres amorties, équation différentielle x'' + 2gamm
                 ${(q.options || []).map((opt, optIdx) => {
                   const isSelected = selectedChoice === optIdx;
                   const isCorrectOption = optIdx === q.correctIndex;
-                  let borderClass = 'border-slate-200 hover:border-slate-300 bg-white text-slate-700';
+                  let borderClass = 'border-zinc-800 hover:border-zinc-700 bg-[#121316] text-zinc-300';
                   
                   if (hasAnswered) {
                     if (isSelected && isCorrectOption) {
-                      borderClass = 'border-blue-600 bg-blue-50 text-blue-900 font-medium';
+                      borderClass = 'border-blue-500 bg-[#121316] text-blue-400 font-medium';
                     } else if (isSelected && !isCorrectOption) {
-                      borderClass = 'border-slate-400 bg-slate-100 text-slate-900 font-medium';
+                      borderClass = 'border-rose-900 bg-rose-950/40 text-rose-300 font-medium';
                     } else if (isCorrectOption) {
-                      borderClass = 'border-blue-300 bg-blue-50/50 text-blue-900';
+                      borderClass = 'border-emerald-800 bg-emerald-950/30 text-emerald-300';
                     }
                   } else if (isSelected) {
-                    borderClass = 'border-blue-600 bg-blue-50 text-blue-900 font-medium';
+                    borderClass = 'border-blue-500 bg-[#16171a] text-white font-medium';
                   }
 
                   const letter = String.fromCharCode(65 + optIdx);
@@ -6202,7 +6202,7 @@ Exercice 1 : Oscillations libres amorties, équation différentielle x'' + 2gamm
                       onclick="app.selectAssessmentOption('${q.id}', ${optIdx})"
                       class="w-full p-2.5 rounded-lg border text-left text-xs transition flex items-center gap-2.5 ${borderClass}"
                     >
-                      <span class="w-5 h-5 rounded-md bg-slate-100 font-mono font-medium text-[10px] text-slate-600 flex items-center justify-center shrink-0">
+                      <span class="w-5 h-5 rounded-md bg-zinc-800 font-mono font-medium text-[10px] text-zinc-300 flex items-center justify-center shrink-0">
                         ${letter}
                       </span>
                       <span class="flex-1">${opt}</span>
@@ -6213,7 +6213,7 @@ Exercice 1 : Oscillations libres amorties, équation différentielle x'' + 2gamm
 
               <!-- Immediate Explanation if Answered -->
               ${hasAnswered ? `
-                <div class="p-2.5 rounded-lg text-[11px] leading-relaxed ml-7 ${selectedChoice === q.correctIndex ? 'bg-blue-50 text-blue-900 border border-blue-200' : 'bg-slate-50 text-slate-900 border border-slate-200'}">
+                <div class="p-2.5 rounded-lg text-[11px] leading-relaxed ml-7 ${selectedChoice === q.correctIndex ? 'bg-[#062817] text-emerald-300 border border-emerald-900/60' : 'bg-[#121316] text-zinc-300 border border-zinc-800'}">
                   <span class="font-semibold">${selectedChoice === q.correctIndex ? '✓ Correct ! ' : '💡 Explication : '}</span>
                   ${q.explanation || ''}
                 </div>
@@ -6229,7 +6229,7 @@ Exercice 1 : Oscillations libres amorties, équation différentielle x'' + 2gamm
         <button 
           onclick="app.submitChapterAssessment()"
           ${this.isLearningLoading ? 'disabled' : ''}
-          class="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-3 px-4 rounded-lg transition text-xs sm:text-sm flex items-center justify-center gap-2 disabled:opacity-40"
+          class="w-full bg-blue-600 hover:bg-blue-500 text-white font-medium py-3 px-4 rounded-lg transition text-xs sm:text-sm flex items-center justify-center gap-2 disabled:opacity-40 shadow-2xs"
         >
           <i data-lucide="check" class="w-4 h-4"></i>
           <span>Valider et calculer mon score final</span>
